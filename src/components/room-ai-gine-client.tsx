@@ -72,12 +72,14 @@ const colorPreferences = [
 const iNeedOptions = ["Desk", "Storage", "Child-Friendly", "Pet-Friendly"];
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 
-const AppHeader = ({ onGenerateNew }: { onGenerateNew: () => void }) => (
+const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () => void, showGenerateButton: boolean }) => (
     <header className="flex justify-between items-center p-4 border-b border-border">
       <LogoIcon />
-      <Button variant="outline" onClick={onGenerateNew}>
-        <RefreshCw className="mr-2" /> Generate New
-      </Button>
+      {showGenerateButton && (
+        <Button variant="outline" onClick={onGenerateNew}>
+          <RefreshCw className="mr-2" /> Generate New
+        </Button>
+      )}
     </header>
 );
 
@@ -228,7 +230,7 @@ export default function RoomAIGineClient() {
   if (!uploadedImage) {
     return (
         <div className="min-h-screen bg-background font-body flex flex-col">
-          <AppHeader onGenerateNew={handleGenerateNew} />
+          <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={false} />
           <div className="flex-grow flex items-center justify-center">
             <motion.section
               initial={{ opacity: 0, y: 20 }}
@@ -265,7 +267,7 @@ export default function RoomAIGineClient() {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-      <AppHeader onGenerateNew={handleGenerateNew} />
+      <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={true}/>
       <div className="grid grid-cols-12 gap-6 max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex-grow w-full">
         {/* Left Column */}
         <div className="col-span-12 lg:col-span-3 space-y-6">
