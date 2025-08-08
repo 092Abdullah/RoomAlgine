@@ -21,6 +21,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -344,7 +350,7 @@ export default function RoomAIGineClient() {
                         animate={{ opacity: 1, y: 0, transition: { delay: index * 0.1 } }}
                       >
                         <Card
-                          className={`shadow-md hover:shadow-primary/20 transition-all cursor-pointer ${selectedImage?.style === image.style ? 'ring-2 ring-primary' : ''}`}
+                          className="shadow-md hover:shadow-primary/20 transition-all cursor-pointer"
                           onClick={() => handleImageSelect(image)}
                         >
                           <CardContent className="p-0">
@@ -393,6 +399,33 @@ export default function RoomAIGineClient() {
           )}
         </main>
       </div>
+      <Dialog open={!!selectedImage} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
+        <DialogContent className="max-w-3xl">
+          {selectedImage && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{selectedImage.style} Design</DialogTitle>
+              </DialogHeader>
+              <div className="aspect-video relative my-4">
+                <Image
+                    src={selectedImage.imageDataUri}
+                    alt={`${selectedImage.style} room`}
+                    fill
+                    className="object-contain"
+                  />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button onClick={() => handleDownload(selectedImage.imageDataUri, selectedImage.style)}>
+                  <Download className="mr-2 h-4 w-4" /> Download
+                </Button>
+                <Button variant="outline" onClick={() => handleShare(selectedImage.imageDataUri, selectedImage.style)}>
+                  <Share2 className="mr-2 h-4 w-4" /> Share
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
