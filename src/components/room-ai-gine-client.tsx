@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useCallback, useRef, type ChangeEvent } from "react";
@@ -285,7 +286,7 @@ export default function RoomAIGineClient() {
         <div className="col-span-12 lg:col-span-6">
           <Card className="bg-secondary/50 border-border h-full flex flex-col">
             <CardHeader className="flex flex-row justify-between items-center">
-              <CardTitle className="text-lg">360° Virtual View</CardTitle>
+              <CardTitle className="text-lg">Decored Room</CardTitle>
               <Button variant="ghost" size="sm">RoomAIgine &gt;</Button>
             </CardHeader>
             <CardContent className="flex-grow flex items-center justify-center">
@@ -420,3 +421,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
