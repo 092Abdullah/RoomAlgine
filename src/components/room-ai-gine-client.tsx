@@ -9,9 +9,6 @@ import {
   Loader2,
   Camera,
   Paintbrush,
-  Sofa,
-  Eye,
-  ArrowRight,
   X,
   Sparkles,
   Wand2,
@@ -29,11 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import {
-  generateRoomStylesAction,
-  getFurnitureSuggestionsAction,
-} from "@/app/actions";
-import { type SuggestFurnitureItemsOutput } from "@/ai/flows/suggest-furniture-items";
+import { generateRoomStylesAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { LogoIcon } from "./icons";
 import { Skeleton } from "./ui/skeleton";
@@ -52,14 +45,11 @@ export default function RoomAIGineClient() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
-  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
-  const [furnitureSuggestions, setFurnitureSuggestions] = useState<SuggestFurnitureItemsOutput["furnitureSuggestions"] | null>(null);
   const [lastSurpriseStyle, setLastSurpriseStyle] = useState<string | null>(null);
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -69,7 +59,6 @@ export default function RoomAIGineClient() {
         setUploadedImage(e.target?.result as string);
         setGeneratedImages([]);
         setSelectedImage(null);
-        setFurnitureSuggestions(null);
       };
       reader.readAsDataURL(file);
     }
@@ -103,7 +92,6 @@ export default function RoomAIGineClient() {
 
     setIsGenerating(true);
     setSelectedImage(null);
-    setFurnitureSuggestions(null);
     setGeneratedImages([]);
 
     const result = await generateRoomStylesAction(uploadedImage, stylesToGenerate);
@@ -116,10 +104,6 @@ export default function RoomAIGineClient() {
       });
     } else {
       setGeneratedImages(result.styledRoomImages);
-      if (stylesToGenerate.length === 1 && lastSurpriseStyle) {
-        // If it was a surprise, select the image automatically
-        handleImageSelect(result.styledRoomImages[0], true);
-      }
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     }
     setIsGenerating(false);
@@ -138,28 +122,9 @@ export default function RoomAIGineClient() {
     startGeneration([randomStyle]);
   };
   
-  const handleImageSelect = useCallback(async (image: GeneratedImage, isSurprise = false) => {
+  const handleImageSelect = useCallback((image: GeneratedImage) => {
     setSelectedImage(image);
-    setIsFetchingSuggestions(true);
-    setFurnitureSuggestions(null);
-    
-    // For surprise, we want to scroll immediately to the suggestions.
-    const scrollTarget = isSurprise ? suggestionsRef : resultsRef;
-    setTimeout(() => scrollTarget.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-
-    const result = await getFurnitureSuggestionsAction(image.style, image.imageDataUri);
-
-    if ("error" in result) {
-        toast({
-            title: "Suggestion Failed",
-            description: result.error,
-            variant: "destructive",
-        });
-    } else {
-        setFurnitureSuggestions(result.furnitureSuggestions);
-    }
-    setIsFetchingSuggestions(false);
-  }, [toast]);
+  }, []);
 
 
   const handleDownload = (imageDataUri: string, style: string) => {
@@ -202,7 +167,6 @@ export default function RoomAIGineClient() {
     setUploadedImage(null);
     setGeneratedImages([]);
     setSelectedImage(null);
-    setFurnitureSuggestions(null);
     setLastSurpriseStyle(null);
     if(fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -394,7 +358,7 @@ export default function RoomAIGineClient() {
                               />
                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                     <p className="text-white font-bold text-lg flex items-center gap-2">
-                                        <Sofa /> Get Furniture Ideas
+                                        View Design
                                     </p>
                                 </div>
                             </div>
@@ -424,75 +388,6 @@ export default function RoomAIGineClient() {
                   </motion.div>
                 )}
                 </AnimatePresence>
-                
-                <div ref={suggestionsRef} className="mt-12">
-                  <AnimatePresence>
-                    {selectedImage && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                      >
-                        <h2 className="text-3xl font-bold mb-2 flex items-center">
-                          <Sofa className="mr-3 h-8 w-8 text-primary"/>
-                          Furniture for Your <span className="text-primary ml-2">{selectedImage.style}</span> Room
-                        </h2>
-                        <p className="text-muted-foreground mb-8">Here are some AI-powered suggestions to complete your look.</p>
-                        
-                        {isFetchingSuggestions && (
-                           <div className="grid md:grid-cols-2 gap-6">
-                            {[...Array(4)].map((_, i) => (
-                                <Card key={i} className="shadow-sm">
-                                    <CardHeader><Skeleton className="h-6 w-2/3" /></CardHeader>
-                                    <CardContent className="space-y-2">
-                                        <Skeleton className="h-4 w-full" />
-                                        <Skeleton className="h-4 w-4/5" />
-                                    </CardContent>
-                                    <CardFooter className="flex gap-2">
-                                      <Skeleton className="h-10 w-24" />
-                                      <Skeleton className="h-10 w-24" />
-                                    </CardFooter>
-                                </Card>
-                            ))}
-                          </div>
-                        )}
-
-                        {furnitureSuggestions && (
-                          <div className="grid md:grid-cols-2 gap-6">
-                            {furnitureSuggestions.map((item, index) => (
-                               <motion.div 
-                                 key={index}
-                                 initial={{ opacity: 0, y: 20 }}
-                                 animate={{ opacity: 1, y: 0, transition: { delay: index * 0.1 } }}
-                               >
-                                <Card className="shadow-sm flex flex-col h-full">
-                                    <CardHeader>
-                                        <CardTitle>{item.itemName}</CardTitle>
-                                        <div className="flex flex-wrap gap-2 pt-2">
-                                            {item.styleKeywords.map(kw => <Badge key={kw} variant="secondary">{kw}</Badge>)}
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="flex-grow">
-                                        <p className="text-muted-foreground">{item.itemDescription}</p>
-                                    </CardContent>
-                                    <CardFooter className="flex-wrap gap-2">
-                                        <Button asChild>
-                                            <a href={item.purchaseLink} target="_blank" rel="noopener noreferrer">
-                                                <ArrowRight className="mr-2 h-4 w-4" /> View Product
-                                            </a>
-                                        </Button>
-                                        <Button variant="outline" disabled>
-                                            <Eye className="mr-2 h-4 w-4" /> View in AR
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                               </motion.div>
-                            ))}
-                          </div>
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
               </div>
             </div>
           )}
@@ -501,5 +396,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
