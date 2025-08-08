@@ -38,7 +38,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { generateRoomStylesAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
-import { GenerateIcon, Palette, BedDouble, DeskIcon, LivingRoomIcon, OfficeIcon, MoreFiltersIcon } from "./icons";
+import { GenerateIcon, Palette, BedDouble, DeskIcon, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, LogoIcon } from "./icons";
 import { Skeleton } from "./ui/skeleton";
 import { AnimatePresence, motion } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
@@ -72,6 +72,15 @@ const colorPreferences = [
 const iNeedOptions = ["Desk", "Storage", "Child-Friendly", "Pet-Friendly"];
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 
+const AppHeader = ({ onGenerateNew }: { onGenerateNew: () => void }) => (
+    <header className="flex justify-between items-center p-4 border-b border-border">
+      <LogoIcon />
+      <Button variant="outline" onClick={onGenerateNew}>
+        <RefreshCw className="mr-2" /> Generate New
+      </Button>
+    </header>
+);
+
 export default function RoomAIGineClient() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [selectedStyles, setSelectedStyles] = useState<string[]>(["Mid-Century Modern"]);
@@ -103,6 +112,16 @@ export default function RoomAIGineClient() {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleGenerateNew = () => {
+    setUploadedImage(null);
+    setGeneratedImages([]);
+    setSelectedImage(null);
+    setActiveGeneratedImage(null);
+    if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
+  }
 
   const handleStyleToggle = (style: string) => {
     setSelectedStyles((prev) =>
@@ -208,42 +227,46 @@ export default function RoomAIGineClient() {
 
   if (!uploadedImage) {
     return (
-      <div className="min-h-screen bg-background font-body flex items-center justify-center">
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="text-center max-w-2xl mx-auto p-4"
-        >
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
-            Visualize Your Dream Room
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Upload a photo of your room, pick your favorite styles, and let
-            our AI bring your vision to life in seconds.
-          </p>
-          <Button
-            size="lg"
-            className="mt-8 bg-primary hover:bg-primary/90 text-primary-foreground"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Upload className="mr-2 h-5 w-5" /> Upload Your Room
-          </Button>
-          <Input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            onChange={handleImageUpload}
-            className="hidden"
-          />
-        </motion.section>
-      </div>
-    );
+        <div className="min-h-screen bg-background font-body flex flex-col">
+          <AppHeader onGenerateNew={handleGenerateNew} />
+          <div className="flex-grow flex items-center justify-center">
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center max-w-2xl mx-auto p-4"
+            >
+              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
+                Visualize Your Dream Room
+              </h1>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Upload a photo of your room, pick your favorite styles, and let
+                our AI bring your vision to life in seconds.
+              </p>
+              <Button
+                size="lg"
+                className="mt-8 bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="mr-2 h-5 w-5" /> Upload Your Room
+              </Button>
+              <Input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </motion.section>
+          </div>
+        </div>
+      );
   }
 
   return (
-    <div className="min-h-screen bg-background font-body text-foreground p-4 sm:p-6 lg:p-8">
-      <div className="grid grid-cols-12 gap-6 max-w-[1600px] mx-auto">
+    <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
+      <AppHeader onGenerateNew={handleGenerateNew} />
+      <div className="grid grid-cols-12 gap-6 max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex-grow w-full">
         {/* Left Column */}
         <div className="col-span-12 lg:col-span-3 space-y-6">
           <Card className="bg-secondary/50 border-border">
@@ -418,5 +441,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
