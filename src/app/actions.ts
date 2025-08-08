@@ -31,14 +31,14 @@ export async function getFurnitureSuggestionsAction(
 ): Promise<{ furnitureSuggestions: SuggestFurnitureItemsOutput['furnitureSuggestions'] } | { error: string }> {
   try {
     const generationResult = await ai.generate({
-        model: 'googleai/gemini-2.0-flash',
+        model: 'googleai/gemini-pro-vision',
         prompt: [
             { media: { url: imageDataUri } },
             { text: 'Describe this room in detail for an interior designer, focusing on furniture, colors, and overall ambiance.' }
         ]
     });
 
-    const imageDescription = generationResult.text();
+    const imageDescription = generationResult.text;
 
     if (!imageDescription) {
         return { error: 'Could not generate a description for the image.' };
