@@ -384,9 +384,6 @@ export default function RoomAIGineClient() {
                     ))}
                  </div>
               </div>
-              <div>
-                <Button variant="link" className="p-0 h-auto text-foreground">More Filters &gt;</Button>
-              </div>
             </CardContent>
           </Card>
         </div>
@@ -421,5 +418,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
