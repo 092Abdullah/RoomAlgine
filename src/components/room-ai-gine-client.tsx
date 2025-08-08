@@ -37,6 +37,8 @@ import { Badge } from "@/components/ui/badge";
 import { LogoIcon } from "./icons";
 import { Skeleton } from "./ui/skeleton";
 import { AnimatePresence, motion } from "framer-motion";
+import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
+
 
 type GeneratedImage = {
   style: string;
@@ -401,18 +403,17 @@ export default function RoomAIGineClient() {
       </div>
       <Dialog open={!!selectedImage} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
         <DialogContent className="max-w-3xl">
-          {selectedImage && (
+          {selectedImage && uploadedImage && (
             <>
               <DialogHeader>
                 <DialogTitle>{selectedImage.style} Design</DialogTitle>
               </DialogHeader>
-              <div className="aspect-video relative my-4">
-                <Image
-                    src={selectedImage.imageDataUri}
-                    alt={`${selectedImage.style} room`}
-                    fill
-                    className="object-contain"
-                  />
+              <div className="my-4">
+                <ReactCompareSlider
+                  itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" />}
+                  itemTwo={<ReactCompareSliderImage src={selectedImage.imageDataUri} alt="After image" />}
+                  className="aspect-video rounded-lg overflow-hidden"
+                />
               </div>
               <div className="flex justify-end gap-2">
                 <Button onClick={() => handleDownload(selectedImage.imageDataUri, selectedImage.style)}>
