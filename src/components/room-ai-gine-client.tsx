@@ -14,6 +14,7 @@ import {
   ArrowRight,
   X,
   Sparkles,
+  Wand2,
 } from "lucide-react";
 import {
   Card,
@@ -43,7 +44,7 @@ type GeneratedImage = {
   imageDataUri: string;
 };
 
-const designStyles = ["Minimalist", "Luxury", "Cozy", "Industrial", "Bohemian", "Modern Farmhouse"];
+const designStyles = ["Minimalist", "Luxury", "Cozy", "Industrial", "Bohemian", "Modern Farmhouse", "Coastal", "Scandinavian", "Mid-Century Modern", "Art Deco"];
 
 export default function RoomAIGineClient() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -53,6 +54,7 @@ export default function RoomAIGineClient() {
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
   const [furnitureSuggestions, setFurnitureSuggestions] = useState<SuggestFurnitureItemsOutput["furnitureSuggestions"] | null>(null);
+  const [lastSurpriseStyle, setLastSurpriseStyle] = useState<string | null>(null);
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,8 +83,8 @@ export default function RoomAIGineClient() {
     );
   };
 
-  const handleGenerate = async () => {
-    if (!uploadedImage) {
+  const startGeneration = async (stylesToGenerate: string[]) => {
+     if (!uploadedImage) {
       toast({
         title: "No Image Uploaded",
         description: "Please upload an image of your room first.",
@@ -90,7 +92,7 @@ export default function RoomAIGineClient() {
       });
       return;
     }
-    if (selectedStyles.length === 0) {
+    if (stylesToGenerate.length === 0) {
       toast({
         title: "No Styles Selected",
         description: "Please choose at least one design style.",
@@ -104,7 +106,7 @@ export default function RoomAIGineClient() {
     setFurnitureSuggestions(null);
     setGeneratedImages([]);
 
-    const result = await generateRoomStylesAction(uploadedImage, selectedStyles);
+    const result = await generateRoomStylesAction(uploadedImage, stylesToGenerate);
 
     if ("error" in result) {
       toast({
@@ -114,17 +116,36 @@ export default function RoomAIGineClient() {
       });
     } else {
       setGeneratedImages(result.styledRoomImages);
+      if (stylesToGenerate.length === 1 && lastSurpriseStyle) {
+        // If it was a surprise, select the image automatically
+        handleImageSelect(result.styledRoomImages[0], true);
+      }
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     }
     setIsGenerating(false);
+  }
+
+  const handleGenerate = () => {
+    setLastSurpriseStyle(null);
+    startGeneration(selectedStyles);
+  };
+
+  const handleSurpriseMe = () => {
+    const availableStyles = designStyles.filter(s => s !== lastSurpriseStyle);
+    const randomStyle = availableStyles[Math.floor(Math.random() * availableStyles.length)];
+    setLastSurpriseStyle(randomStyle);
+    setSelectedStyles([randomStyle]);
+    startGeneration([randomStyle]);
   };
   
-  const handleImageSelect = useCallback(async (image: GeneratedImage) => {
+  const handleImageSelect = useCallback(async (image: GeneratedImage, isSurprise = false) => {
     setSelectedImage(image);
     setIsFetchingSuggestions(true);
     setFurnitureSuggestions(null);
     
-    setTimeout(() => suggestionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    // For surprise, we want to scroll immediately to the suggestions.
+    const scrollTarget = isSurprise ? suggestionsRef : resultsRef;
+    setTimeout(() => scrollTarget.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 
     const result = await getFurnitureSuggestionsAction(image.style, image.imageDataUri);
 
@@ -182,6 +203,7 @@ export default function RoomAIGineClient() {
     setGeneratedImages([]);
     setSelectedImage(null);
     setFurnitureSuggestions(null);
+    setLastSurpriseStyle(null);
     if(fileInputRef.current) {
         fileInputRef.current.value = "";
     }
@@ -290,13 +312,13 @@ export default function RoomAIGineClient() {
                       ))}
                     </div>
                   </CardContent>
-                  <CardFooter>
-                    <Button
+                  <CardFooter className="flex-col gap-2">
+                     <Button
                       onClick={handleGenerate}
                       disabled={isGenerating}
                       className="w-full"
                     >
-                      {isGenerating ? (
+                      {isGenerating && !lastSurpriseStyle ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Generating...
@@ -308,6 +330,24 @@ export default function RoomAIGineClient() {
                         </>
                       )}
                     </Button>
+                     <Button
+                      onClick={handleSurpriseMe}
+                      disabled={isGenerating}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      {isGenerating && lastSurpriseStyle ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Working Magic...
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 className="mr-2 h-4 w-4" />
+                          Surprise Me!
+                        </>
+                      )}
+                    </Button>
                   </CardFooter>
                 </Card>
               </div>
@@ -315,11 +355,11 @@ export default function RoomAIGineClient() {
               <div className="lg:col-span-8">
                 {isGenerating && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {selectedStyles.map(style => (
+                    {(lastSurpriseStyle ? [lastSurpriseStyle] : selectedStyles).map(style => (
                         <div key={style}>
                             <Skeleton className="aspect-video w-full rounded-lg" />
                             <Skeleton className="h-6 w-1/3 mt-4" />
-                            <Skeleton className="h-4 w-2/3 mt-2" />
+                             <Skeleton className="h-4 w-1/3 mt-2" />
                         </div>
                     ))}
                   </div>
@@ -461,3 +501,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
