@@ -85,7 +85,7 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
 
 export default function RoomAIGineClient() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [selectedStyles, setSelectedStyles] = useState<string[]>(["Mid-Century Modern"]);
+  const [selectedStyle, setSelectedStyle] = useState<string>("Mid-Century Modern");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [activeGeneratedImage, setActiveGeneratedImage] = useState<GeneratedImage | null>(null);
@@ -125,14 +125,6 @@ export default function RoomAIGineClient() {
     }
   }
 
-  const handleStyleToggle = (style: string) => {
-    setSelectedStyles((prev) =>
-      prev.includes(style)
-        ? prev.filter((s) => s !== style)
-        : [...prev, style]
-    );
-  };
-  
   const handleNeedToggle = (need: string) => {
     setSelectedNeeds((prev) =>
       prev.includes(need)
@@ -149,10 +141,10 @@ export default function RoomAIGineClient() {
 
 
   const startGeneration = async () => {
-    if (selectedStyles.length === 0) {
+    if (!selectedStyle) {
       toast({
-        title: "No Styles Selected",
-        description: "Please choose at least one design style.",
+        title: "No Style Selected",
+        description: "Please choose a design style.",
         variant: "destructive",
       });
       return;
@@ -163,7 +155,7 @@ export default function RoomAIGineClient() {
     setActiveGeneratedImage(null);
 
     const result = await generateRoomStylesAction({ 
-      styles: selectedStyles,
+      styles: [selectedStyle],
       roomType,
       colorPreferences: selectedColors,
       mood: selectedMoods[0] // Assuming single mood selection for now
@@ -283,23 +275,33 @@ export default function RoomAIGineClient() {
           </Card>
           <Card className="bg-secondary/50 border-border">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg"><Paintbrush /> Choose Styles</CardTitle>
-              <CardDescription>Select one or more styles to apply.</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-lg"><Paintbrush /> Choose a Style</CardTitle>
+              <CardDescription>Select a style to apply to your room.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3">
+              <ToggleGroup 
+                type="single" 
+                value={selectedStyle} 
+                onValueChange={(style) => {
+                  if (style) setSelectedStyle(style);
+                }} 
+                className="grid grid-cols-2 gap-3"
+              >
                 {designStyles.map((style) => (
-                  <div key={style} className="flex items-center space-x-2">
-                    <Checkbox id={style} checked={selectedStyles.includes(style)} onCheckedChange={() => handleStyleToggle(style)} />
-                    <Label htmlFor={style} className="text-sm cursor-pointer">{style}</Label>
-                  </div>
+                  <ToggleGroupItem 
+                    key={style} 
+                    value={style}
+                    className="h-auto p-3 flex-col items-start justify-start rounded-md border-2 border-transparent data-[state=on]:border-primary data-[state=on]:bg-primary/10"
+                    >
+                      <p className="font-semibold text-sm data-[state=on]:text-primary">{style}</p>
+                  </ToggleGroupItem>
                 ))}
-              </div>
+              </ToggleGroup>
             </CardContent>
             <CardFooter className="flex-col gap-3">
               <Button onClick={startGeneration} disabled={isGenerating} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                 {isGenerating ? <Loader2 className="animate-spin" /> : <GenerateIcon />}
-                Generate Styles
+                Generate Style
               </Button>
               <Button variant="outline" className="w-full">AI-Powered Ideas</Button>
               <Button variant="ghost" className="w-full"><MoreFiltersIcon /> More Filters</Button>
@@ -442,3 +444,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
