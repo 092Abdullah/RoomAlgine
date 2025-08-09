@@ -51,7 +51,7 @@ type GeneratedImage = {
   imageDataUri: string;
 };
 
-const designStyles = ["Minimalist", "Luxury", "Cozy", "Industrial", "Bohemian", "Modern Farmhouse", "Coastal", "Scandinavian", "Mid-Century Modern", "Eclectic"];
+const designStyles = ["Minimalist", "Luxury", "Cozy", "Industrial", "Bohemian", "Coastal", "Scandinavian", "Eclectic"];
 const roomTypes = [
   { id: 'bedroom', label: 'Bedroom', icon: BedDouble },
   { id: 'living-room', label: 'Living Room', icon: LivingRoomIcon },
@@ -85,7 +85,7 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
 
 export default function RoomAIGineClient() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [selectedStyle, setSelectedStyle] = useState<string>("Mid-Century Modern");
+  const [selectedStyle, setSelectedStyle] = useState<string>("Minimalist");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [activeGeneratedImage, setActiveGeneratedImage] = useState<GeneratedImage | null>(null);
@@ -444,5 +444,7 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
 
     
