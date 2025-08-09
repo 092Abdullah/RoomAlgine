@@ -34,6 +34,7 @@ import { motion } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import Link from "next/link";
 
 type GeneratedImage = {
   style: string;
@@ -72,7 +73,9 @@ const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 
 const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () => void, showGenerateButton: boolean }) => (
     <header className="flex justify-between items-center p-4 border-b border-border">
-      <LogoIcon />
+      <Link href="/">
+        <LogoIcon />
+      </Link>
       {showGenerateButton && (
         <Button variant="outline" onClick={onGenerateNew}>
           <RefreshCw className="mr-2 h-4 w-4" /> Generate New

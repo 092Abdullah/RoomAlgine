@@ -1,5 +1,5 @@
-import RoomAIGineClient from '@/components/room-ai-gine-client';
+import LandingPage from "@/components/landing-page";
 
 export default function Home() {
-  return <RoomAIGineClient />;
+  return <LandingPage />;
 }
