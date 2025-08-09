@@ -75,7 +75,7 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
       <LogoIcon />
       {showGenerateButton && (
         <Button variant="outline" onClick={onGenerateNew}>
-          <RefreshCw className="mr-2" /> Generate New
+          <RefreshCw className="mr-2 h-4 w-4" /> Generate New
         </Button>
       )}
     </header>
@@ -133,7 +133,7 @@ const RoomAIGineEditor = ({
             <div className="col-span-12 lg:col-span-3 space-y-6">
                 <Card className="bg-secondary/50 border-border">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Camera /> Your Room</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-lg"><Camera className="h-5 w-5" /> Your Room</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="aspect-video rounded-lg overflow-hidden relative">
@@ -143,7 +143,7 @@ const RoomAIGineEditor = ({
                 </Card>
                 <Card className="bg-secondary/50 border-border">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Paintbrush /> Choose a Style</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-lg"><Paintbrush className="h-5 w-5" /> Choose a Style</CardTitle>
                         <CardDescription>Select a style to apply to your room.</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -168,11 +168,11 @@ const RoomAIGineEditor = ({
                     </CardContent>
                     <CardFooter className="flex-col gap-3">
                         <Button onClick={startGeneration} disabled={isGenerating} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                            {isGenerating ? <Loader2 className="animate-spin" /> : <GenerateIcon />}
+                            {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <GenerateIcon className="h-4 w-4" />}
                             Generate Style
                         </Button>
                         <Button variant="outline" className="w-full">AI-Powered Ideas</Button>
-                        <Button variant="ghost" className="w-full"><MoreFiltersIcon /> More Filters</Button>
+                        <Button variant="ghost" className="w-full"><MoreFiltersIcon className="h-4 w-4" /> More Filters</Button>
                     </CardFooter>
                 </Card>
             </div>
@@ -181,7 +181,7 @@ const RoomAIGineEditor = ({
             <div className="col-span-12 lg:col-span-6">
                 <Card className="bg-secondary/50 border-border h-full flex flex-col">
                     <CardHeader className="flex flex-row justify-between items-center">
-                        <CardTitle className="text-lg">Decored Room</CardTitle>
+                        <CardTitle className="text-lg">Decorated Room</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-grow flex items-center justify-center">
                         {isGenerating ? (
@@ -196,8 +196,8 @@ const RoomAIGineEditor = ({
                                     className="w-full h-full"
                                 />
                                 <div className="absolute bottom-4 right-4 flex gap-2">
-                                    <Button size="icon" variant="secondary" onClick={() => handleDownload(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Download /></Button>
-                                    <Button size="icon" variant="secondary" onClick={() => handleShare(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Share2 /></Button>
+                                    <Button size="icon" variant="secondary" onClick={() => handleDownload(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Download className="h-4 w-4" /></Button>
+                                    <Button size="icon" variant="secondary" onClick={() => handleShare(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Share2 className="h-4 w-4" /></Button>
                                 </div>
                                 <div className="absolute top-4 right-4">
                                     <Badge variant="secondary">{activeGeneratedImage.style}</Badge>
@@ -207,7 +207,7 @@ const RoomAIGineEditor = ({
                             <div className="w-full aspect-video rounded-lg bg-muted flex flex-col items-center justify-center text-center p-4">
                                 <Sparkles className="h-12 w-12 text-primary/50 mb-4" />
                                 <p className="text-muted-foreground">Your generated designs will appear here.</p>
-                                <p className="text-xs text-muted-foreground/50">Use the panel on the right to customize your generation.</p>
+                                <p className="text-xs text-muted-foreground/50">Select a style and other options to get started.</p>
                             </div>
                         )}
                     </CardContent>
@@ -266,8 +266,8 @@ const RoomAIGineEditor = ({
                             </div>
                         </div>
                         <div>
-                            <Label className="mb-2 block">Mood-Based Design</Label>
-                            <ToggleGroup type="multiple" value={selectedMoods} onValueChange={setSelectedMoods} className="grid grid-cols-2 gap-2">
+                            <Label className="mb-2 block">Mood</Label>
+                            <ToggleGroup type="single" value={selectedMoods[0]} onValueChange={(mood) => {if(mood) setSelectedMoods([mood])}} className="grid grid-cols-2 gap-2">
                                 {moodOptions.map((mood) => (
                                     <ToggleGroupItem key={mood} value={mood} className="w-full">{mood}</ToggleGroupItem>
                                 ))}
@@ -335,14 +335,14 @@ export default function RoomAIGineClient() {
     }
 
     setIsGenerating(true);
-    setGeneratedImages([]);
+    // Keep existing images but deactivate them
     setActiveGeneratedImage(null);
 
     const result = await generateRoomStylesAction({ 
       styles: [selectedStyle],
       roomType,
       colorPreferences: selectedColors,
-      mood: selectedMoods[0] // Assuming single mood selection for now
+      mood: selectedMoods[0]
     }, uploadedImage);
 
 
@@ -353,9 +353,16 @@ export default function RoomAIGineClient() {
         variant: "destructive",
       });
     } else {
-      setGeneratedImages(result.styledRoomImages);
-      if (result.styledRoomImages.length > 0) {
-        setActiveGeneratedImage(result.styledRoomImages[0]);
+        const newImages = result.styledRoomImages;
+        // Add new images, avoiding duplicates by style
+        setGeneratedImages(prevImages => {
+            const existingStyles = new Set(prevImages.map(img => img.style));
+            const filteredNewImages = newImages.filter(img => !existingStyles.has(img.style));
+            return [...prevImages, ...filteredNewImages];
+        });
+
+      if (newImages.length > 0) {
+        setActiveGeneratedImage(newImages[0]);
       }
     }
     setIsGenerating(false);
@@ -551,7 +558,7 @@ export default function RoomAIGineClient() {
         </div>
 =======
       <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={!!uploadedImage} />
-      <div className="flex-grow flex items-center justify-center">
+      <main className="flex-grow flex items-center justify-center">
         {!uploadedImage ? (
           <UploadScreen onUploadClick={() => fileInputRef.current?.click()} />
         ) : (
@@ -583,6 +590,7 @@ export default function RoomAIGineClient() {
               onChange={handleImageUpload}
               className="hidden"
             />
+<<<<<<< HEAD
 >>>>>>> 8f65c35 (Simplify the structure — merge duplicate logic, shorten overly long func)
       </div>
        <Dialog open={!!activeGeneratedImage && !isGenerating} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
@@ -611,8 +619,9 @@ export default function RoomAIGineClient() {
           )}
         </DialogContent>
       </Dialog>
+=======
+      </main>
+>>>>>>> 90bcc04 (Keep all current features 100% functional and UI exactly the same unless)
     </div>
   );
 }
-
-    

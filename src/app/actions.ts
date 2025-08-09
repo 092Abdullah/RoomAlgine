@@ -19,6 +19,7 @@ export async function generateRoomStylesAction(
     return result;
   } catch (e) {
     console.error(e);
+    // Return a user-friendly error message
     return { error: 'Error creating image, please try again.' };
   }
 }

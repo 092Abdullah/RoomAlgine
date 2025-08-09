@@ -47,36 +47,37 @@ const generateRoomStylesFlow = ai.defineFlow(
     outputSchema: GenerateRoomStylesOutputSchema,
   },
   async input => {
-    const styledRoomImages = await Promise.all(
-      input.styles.map(async style => {
-        let promptText = `Restyle this room in a ${style} style.`;
+    // Generate images in parallel for better performance
+    const styledRoomImagePromises = input.styles.map(async style => {
+      let promptText = `Restyle this room in a ${style} style.`;
 
-        if (input.roomType) {
-          promptText += ` It is a ${input.roomType}.`;
-        }
-        if (input.colorPreferences && input.colorPreferences.length > 0) {
-          promptText += ` Use the following color preferences: ${input.colorPreferences.join(', ')}.`;
-        }
-        if (input.mood) {
-          promptText += ` The mood should be ${input.mood}.`;
-        }
-        
-        const {media} = await ai.generate({
-          model: 'googleai/gemini-2.0-flash-preview-image-generation',
-          prompt: [
-            {media: {url: input.photoDataUri}},
-            {text: promptText},
-          ],
-          config: {
-            responseModalities: ['TEXT', 'IMAGE'],
-          },
-        });
-        return {
-          style: style,
-          imageDataUri: media.url,
-        };
-      })
-    );
+      if (input.roomType) {
+        promptText += ` It is a ${input.roomType}.`;
+      }
+      if (input.colorPreferences && input.colorPreferences.length > 0) {
+        promptText += ` Use the following color preferences: ${input.colorPreferences.join(', ')}.`;
+      }
+      if (input.mood) {
+        promptText += ` The mood should be ${input.mood}.`;
+      }
+      
+      const {media} = await ai.generate({
+        model: 'googleai/gemini-2.0-flash-preview-image-generation',
+        prompt: [
+          {media: {url: input.photoDataUri}},
+          {text: promptText},
+        ],
+        config: {
+          responseModalities: ['TEXT', 'IMAGE'],
+        },
+      });
+      return {
+        style: style,
+        imageDataUri: media.url,
+      };
+    });
+
+    const styledRoomImages = await Promise.all(styledRoomImagePromises);
 
     return {
       styledRoomImages: styledRoomImages,
