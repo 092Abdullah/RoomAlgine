@@ -10,7 +10,6 @@ import {
   Loader2,
   Camera,
   Paintbrush,
-  X,
   Sparkles,
   RefreshCw,
   Home,
@@ -25,12 +24,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,9 +31,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { generateRoomStylesAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
-import { GenerateIcon, Palette, BedDouble, DeskIcon, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, LogoIcon } from "./icons";
-import { Skeleton } from "./ui/skeleton";
-import { AnimatePresence, motion } from "framer-motion";
+import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, LogoIcon } from "./icons";
+import { motion } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -79,8 +71,6 @@ const colorPreferences = [
   { id: 'coral', value: '#FF6B6B', name: 'Coral' },
 ];
 
-
-const iNeedOptions = ["Desk", "Storage", "Child-Friendly", "Pet-Friendly"];
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 
 const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () => void, showGenerateButton: boolean }) => (
@@ -100,12 +90,10 @@ export default function RoomAIGineClient() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [activeGeneratedImage, setActiveGeneratedImage] = useState<GeneratedImage | null>(null);
-  const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   
   const [budget, setBudget] = useState([5000]);
   const [roomType, setRoomType] = useState<string>('bedroom');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>(["Relaxed"]);
 
 
@@ -119,7 +107,6 @@ export default function RoomAIGineClient() {
       reader.onload = (e) => {
         setUploadedImage(e.target?.result as string);
         setGeneratedImages([]);
-        setSelectedImage(null);
         setActiveGeneratedImage(null);
       };
       reader.readAsDataURL(file);
@@ -129,20 +116,11 @@ export default function RoomAIGineClient() {
   const handleGenerateNew = () => {
     setUploadedImage(null);
     setGeneratedImages([]);
-    setSelectedImage(null);
     setActiveGeneratedImage(null);
     if(fileInputRef.current) {
         fileInputRef.current.value = "";
     }
   }
-
-  const handleNeedToggle = (need: string) => {
-    setSelectedNeeds((prev) =>
-      prev.includes(need)
-        ? prev.filter((n) => n !== need)
-        : [...prev, need]
-    );
-  };
 
   const handleColorSelect = (colorValue: string) => {
     setSelectedColors((prev) =>
@@ -187,12 +165,6 @@ export default function RoomAIGineClient() {
     }
     setIsGenerating(false);
   }
-
-  const handleImageSelect = useCallback((image: GeneratedImage) => {
-    setActiveGeneratedImage(image);
-  }, []);
-
-
   const handleDownload = (imageDataUri: string, style: string) => {
     const link = document.createElement("a");
     link.href = imageDataUri;
@@ -416,22 +388,10 @@ export default function RoomAIGineClient() {
                     ))}
                  </ToggleGroup>
               </div>
-              <div>
-                <Label className="mb-2 block">I Need</Label>
-                 <div className="grid grid-cols-2 gap-2">
-                    {iNeedOptions.map((need) => (
-                         <div key={need} className="flex items-center space-x-2">
-                            <Checkbox id={need} checked={selectedNeeds.includes(need)} onCheckedChange={() => handleNeedToggle(need)} />
-                            <Label htmlFor={need} className="text-sm font-light cursor-pointer">{need}</Label>
-                        </div>
-                    ))}
-                 </div>
-              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-
        <Dialog open={!!activeGeneratedImage && !isGenerating} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
         <DialogContent className="max-w-4xl">
           {activeGeneratedImage && uploadedImage && (
@@ -461,7 +421,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
-
-    
