@@ -61,13 +61,24 @@ const roomTypes = [
 ];
 
 const colorPreferences = [
-  { id: 'cool-blue', value: '#6096BA', name: 'Cool Blue' },
-  { id: 'emerald-green', value: '#52B788', name: 'Emerald Green' },
-  { id: 'olive-green', value: '#99A88C', name: 'Olive Green' },
-  { id: 'warm-beige', value: '#C9B7A6', name: 'Warm Beige' },
-  { id: 'terracotta-red', value: '#BA6D3B', name: 'Terracotta Red' },
-  { id: 'sunset-orange', value: '#F4A261', name: 'Sunset Orange' },
+  { id: 'soft-ivory', value: '#F8F4EF', name: 'Soft Ivory' },
+  { id: 'warm-beige', value: '#DCC7AA', name: 'Warm Beige' },
+  { id: 'light-gray', value: '#D3D3D3', name: 'Light Gray' },
+  { id: 'charcoal', value: '#333333', name: 'Charcoal' },
+  { id: 'terracotta', value: '#E07A5F', name: 'Terracotta' },
+  { id: 'blush-pink', value: '#F2C6C2', name: 'Blush Pink' },
+  { id: 'mustard-yellow', value: '#E6B325', name: 'Mustard Yellow' },
+  { id: 'burnt-orange', value: '#C84B31', name: 'Burnt Orange' },
+  { id: 'sage-green', value: '#A3B18A', name: 'Sage Green' },
+  { id: 'forest-green', value: '#3A5A40', name: 'Forest Green' },
+  { id: 'dusty-blue', value: '#7DA0B6', name: 'Dusty Blue' },
+  { id: 'navy-blue', value: '#1D3557', name: 'Navy Blue' },
+  { id: 'emerald', value: '#2D6A4F', name: 'Emerald' },
+  { id: 'deep-plum', value: '#5A189A', name: 'Deep Plum' },
+  { id: 'teal', value: '#008080', name: 'Teal' },
+  { id: 'coral', value: '#FF6B6B', name: 'Coral' },
 ];
+
 
 const iNeedOptions = ["Desk", "Storage", "Child-Friendly", "Pet-Friendly"];
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
@@ -93,7 +104,7 @@ export default function RoomAIGineClient() {
   
   const [budget, setBudget] = useState([5000]);
   const [roomType, setRoomType] = useState<string>('bedroom');
-  const [selectedColors, setSelectedColors] = useState<string[]>(['#6096BA']);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>(["Relaxed"]);
 
@@ -385,9 +396,15 @@ export default function RoomAIGineClient() {
               </div>
               <div>
                 <Label className="mb-2 block">Color Preferences</Label>
-                 <div className="flex gap-2">
+                 <div className="grid grid-cols-8 gap-2">
                     {colorPreferences.map((color) => (
-                      <button key={color.id} onClick={() => handleColorSelect(color.value)} className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColors.includes(color.value) ? 'border-primary' : 'border-transparent'}`} style={{ backgroundColor: color.value }} />
+                      <button 
+                        key={color.id} 
+                        onClick={() => handleColorSelect(color.value)} 
+                        className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColors.includes(color.value) ? 'border-primary' : 'border-transparent'}`} 
+                        style={{ backgroundColor: color.value }} 
+                        aria-label={color.name}
+                      />
                     ))}
                  </div>
               </div>
