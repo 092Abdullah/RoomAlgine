@@ -291,7 +291,7 @@ export default function RoomAIGineClient() {
                   <ToggleGroupItem 
                     key={style} 
                     value={style}
-                    className="h-auto p-3 flex-col items-start justify-start rounded-md border-2 border-transparent data-[state=on]:border-primary data-[state=on]:bg-primary/10"
+                    className="h-auto p-3 flex-col items-start justify-start rounded-md border-2 border-border data-[state=on]:border-primary data-[state=on]:bg-primary/10"
                     >
                       <p className="font-semibold text-sm data-[state=on]:text-primary">{style}</p>
                   </ToggleGroupItem>
