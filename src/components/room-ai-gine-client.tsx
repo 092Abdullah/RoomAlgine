@@ -91,7 +91,7 @@ export default function RoomAIGineClient() {
   const [activeGeneratedImage, setActiveGeneratedImage] = useState<GeneratedImage | null>(null);
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   
-  const [budget, setBudget] = useState([10000]);
+  const [budget, setBudget] = useState([5000]);
   const [roomType, setRoomType] = useState<string>('bedroom');
   const [selectedColors, setSelectedColors] = useState<string[]>(['#6096BA']);
   const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
@@ -367,8 +367,8 @@ export default function RoomAIGineClient() {
                 <Label className="mb-2 block">Budget</Label>
                 <div className="flex items-center gap-4">
                     <span className="text-sm text-muted-foreground">${(budget[0] / 1000)}k</span>
-                    <Slider value={budget} onValueChange={setBudget} max={550000} step={1000} />
-                    <span className="text-sm text-muted-foreground">$550k</span>
+                    <Slider value={budget} onValueChange={setBudget} max={50000} step={1000} />
+                    <span className="text-sm text-muted-foreground">$50k</span>
                 </div>
               </div>
               <div>
