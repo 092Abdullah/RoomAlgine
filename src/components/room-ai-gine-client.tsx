@@ -186,7 +186,7 @@ export default function RoomAIGineClient() {
   }
 
   const handleImageSelect = useCallback((image: GeneratedImage) => {
-    setSelectedImage(image);
+    setActiveGeneratedImage(image);
   }, []);
 
 
@@ -310,9 +310,8 @@ export default function RoomAIGineClient() {
         {/* Middle Column */}
         <div className="col-span-12 lg:col-span-6">
           <Card className="bg-secondary/50 border-border h-full flex flex-col">
-            <CardHeader className="flex flex-row justify-between items-center">
+            <CardHeader>
               <CardTitle className="text-lg">Decored Room</CardTitle>
-              <Button variant="ghost" size="sm">RoomAIgine &gt;</Button>
             </CardHeader>
             <CardContent className="flex-grow flex items-center justify-center">
               {isGenerating ? (
@@ -346,7 +345,7 @@ export default function RoomAIGineClient() {
                  <CardFooter className="p-2">
                     <div className="grid grid-cols-5 gap-2 w-full">
                         {generatedImages.map((image) => (
-                            <button key={image.style} onClick={() => setActiveGeneratedImage(image)} className={`aspect-square rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
+                            <button key={image.style} onClick={() => handleImageSelect(image)} className={`aspect-square rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
                                 <Image src={image.imageDataUri} alt={image.style} width={100} height={100} className="object-cover w-full h-full"/>
                             </button>
                         ))}
@@ -366,7 +365,7 @@ export default function RoomAIGineClient() {
               <div>
                 <Label className="mb-2 block">Budget</Label>
                 <div className="flex items-center gap-4">
-                    <span className="text-sm text-muted-foreground">${(budget[0] / 1000)}k</span>
+                    <span className="text-sm text-muted-foreground">$0k</span>
                     <Slider value={budget} onValueChange={setBudget} max={50000} step={1000} />
                     <span className="text-sm text-muted-foreground">$50k</span>
                 </div>
@@ -414,25 +413,25 @@ export default function RoomAIGineClient() {
         </div>
       </div>
 
-       <Dialog open={!!selectedImage} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
+       <Dialog open={!!activeGeneratedImage && !isGenerating} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
         <DialogContent className="max-w-4xl">
-          {selectedImage && uploadedImage && (
+          {activeGeneratedImage && uploadedImage && (
             <>
               <DialogHeader>
-                <DialogTitle>{selectedImage.style} Design</DialogTitle>
+                <DialogTitle>{activeGeneratedImage.style} Design</DialogTitle>
               </DialogHeader>
               <div className="my-4">
                 <ReactCompareSlider
                   itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" />}
-                  itemTwo={<ReactCompareSliderImage src={selectedImage.imageDataUri} alt="After image" />}
+                  itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" />}
                   className="aspect-video rounded-lg overflow-hidden"
                 />
               </div>
               <div className="flex justify-end gap-2">
-                <Button onClick={() => handleDownload(selectedImage.imageDataUri, selectedImage.style)}>
+                <Button onClick={() => handleDownload(activeGeneratedImage.imageDataUri, activeGeneratedImage.style)}>
                   <Download className="mr-2 h-4 w-4" /> Download
                 </Button>
-                <Button variant="outline" onClick={() => handleShare(selectedImage.imageDataUri, selectedImage.style)}>
+                <Button variant="outline" onClick={() => handleShare(activeGeneratedImage.imageDataUri, activeGeneratedImage.style)}>
                   <Share2 className="mr-2 h-4 w-4" /> Share
                 </Button>
               </div>
