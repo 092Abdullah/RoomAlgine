@@ -19,7 +19,6 @@ export async function generateRoomStylesAction(
     return result;
   } catch (e) {
     console.error(e);
-    const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
-    return { error: `Failed to generate room styles: ${errorMessage}` };
+    return { error: 'Error creating image, please try again.' };
   }
 }
