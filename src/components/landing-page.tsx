@@ -19,10 +19,14 @@ import {
   Download,
   Star,
 <<<<<<< HEAD
+<<<<<<< HEAD
   Instagram,
 =======
   Twitter,
 >>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
+=======
+  Instagram,
+>>>>>>> a79f12d (in the footer section)
   Linkedin,
   Github,
 } from "lucide-react";
@@ -322,6 +326,7 @@ const LandingPage = () => {
           <div className="md:flex md:items-center md:justify-between">
             <div className="flex justify-center space-x-6 md:order-2">
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <Link href="https://github.com/Abdullah-Maqbool1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
                 <Link href="https://www.instagram.com/abdullah__maqbool" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Instagram /></Link>
                 <Link href="https://www.linkedin.com/in/abdullah-maqbool-se" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
@@ -330,6 +335,11 @@ const LandingPage = () => {
                 <Link href="#" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
                 <Link href="#" className="text-muted-foreground hover:text-foreground"><Github /></Link>
 >>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
+=======
+                <Link href="https://github.com/Abdullah-Maqbool1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
+                <Link href="https://www.instagram.com/abdullah__maqbool" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Instagram /></Link>
+                <Link href="https://www.linkedin.com/in/abdullah-maqbool-se" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
+>>>>>>> a79f12d (in the footer section)
             </div>
             <div className="mt-8 md:mt-0 md:order-1">
                 <p className="text-center text-sm text-muted-foreground">
