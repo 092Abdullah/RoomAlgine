@@ -101,7 +101,7 @@ const LandingPage = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <Image 
-                src="https://i.ibb.co/xS3KWXzX/hero.png" 
+                src="https://i.ibb.co/1Y512tmL/hero1.jpg" 
                 alt="AI generated room" 
                 width={1200}
                 height={600}
