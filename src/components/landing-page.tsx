@@ -188,7 +188,7 @@ const LandingPage = () => {
                     <CarouselContent>
                         <CarouselItem>
                              <ReactCompareSlider
-                                itemOne={<ReactCompareSliderImage src="https://placehold.co/800x450.png" alt="Before image" data-ai-hint="messy bedroom"/>}
+                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/spCKd6WL/before.webp" alt="Before image" data-ai-hint="messy bedroom"/>}
                                 itemTwo={<ReactCompareSliderImage src="https://placehold.co/800x450.png" alt="After image" data-ai-hint="minimalist bedroom"/>}
                                 className="w-full h-full rounded-xl overflow-hidden"
                             />
