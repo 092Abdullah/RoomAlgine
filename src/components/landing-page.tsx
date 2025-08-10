@@ -43,7 +43,7 @@ const LandingPage = () => {
             <LogoIcon />
             <nav className="hidden md:flex md:gap-8">
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-              <Link href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
+              <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
             </nav>
             <Button asChild>
               <Link href="/generate">
@@ -178,7 +178,7 @@ const LandingPage = () => {
         </section>
         
         {/* Live Preview Carousel */}
-        <section className="py-20 bg-secondary/30">
+        <section id="see-the-magic" className="py-20 bg-secondary/30">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
                     <h2 className="text-3xl font-bold tracking-tight">See the Magic</h2>
