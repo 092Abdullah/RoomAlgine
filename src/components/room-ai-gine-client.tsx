@@ -370,6 +370,7 @@ export default function RoomAIGineClient() {
     }
     setIsGenerating(false);
   }
+
   const handleDownload = (imageDataUri: string, style: string) => {
     const link = document.createElement("a");
     link.href = imageDataUri;
@@ -409,157 +410,6 @@ export default function RoomAIGineClient() {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-<<<<<<< HEAD
-      <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={true}/>
-      <div className="grid grid-cols-12 gap-6 max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex-grow w-full">
-        {/* Left Column */}
-        <div className="col-span-12 lg:col-span-3 space-y-6">
-          <Card className="bg-secondary/50 border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg"><Camera /> Your Room</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="aspect-video rounded-lg overflow-hidden relative">
-                <Image src={uploadedImage} alt="Uploaded room" fill className="object-cover" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-secondary/50 border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg"><Paintbrush /> Choose a Style</CardTitle>
-              <CardDescription>Select a style to apply to your room.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ToggleGroup 
-                type="single" 
-                value={selectedStyle} 
-                onValueChange={(style) => {
-                  if (style) setSelectedStyle(style);
-                }} 
-                className="grid grid-cols-2 gap-3"
-              >
-                {designStyles.map((style) => (
-                  <ToggleGroupItem 
-                    key={style} 
-                    value={style}
-                    className="h-auto p-3 flex-col items-start justify-start rounded-md border-2 border-border data-[state=on]:border-primary data-[state=on]:bg-primary/10"
-                    >
-                      <p className="font-semibold text-sm data-[state=on]:text-primary">{style}</p>
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
-            </CardContent>
-            <CardFooter className="flex-col gap-3">
-              <Button onClick={startGeneration} disabled={isGenerating} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                {isGenerating ? <Loader2 className="animate-spin" /> : <GenerateIcon />}
-                Generate Style
-              </Button>
-              <Button variant="outline" className="w-full">AI-Powered Ideas</Button>
-              <Button variant="ghost" className="w-full"><MoreFiltersIcon /> More Filters</Button>
-            </CardFooter>
-          </Card>
-        </div>
-
-        {/* Middle Column */}
-        <div className="col-span-12 lg:col-span-6">
-          <Card className="bg-secondary/50 border-border h-full flex flex-col">
-            <CardHeader>
-              <CardTitle className="text-lg">Decored Room</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-grow flex items-center justify-center">
-              {isGenerating ? (
-                <div className="w-full aspect-video flex items-center justify-center">
-                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                </div>
-              ) : activeGeneratedImage ? (
-                <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
-                  <ReactCompareSlider
-                    itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" />}
-                    itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" />}
-                    className="w-full h-full"
-                  />
-                  <div className="absolute bottom-4 right-4 flex gap-2">
-                    <Button size="icon" variant="secondary" onClick={() => handleDownload(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Download /></Button>
-                    <Button size="icon" variant="secondary" onClick={() => handleShare(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Share2 /></Button>
-                  </div>
-                   <div className="absolute top-4 right-4">
-                    <Badge variant="secondary">{activeGeneratedImage.style}</Badge>
-                  </div>
-                </div>
-              ) : (
-                <div className="w-full aspect-video rounded-lg bg-muted flex flex-col items-center justify-center text-center p-4">
-                   <Sparkles className="h-12 w-12 text-primary/50 mb-4" />
-                   <p className="text-muted-foreground">Your generated designs will appear here.</p>
-                   <p className="text-xs text-muted-foreground/50">Use the panel on the right to customize your generation.</p>
-                </div>
-              )}
-            </CardContent>
-            {generatedImages.length > 0 && (
-                 <CardFooter className="p-2">
-                    <div className="grid grid-cols-5 gap-2 w-full">
-                        {generatedImages.map((image) => (
-                            <button key={image.style} onClick={() => handleImageSelect(image)} className={`aspect-square rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
-                                <Image src={image.imageDataUri} alt={image.style} width={100} height={100} className="object-cover w-full h-full"/>
-                            </button>
-                        ))}
-                    </div>
-                </CardFooter>
-            )}
-          </Card>
-        </div>
-
-        {/* Right Column */}
-        <div className="col-span-12 lg:col-span-3">
-          <Card className="bg-secondary/50 border-border">
-            <CardHeader>
-              <CardTitle className="text-lg">Personalize</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label className="mb-2 block">Budget</Label>
-                <div className="flex items-center gap-4">
-                    <span className="text-sm text-muted-foreground">$0k</span>
-                    <Slider value={budget} onValueChange={setBudget} max={50000} step={1000} />
-                    <span className="text-sm text-muted-foreground">$50k</span>
-                </div>
-              </div>
-              <div>
-                <Label className="mb-2 block">Room Type</Label>
-                <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if(value) setRoomType(value)}} className="grid grid-cols-5 gap-1">
-                  {roomTypes.map(({ id, label, icon: Icon }) => (
-                    <ToggleGroupItem key={id} value={id} aria-label={label} className="flex-col h-auto p-2 text-xs gap-1">
-                      <Icon className="h-5 w-5" />
-                      {label}
-                    </ToggleGroupItem>
-                  ))}
-                </ToggleGroup>
-              </div>
-              <div>
-                <Label className="mb-2 block">Color Preferences</Label>
-                 <div className="grid grid-cols-8 gap-2">
-                    {colorPreferences.map((color) => (
-                      <button 
-                        key={color.id} 
-                        onClick={() => handleColorSelect(color.value)} 
-                        className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColors.includes(color.value) ? 'border-primary' : 'border-transparent'}`} 
-                        style={{ backgroundColor: color.value }} 
-                        aria-label={color.name}
-                      />
-                    ))}
-                 </div>
-              </div>
-              <div>
-                <Label className="mb-2 block">Mood-Based Design</Label>
-                 <ToggleGroup type="multiple" value={selectedMoods} onValueChange={setSelectedMoods} className="grid grid-cols-2 gap-2">
-                    {moodOptions.map((mood) => (
-                      <ToggleGroupItem key={mood} value={mood} className="w-full">{mood}</ToggleGroupItem>
-                    ))}
-                 </ToggleGroup>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-=======
       <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={!!uploadedImage} />
       <main className="flex-grow flex items-center justify-center">
         {!uploadedImage ? (
@@ -593,38 +443,7 @@ export default function RoomAIGineClient() {
               onChange={handleImageUpload}
               className="hidden"
             />
-<<<<<<< HEAD
->>>>>>> 8f65c35 (Simplify the structure — merge duplicate logic, shorten overly long func)
-      </div>
-       <Dialog open={!!activeGeneratedImage && !isGenerating} onOpenChange={(isOpen) => !isOpen && setSelectedImage(null)}>
-        <DialogContent className="max-w-4xl">
-          {activeGeneratedImage && uploadedImage && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{activeGeneratedImage.style} Design</DialogTitle>
-              </DialogHeader>
-              <div className="my-4">
-                <ReactCompareSlider
-                  itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" />}
-                  itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" />}
-                  className="aspect-video rounded-lg overflow-hidden"
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button onClick={() => handleDownload(activeGeneratedImage.imageDataUri, activeGeneratedImage.style)}>
-                  <Download className="mr-2 h-4 w-4" /> Download
-                </Button>
-                <Button variant="outline" onClick={() => handleShare(activeGeneratedImage.imageDataUri, activeGeneratedImage.style)}>
-                  <Share2 className="mr-2 h-4 w-4" /> Share
-                </Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-=======
       </main>
->>>>>>> 90bcc04 (Keep all current features 100% functional and UI exactly the same unless)
     </div>
   );
 }
