@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, type ChangeEvent } from "react";
+import { useState, useRef, type ChangeEvent, useEffect } from "react";
 import Image from "next/image";
 import {
   Upload,
@@ -35,6 +35,7 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Link from "next/link";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 type GeneratedImage = {
   style: string;
@@ -447,5 +448,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    

@@ -1,5 +1,5 @@
 import type { SVGProps } from "react";
-import { Home, Sparkles, Wand2, Palette, BedDouble, Lamp, Sofa, Armchair, MoreHorizontal, Paintbrush } from 'lucide-react';
+import { Home, Sparkles, Wand2, BedDouble, Sofa, Armchair, MoreHorizontal } from 'lucide-react';
 
 export function LogoIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -14,4 +14,4 @@ export function LogoIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 
-export { Wand2 as GenerateIcon, Palette, BedDouble, Lamp as DeskIcon, Sofa as LivingRoomIcon, Armchair as OfficeIcon, MoreHorizontal as MoreFiltersIcon };
+export { Wand2 as GenerateIcon, BedDouble, Sofa as LivingRoomIcon, Armchair as OfficeIcon, MoreHorizontal as MoreFiltersIcon };
