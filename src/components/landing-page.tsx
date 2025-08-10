@@ -1,7 +1,11 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
+=======
+
+>>>>>>> f086a20 (Try It Free – No Signup Needed)
 "use client";
 import React from "react";
 import Image from "next/image";
@@ -121,11 +125,15 @@ const LandingPage = () => {
              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10 h-1/2 bottom-0" />
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f086a20 (Try It Free – No Signup Needed)
             <Image 
                 src="https://placehold.co/1200x600.png" 
                 alt="AI generated room" 
                 width={1200}
                 height={600}
+<<<<<<< HEAD
                 className="w-full max-w-4xl mx-auto h-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
                 data-ai-hint="minimalist bedroom"
 =======
@@ -144,6 +152,10 @@ const LandingPage = () => {
                 itemTwo={<ReactCompareSliderImage src="https://placehold.co/1200x600.png" alt="After image" data-ai-hint="minimalist bedroom"/>}
                 className="w-full max-w-4xl mx-auto h-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
 >>>>>>> 3ed1669 (Make the following changes:)
+=======
+                className="w-full max-w-4xl mx-auto h-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
+                data-ai-hint="minimalist bedroom"
+>>>>>>> f086a20 (Try It Free – No Signup Needed)
             />
           </motion.div>
         </section>
