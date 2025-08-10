@@ -117,6 +117,7 @@ const LandingPage = () => {
           >
              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10 h-1/2 bottom-0" />
 <<<<<<< HEAD
+<<<<<<< HEAD
             <Image 
                 src="https://placehold.co/1200x600.png" 
                 alt="AI generated room" 
@@ -134,6 +135,12 @@ const LandingPage = () => {
               data-ai-hint="modern living room"
               priority
 >>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
+=======
+            <ReactCompareSlider
+                itemOne={<ReactCompareSliderImage src="https://placehold.co/1200x600.png" alt="Before image" data-ai-hint="messy bedroom"/>}
+                itemTwo={<ReactCompareSliderImage src="https://placehold.co/1200x600.png" alt="After image" data-ai-hint="minimalist bedroom"/>}
+                className="w-full max-w-4xl mx-auto h-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
+>>>>>>> 3ed1669 (Make the following changes:)
             />
           </motion.div>
         </section>
