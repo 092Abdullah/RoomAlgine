@@ -99,14 +99,10 @@ const LandingPage = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10 h-1/2 bottom-0" />
-            <Image
-              src="https://placehold.co/1200x600.png"
-              alt="AI-generated room preview"
-              width={1200}
-              height={600}
-              className="rounded-lg shadow-2xl shadow-primary/20"
-              data-ai-hint="modern living room"
-              priority
+            <ReactCompareSlider
+                itemOne={<ReactCompareSliderImage src="https://placehold.co/1200x600.png" alt="Before image" data-ai-hint="messy bedroom"/>}
+                itemTwo={<ReactCompareSliderImage src="https://placehold.co/1200x600.png" alt="After image" data-ai-hint="minimalist bedroom"/>}
+                className="w-full max-w-4xl mx-auto h-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
             />
           </motion.div>
         </section>
