@@ -6,6 +6,18 @@ import { Analytics } from '@vercel/analytics/react';
 export const metadata: Metadata = {
   title: 'RoomAIgine',
   description: 'On-Demand AI Interior Designer',
+  openGraph: {
+    title: 'RoomAIgine',
+    description: 'Visualize Your Dream Room in Seconds with AI',
+    images: [
+      {
+        url: 'https://i.ibb.co/1Y512tmL/hero1.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'AI-powered room restyling',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
