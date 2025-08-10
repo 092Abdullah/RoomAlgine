@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
-=======
-
->>>>>>> f086a20 (Try It Free – No Signup Needed)
 "use client";
 import React from "react";
 import Image from "next/image";
@@ -18,15 +10,7 @@ import {
   Sparkles,
   Download,
   Star,
-<<<<<<< HEAD
-<<<<<<< HEAD
   Instagram,
-=======
-  Twitter,
->>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
-=======
-  Instagram,
->>>>>>> a79f12d (in the footer section)
   Linkedin,
   Github,
 } from "lucide-react";
@@ -55,30 +39,12 @@ const LandingPage = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 363f73c (Make the following changes:)
             <Link href="#">
               <LogoIcon />
             </Link>
             <nav className="hidden md:flex md:gap-8">
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
               <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
-=======
-            <LogoIcon />
-            <nav className="hidden md:flex md:gap-8">
-              <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-<<<<<<< HEAD
-              <Link href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
-<<<<<<< HEAD
-              <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
->>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
-=======
->>>>>>> 9f59433 (remove the pricing thing.its free)
-=======
-              <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
->>>>>>> e1f8504 (when user clicks testimonials button from the header,the page should sli)
             </nav>
             <Button asChild>
               <Link href="/generate">
@@ -134,39 +100,13 @@ const LandingPage = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10 h-1/2 bottom-0" />
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> f086a20 (Try It Free – No Signup Needed)
             <Image 
                 src="https://iili.io/FLsWrYB.th.jpg" 
                 alt="AI generated room" 
                 width={1200}
                 height={600}
-<<<<<<< HEAD
                 className="w-full max-w-4xl mx-auto h-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
                 data-ai-hint="minimalist bedroom"
-=======
-            <Image
-              src="https://placehold.co/1200x600.png"
-              alt="AI-generated room preview"
-              width={1200}
-              height={600}
-              className="rounded-lg shadow-2xl shadow-primary/20"
-              data-ai-hint="modern living room"
-              priority
->>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
-=======
-            <ReactCompareSlider
-                itemOne={<ReactCompareSliderImage src="https://placehold.co/1200x600.png" alt="Before image" data-ai-hint="messy bedroom"/>}
-                itemTwo={<ReactCompareSliderImage src="https://placehold.co/1200x600.png" alt="After image" data-ai-hint="minimalist bedroom"/>}
-                className="w-full max-w-4xl mx-auto h-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
->>>>>>> 3ed1669 (Make the following changes:)
-=======
-                className="w-full max-w-4xl mx-auto h-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
-                data-ai-hint="minimalist bedroom"
->>>>>>> f086a20 (Try It Free – No Signup Needed)
             />
           </motion.div>
         </section>
@@ -239,15 +179,7 @@ const LandingPage = () => {
         </section>
         
         {/* Live Preview Carousel */}
-<<<<<<< HEAD
-<<<<<<< HEAD
         <section id="see-the-magic" className="py-20 bg-secondary/30">
-=======
-        <section className="py-20 bg-secondary/30">
->>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
-=======
-        <section id="see-the-magic" className="py-20 bg-secondary/30">
->>>>>>> e1f8504 (when user clicks testimonials button from the header,the page should sli)
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
                     <h2 className="text-3xl font-bold tracking-tight">See the Magic</h2>
@@ -336,21 +268,9 @@ const LandingPage = () => {
         <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="flex justify-center space-x-6 md:order-2">
-<<<<<<< HEAD
-<<<<<<< HEAD
                 <Link href="https://github.com/Abdullah-Maqbool1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
                 <Link href="https://www.instagram.com/abdullah__maqbool" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Instagram /></Link>
                 <Link href="https://www.linkedin.com/in/abdullah-maqbool-se" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
-=======
-                <Link href="#" className="text-muted-foreground hover:text-foreground"><Twitter /></Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground"><Github /></Link>
->>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
-=======
-                <Link href="https://github.com/Abdullah-Maqbool1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
-                <Link href="https://www.instagram.com/abdullah__maqbool" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Instagram /></Link>
-                <Link href="https://www.linkedin.com/in/abdullah-maqbool-se" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
->>>>>>> a79f12d (in the footer section)
             </div>
             <div className="mt-8 md:mt-0 md:order-1">
                 <p className="text-center text-sm text-muted-foreground">
