@@ -131,9 +131,9 @@ const RoomAIGineEditor = ({
 }: any) => {
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-8 flex-grow w-full">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-8 flex-grow w-full">
             {/* Left Column */}
-            <div className="col-span-1 md:col-span-12 lg:col-span-3 space-y-4 md:space-y-6">
+            <div className="col-span-1 xl:col-span-3 space-y-4 md:space-y-6">
                 <Card className="bg-secondary/50 border-border">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg"><Camera className="h-5 w-5" /> Your Room</CardTitle>
@@ -181,7 +181,7 @@ const RoomAIGineEditor = ({
             </div>
 
             {/* Middle Column */}
-            <div className="col-span-1 md:col-span-12 lg:col-span-6">
+            <div className="col-span-1 xl:col-span-6">
                 <Card className="bg-secondary/50 border-border h-full flex flex-col">
                     <CardHeader className="flex flex-row justify-between items-center">
                         <CardTitle className="text-lg">Decorated Room</CardTitle>
@@ -216,7 +216,7 @@ const RoomAIGineEditor = ({
                     </CardContent>
                     {generatedImages.length > 0 && (
                         <CardFooter className="p-2">
-                            <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 w-full">
+                            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 w-full">
                                 {generatedImages.map((image: GeneratedImage) => (
                                     <button key={image.style} onClick={() => setActiveGeneratedImage(image)} className={`aspect-square rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
                                         <Image src={image.imageDataUri} alt={image.style} width={100} height={100} className="object-cover w-full h-full" />
@@ -229,7 +229,7 @@ const RoomAIGineEditor = ({
             </div>
 
             {/* Right Column */}
-            <div className="col-span-1 md:col-span-12 lg:col-span-3">
+            <div className="col-span-1 xl:col-span-3">
                 <Card className="bg-secondary/50 border-border">
                     <CardHeader>
                         <CardTitle className="text-lg">Personalize</CardTitle>
@@ -245,7 +245,7 @@ const RoomAIGineEditor = ({
                         </div>
                         <div>
                             <Label className="mb-2 block">Room Type</Label>
-                            <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-3 sm:grid-cols-5 gap-1">
+                            <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                                 {roomTypes.map(({ id, label, icon: Icon }) => (
                                     <ToggleGroupItem key={id} value={id} aria-label={label} className="flex-col h-auto p-2 text-xs gap-1">
                                         <Icon className="h-5 w-5" />
