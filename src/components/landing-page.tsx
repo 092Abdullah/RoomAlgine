@@ -140,7 +140,7 @@ const LandingPage = () => {
 =======
 >>>>>>> f086a20 (Try It Free – No Signup Needed)
             <Image 
-                src="https://placehold.co/1200x600.png" 
+                src="https://freeimage.host/i/FLsWrYB" 
                 alt="AI generated room" 
                 width={1200}
                 height={600}
