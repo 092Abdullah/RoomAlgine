@@ -59,8 +59,11 @@ const LandingPage = () => {
             <nav className="hidden md:flex md:gap-8">
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
               <Link href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
+<<<<<<< HEAD
               <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
 >>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
+=======
+>>>>>>> 9f59433 (remove the pricing thing.its free)
             </nav>
             <Button asChild>
               <Link href="/generate">
