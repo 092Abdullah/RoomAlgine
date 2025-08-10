@@ -56,6 +56,9 @@ const LandingPage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 363f73c (Make the following changes:)
             <Link href="#">
               <LogoIcon />
             </Link>
