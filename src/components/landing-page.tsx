@@ -95,7 +95,7 @@ const LandingPage = () => {
             </motion.div>
           </motion.div>
           <motion.div 
-            className="relative container mx-auto mt-12"
+            className="relative container mx-auto mt-12 px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
@@ -105,7 +105,7 @@ const LandingPage = () => {
                 alt="AI generated room" 
                 width={1200}
                 height={600}
-                className="w-full max-w-4xl mx-auto h-full rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
+                className="w-full max-w-4xl mx-auto h-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
                 data-ai-hint="minimalist bedroom"
             />
           </motion.div>
@@ -191,14 +191,14 @@ const LandingPage = () => {
                              <ReactCompareSlider
                                 itemOne={<ReactCompareSliderImage src="https://i.ibb.co/spCKd6WL/before.webp" alt="Before image" data-ai-hint="messy bedroom"/>}
                                 itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/NgKGqxJ0/after.png" alt="After image" data-ai-hint="minimalist bedroom"/>}
-                                className="w-full h-full rounded-xl overflow-hidden"
+                                className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
                             />
                         </CarouselItem>
                         <CarouselItem>
                              <ReactCompareSlider
                                 itemOne={<ReactCompareSliderImage src="https://i.ibb.co/nq3QGF2t/before1.jpg" alt="Before image" data-ai-hint="old kitchen"/>}
                                 itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/G4KRf34j/after1.png" alt="After image" data-ai-hint="luxury kitchen"/>}
-                                className="w-full h-full rounded-xl overflow-hidden"
+                                className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
                             />
                         </CarouselItem>
                     </CarouselContent>

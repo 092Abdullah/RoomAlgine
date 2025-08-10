@@ -77,7 +77,7 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
         <LogoIcon />
       </Link>
       {showGenerateButton && (
-        <Button variant="outline" onClick={onGenerateNew}>
+        <Button variant="outline" onClick={onGenerateNew} size="sm">
           <RefreshCw className="mr-2 h-4 w-4" /> Generate New
         </Button>
       )}
@@ -131,9 +131,9 @@ const RoomAIGineEditor = ({
 }: any) => {
 
     return (
-        <div className="grid grid-cols-12 gap-6 max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 flex-grow w-full">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-8 flex-grow w-full">
             {/* Left Column */}
-            <div className="col-span-12 lg:col-span-3 space-y-6">
+            <div className="col-span-1 md:col-span-12 lg:col-span-3 space-y-4 md:space-y-6">
                 <Card className="bg-secondary/50 border-border">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg"><Camera className="h-5 w-5" /> Your Room</CardTitle>
@@ -181,7 +181,7 @@ const RoomAIGineEditor = ({
             </div>
 
             {/* Middle Column */}
-            <div className="col-span-12 lg:col-span-6">
+            <div className="col-span-1 md:col-span-12 lg:col-span-6">
                 <Card className="bg-secondary/50 border-border h-full flex flex-col">
                     <CardHeader className="flex flex-row justify-between items-center">
                         <CardTitle className="text-lg">Decorated Room</CardTitle>
@@ -198,11 +198,11 @@ const RoomAIGineEditor = ({
                                     itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" />}
                                     className="w-full h-full"
                                 />
-                                <div className="absolute bottom-4 right-4 flex gap-2">
+                                <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex gap-2">
                                     <Button size="icon" variant="secondary" onClick={() => handleDownload(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Download className="h-4 w-4" /></Button>
                                     <Button size="icon" variant="secondary" onClick={() => handleShare(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Share2 className="h-4 w-4" /></Button>
                                 </div>
-                                <div className="absolute top-4 right-4">
+                                <div className="absolute top-2 right-2 md:top-4 md:right-4">
                                     <Badge variant="secondary">{activeGeneratedImage.style}</Badge>
                                 </div>
                             </div>
@@ -216,7 +216,7 @@ const RoomAIGineEditor = ({
                     </CardContent>
                     {generatedImages.length > 0 && (
                         <CardFooter className="p-2">
-                            <div className="grid grid-cols-5 gap-2 w-full">
+                            <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 w-full">
                                 {generatedImages.map((image: GeneratedImage) => (
                                     <button key={image.style} onClick={() => setActiveGeneratedImage(image)} className={`aspect-square rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
                                         <Image src={image.imageDataUri} alt={image.style} width={100} height={100} className="object-cover w-full h-full" />
@@ -229,7 +229,7 @@ const RoomAIGineEditor = ({
             </div>
 
             {/* Right Column */}
-            <div className="col-span-12 lg:col-span-3">
+            <div className="col-span-1 md:col-span-12 lg:col-span-3">
                 <Card className="bg-secondary/50 border-border">
                     <CardHeader>
                         <CardTitle className="text-lg">Personalize</CardTitle>
@@ -237,7 +237,7 @@ const RoomAIGineEditor = ({
                     <CardContent className="space-y-6">
                         <div>
                             <Label className="mb-2 block">Budget</Label>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 md:gap-4">
                                 <span className="text-sm text-muted-foreground">${(budget[0] / 1000)}k</span>
                                 <Slider value={budget} onValueChange={setBudget} max={50000} step={1000} />
                                 <span className="text-sm text-muted-foreground">$50k</span>
@@ -245,7 +245,7 @@ const RoomAIGineEditor = ({
                         </div>
                         <div>
                             <Label className="mb-2 block">Room Type</Label>
-                            <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-5 gap-1">
+                            <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-3 sm:grid-cols-5 gap-1">
                                 {roomTypes.map(({ id, label, icon: Icon }) => (
                                     <ToggleGroupItem key={id} value={id} aria-label={label} className="flex-col h-auto p-2 text-xs gap-1">
                                         <Icon className="h-5 w-5" />
@@ -256,7 +256,7 @@ const RoomAIGineEditor = ({
                         </div>
                         <div>
                             <Label className="mb-2 block">Color Preferences</Label>
-                            <div className="grid grid-cols-8 gap-2">
+                            <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
                                 {colorPreferences.map((color) => (
                                     <button
                                         key={color.id}
@@ -447,3 +447,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
