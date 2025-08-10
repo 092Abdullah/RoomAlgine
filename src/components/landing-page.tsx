@@ -40,7 +40,9 @@ const LandingPage = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <LogoIcon />
+            <Link href="#">
+              <LogoIcon />
+            </Link>
             <nav className="hidden md:flex md:gap-8">
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
               <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
