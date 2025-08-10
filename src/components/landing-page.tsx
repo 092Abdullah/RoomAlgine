@@ -216,9 +216,9 @@ const LandingPage = () => {
             </div>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { name: "Sarah J.", role: "Homeowner", review: "This app is a game-changer! I redesigned my entire living room in one evening. So easy and fun to use.", rating: 5, img: "https://placehold.co/100x100.png" },
-                { name: "David L.", role: "Interior Designer", review: "RoomAIgine helps me create quick mockups for clients. It's an indispensable tool in my workflow now.", rating: 5, img: "https://placehold.co/100x100.png" },
-                { name: "Emily R.", role: "Renter", review: "I wasn't sure what to do with my small apartment, but this app gave me incredible ideas. Highly recommend!", rating: 5, img: "https://placehold.co/100x100.png" },
+                { name: "Areef R.", role: "Homeowner", review: "This app is a game-changer! I redesigned my entire living room in one evening. So easy and fun to use.", rating: 5, img: "https://i.ibb.co/XxsMswcR/areef.jpg" },
+                { name: "Muzaffar A.", role: "Interior Designer", review: "RoomAIgine helps me create quick mockups for clients. It's an indispensable tool in my workflow now.", rating: 5, img: "https://i.postimg.cc/J7JKZbLp/muzaffar.jpg" },
+                { name: "Abdullah M.", role: "Renter", review: "I wasn't sure what to do with my small apartment, but this app gave me incredible ideas. Highly recommend!", rating: 5, img: "https://i.postimg.cc/BndXT1sC/pic1.jpg" },
               ].map((testimonial, i) => (
                 <motion.div
                     key={i}
