@@ -101,7 +101,7 @@ const LandingPage = () => {
           >
              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10 h-1/2 bottom-0" />
             <Image 
-                src="https://iili.io/FLsWrYB.th.jpg" 
+                src="https://i.ibb.co/xS3KWXzX/hero.png" 
                 alt="AI generated room" 
                 width={1200}
                 height={600}
