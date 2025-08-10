@@ -66,12 +66,16 @@ const LandingPage = () => {
             <LogoIcon />
             <nav className="hidden md:flex md:gap-8">
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
+<<<<<<< HEAD
               <Link href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
 <<<<<<< HEAD
               <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
 >>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
 =======
 >>>>>>> 9f59433 (remove the pricing thing.its free)
+=======
+              <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
+>>>>>>> e1f8504 (when user clicks testimonials button from the header,the page should sli)
             </nav>
             <Button asChild>
               <Link href="/generate">
@@ -233,10 +237,14 @@ const LandingPage = () => {
         
         {/* Live Preview Carousel */}
 <<<<<<< HEAD
+<<<<<<< HEAD
         <section id="see-the-magic" className="py-20 bg-secondary/30">
 =======
         <section className="py-20 bg-secondary/30">
 >>>>>>> d4e915a (Create a high-end, ultra-modern, premium landing page for the app)
+=======
+        <section id="see-the-magic" className="py-20 bg-secondary/30">
+>>>>>>> e1f8504 (when user clicks testimonials button from the header,the page should sli)
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
                     <h2 className="text-3xl font-bold tracking-tight">See the Magic</h2>
