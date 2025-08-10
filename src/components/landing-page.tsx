@@ -140,7 +140,7 @@ const LandingPage = () => {
 =======
 >>>>>>> f086a20 (Try It Free – No Signup Needed)
             <Image 
-                src="https://freeimage.host/i/FLsWrYB" 
+                src="https://iili.io/FLsWrYB.th.jpg" 
                 alt="AI generated room" 
                 width={1200}
                 height={600}
