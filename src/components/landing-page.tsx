@@ -99,7 +99,6 @@ const LandingPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10 h-1/2 bottom-0" />
             <Image 
                 src="https://i.ibb.co/xS3KWXzX/hero.png" 
                 alt="AI generated room" 
