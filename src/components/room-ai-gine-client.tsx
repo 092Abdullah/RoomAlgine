@@ -131,6 +131,7 @@ const RoomAIGineEditor = ({
     selectedMoods,
     setSelectedMoods,
 }: any) => {
+    const isLoading = isGenerating || isDetectingRoomType;
 
     return (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-8 flex-grow w-full">
@@ -172,9 +173,9 @@ const RoomAIGineEditor = ({
                         </ToggleGroup>
                     </CardContent>
                     <CardFooter className="flex-col gap-3">
-                        <Button onClick={startGeneration} disabled={isGenerating || isDetectingRoomType} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                        <Button onClick={startGeneration} disabled={isLoading} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                             {isGenerating ? <Helix size="24" color="#a855f7" /> : <GenerateIcon className="h-4 w-4" />}
-                            Generate Style
+                            {isGenerating ? 'Generating...' : 'Generate Style'}
                         </Button>
                         <Button variant="outline" className="w-full">AI-Powered Ideas</Button>
                         <Button variant="ghost" className="w-full"><MoreFiltersIcon className="h-4 w-4" /> More Filters</Button>
@@ -189,9 +190,12 @@ const RoomAIGineEditor = ({
                         <CardTitle className="text-lg">Decorated Room</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-grow flex items-center justify-center">
-                        {isGenerating ? (
-                            <div className="w-full aspect-video flex items-center justify-center">
+                        {isLoading ? (
+                            <div className="w-full aspect-video flex flex-col items-center justify-center text-center">
                                  <Helix size="45" color="#a855f7" />
+                                 <p className="mt-4 text-muted-foreground">
+                                    {isDetectingRoomType ? "Detecting room type..." : "Generating your new room..."}
+                                 </p>
                             </div>
                         ) : activeGeneratedImage ? (
                             <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
@@ -216,7 +220,7 @@ const RoomAIGineEditor = ({
                             </div>
                         )}
                     </CardContent>
-                    {generatedImages.length > 0 && (
+                    {generatedImages.length > 0 && !isLoading && (
                         <CardFooter className="p-2">
                             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 w-full">
                                 {generatedImages.map((image: GeneratedImage) => (
