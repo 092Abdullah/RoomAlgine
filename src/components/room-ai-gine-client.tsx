@@ -7,7 +7,6 @@ import {
   Upload,
   Download,
   Share2,
-  Loader2,
   Camera,
   Paintbrush,
   Sparkles,
@@ -27,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { generateRoomStylesAction } from "@/app/actions";
+import { generateRoomStylesAction, detectRoomTypeAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, LogoIcon } from "./icons";
 import { motion } from "framer-motion";
@@ -36,6 +35,7 @@ import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Helix } from 'ldrs/react'
 
 type GeneratedImage = {
   style: string;
@@ -125,6 +125,7 @@ const RoomAIGineEditor = ({
     setBudget,
     roomType,
     setRoomType,
+    isDetectingRoomType,
     selectedColors,
     handleColorSelect,
     selectedMoods,
@@ -171,8 +172,8 @@ const RoomAIGineEditor = ({
                         </ToggleGroup>
                     </CardContent>
                     <CardFooter className="flex-col gap-3">
-                        <Button onClick={startGeneration} disabled={isGenerating} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                            {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <GenerateIcon className="h-4 w-4" />}
+                        <Button onClick={startGeneration} disabled={isGenerating || isDetectingRoomType} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                            {isGenerating ? <Helix size="24" color="#a855f7" /> : <GenerateIcon className="h-4 w-4" />}
                             Generate Style
                         </Button>
                         <Button variant="outline" className="w-full">AI-Powered Ideas</Button>
@@ -190,7 +191,7 @@ const RoomAIGineEditor = ({
                     <CardContent className="flex-grow flex items-center justify-center">
                         {isGenerating ? (
                             <div className="w-full aspect-video flex items-center justify-center">
-                                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                                 <Helix size="45" color="#a855f7" />
                             </div>
                         ) : activeGeneratedImage ? (
                             <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
@@ -230,7 +231,7 @@ const RoomAIGineEditor = ({
             </div>
 
             {/* Right Column */}
-            <div className="col-span-1 xl:col-span-3">
+             <div className="col-span-1 xl:col-span-3">
                 <Card className="bg-secondary/50 border-border">
                     <CardHeader>
                         <CardTitle className="text-lg">Personalize</CardTitle>
@@ -245,8 +246,11 @@ const RoomAIGineEditor = ({
                             </div>
                         </div>
                         <div>
-                            <Label className="mb-2 block">Room Type</Label>
-                            <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                             <Label className="mb-2 block flex items-center gap-2">
+                                Room Type
+                                {isDetectingRoomType && <Helix size="16" color="#a855f7" />}
+                            </Label>
+                            <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-2">
                                 {roomTypes.map(({ id, label, icon: Icon }) => (
                                     <ToggleGroupItem key={id} value={id} aria-label={label} className="flex-col h-auto p-2 text-xs gap-1">
                                         <Icon className="h-5 w-5" />
@@ -257,7 +261,7 @@ const RoomAIGineEditor = ({
                         </div>
                         <div>
                             <Label className="mb-2 block">Color Preferences</Label>
-                            <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
+                            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-6 gap-2">
                                 {colorPreferences.map((color) => (
                                     <button
                                         key={color.id}
@@ -290,6 +294,7 @@ export default function RoomAIGineClient() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [activeGeneratedImage, setActiveGeneratedImage] = useState<GeneratedImage | null>(null);
+  const [isDetectingRoomType, setIsDetectingRoomType] = useState(false);
 
   const [budget, setBudget] = useState([5000]);
   const [roomType, setRoomType] = useState<string>('bedroom');
@@ -298,15 +303,44 @@ export default function RoomAIGineClient() {
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  useEffect(() => {
+    // This code runs only on the client
+    import('ldrs').then(({ helix }) => helix.register());
+  }, []);
+
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setUploadedImage(e.target?.result as string);
+      reader.onload = async (e) => {
+        const dataUri = e.target?.result as string;
+        setUploadedImage(dataUri);
         setGeneratedImages([]);
         setActiveGeneratedImage(null);
+
+        // Start room type detection
+        setIsDetectingRoomType(true);
+        const detectionResult = await detectRoomTypeAction(dataUri);
+        if ('roomType' in detectionResult) {
+            // Check if the detected room type is one of the available options
+            const isValidRoomType = roomTypes.some(rt => rt.id === detectionResult.roomType);
+            if (isValidRoomType) {
+                setRoomType(detectionResult.roomType);
+            } else {
+                // Handle cases where the detected room is 'other' or not in our list
+                console.warn(`Detected room type "${detectionResult.roomType}" is not a selectable option.`);
+                // Optionally, set to a default or 'other' if you add it to roomTypes
+            }
+        } else {
+            toast({
+                title: "Room Detection Failed",
+                description: detectionResult.error,
+                variant: "destructive",
+            });
+        }
+        setIsDetectingRoomType(false);
       };
       reader.readAsDataURL(file);
     }
@@ -431,6 +465,7 @@ export default function RoomAIGineClient() {
             setBudget={setBudget}
             roomType={roomType}
             setRoomType={setRoomType}
+            isDetectingRoomType={isDetectingRoomType}
             selectedColors={selectedColors}
             handleColorSelect={handleColorSelect}
             selectedMoods={selectedMoods}
