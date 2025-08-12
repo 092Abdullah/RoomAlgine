@@ -115,7 +115,8 @@ const RoomAIGineEditor = ({
     selectedStyle,
     setSelectedStyle,
     startGeneration,
-    isGenerating,
+    isLoading,
+    loadingMessage,
     activeGeneratedImage,
     generatedImages,
     setActiveGeneratedImage,
@@ -131,7 +132,6 @@ const RoomAIGineEditor = ({
     selectedMoods,
     setSelectedMoods,
 }: any) => {
-    const isLoading = isGenerating || isDetectingRoomType;
 
     return (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-8 flex-grow w-full">
@@ -174,8 +174,8 @@ const RoomAIGineEditor = ({
                     </CardContent>
                     <CardFooter className="flex-col gap-3">
                         <Button onClick={startGeneration} disabled={isLoading} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                            {isGenerating ? <Helix size="24" color="#a855f7" /> : <GenerateIcon className="h-4 w-4" />}
-                            {isGenerating ? 'Generating...' : 'Generate Style'}
+                            {isLoading ? <Helix size="24" color="#a855f7" /> : <GenerateIcon className="h-4 w-4" />}
+                            {isLoading ? 'Generating...' : 'Generate Style'}
                         </Button>
                         <Button variant="outline" className="w-full">AI-Powered Ideas</Button>
                         <Button variant="ghost" className="w-full"><MoreFiltersIcon className="h-4 w-4" /> More Filters</Button>
@@ -193,9 +193,7 @@ const RoomAIGineEditor = ({
                         {isLoading ? (
                             <div className="w-full aspect-video flex flex-col items-center justify-center text-center">
                                  <Helix size="45" color="#a855f7" />
-                                 <p className="mt-4 text-muted-foreground">
-                                    {isDetectingRoomType ? "Detecting room type..." : "Generating your new room..."}
-                                 </p>
+                                 <p className="mt-4 text-muted-foreground">{loadingMessage}</p>
                             </div>
                         ) : activeGeneratedImage ? (
                             <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
@@ -216,6 +214,7 @@ const RoomAIGineEditor = ({
                             <div className="w-full aspect-video rounded-lg bg-muted flex flex-col items-center justify-center text-center p-4">
                                 <Sparkles className="h-12 w-12 text-primary/50 mb-4" />
                                 <p className="text-muted-foreground">Your generated designs will appear here.</p>
+
                                 <p className="text-xs text-muted-foreground/50">Select a style and other options to get started.</p>
                             </div>
                         )}
@@ -299,6 +298,7 @@ export default function RoomAIGineClient() {
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [activeGeneratedImage, setActiveGeneratedImage] = useState<GeneratedImage | null>(null);
   const [isDetectingRoomType, setIsDetectingRoomType] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState<string>('');
 
   const [budget, setBudget] = useState([5000]);
   const [roomType, setRoomType] = useState<string>('bedroom');
@@ -313,6 +313,7 @@ export default function RoomAIGineClient() {
     import('ldrs').then(({ helix }) => helix.register());
   }, []);
 
+  const isLoading = isDetectingRoomType || isGenerating;
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -326,6 +327,8 @@ export default function RoomAIGineClient() {
 
         // Start room type detection
         setIsDetectingRoomType(true);
+        setLoadingMessage("Detecting room type...");
+
         const detectionResult = await detectRoomTypeAction(dataUri);
         if ('roomType' in detectionResult) {
             // Check if the detected room type is one of the available options
@@ -345,6 +348,7 @@ export default function RoomAIGineClient() {
             });
         }
         setIsDetectingRoomType(false);
+        setLoadingMessage("");
       };
       reader.readAsDataURL(file);
     }
@@ -377,6 +381,7 @@ export default function RoomAIGineClient() {
     }
 
     setIsGenerating(true);
+    setLoadingMessage(`Generating your new ${selectedStyle} room...`);
     // Keep existing images but deactivate them
     setActiveGeneratedImage(null);
 
@@ -408,6 +413,7 @@ export default function RoomAIGineClient() {
       }
     }
     setIsGenerating(false);
+    setLoadingMessage('');
   }
 
   const handleDownload = (imageDataUri: string, style: string) => {
@@ -459,7 +465,8 @@ export default function RoomAIGineClient() {
             selectedStyle={selectedStyle}
             setSelectedStyle={setSelectedStyle}
             startGeneration={startGeneration}
-            isGenerating={isGenerating}
+            isLoading={isLoading}
+            loadingMessage={loadingMessage}
             activeGeneratedImage={activeGeneratedImage}
             generatedImages={generatedImages}
             setActiveGeneratedImage={setActiveGeneratedImage}
@@ -487,3 +494,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
