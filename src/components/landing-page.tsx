@@ -45,7 +45,7 @@ const LandingPage = () => {
             <nav className="hidden md:flex md:gap-8">
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
               <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
-              <Link href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Reviews</Link>
+              <Link href="#loved-by-creatives" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Reviews</Link>
             </nav>
             <Button asChild>
               <Link href="/generate">
@@ -59,7 +59,6 @@ const LandingPage = () => {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 text-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-background -z-10" />
           <motion.div
             className="container mx-auto px-4 sm:px-6 lg:px-8"
             initial="hidden"
@@ -107,6 +106,7 @@ const LandingPage = () => {
                 height={600}
                 className="w-full max-w-4xl mx-auto h-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
                 data-ai-hint="minimalist bedroom"
+                priority
             />
           </motion.div>
         </section>
@@ -209,7 +209,7 @@ const LandingPage = () => {
         </section>
 
         {/* Testimonials Section */}
-        <section id="testimonials" className="py-20">
+        <section id="loved-by-creatives" className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight">Loved by Creatives</h2>
@@ -285,5 +285,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
-    
