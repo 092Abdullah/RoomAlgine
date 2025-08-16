@@ -150,6 +150,7 @@ const RoomAIGineEditor = ({
 
         // Find the color values from the color names and set them
         const suggestedColorNames = suggestion.colorCombo.split(',').map(name => name.trim().toLowerCase());
+        
         const colorValuesToSelect = colorPreferences
             .filter(c => suggestedColorNames.includes(c.name.toLowerCase()))
             .map(c => c.value);
@@ -489,9 +490,12 @@ export default function RoomAIGineClient() {
     setIsSuggesting(true);
     setStyleSuggestions([]); // Clear previous suggestions
 
+    const availableColorNames = colorPreferences.map(c => c.name);
+
     const result = await suggestStylesAction({
       photoDataUri: uploadedImage,
       roomType: roomType,
+      availableColors: availableColorNames,
     });
 
     if ('error' in result) {

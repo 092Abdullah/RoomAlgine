@@ -13,7 +13,6 @@ import {z} from 'genkit';
 
 const designStyles = ["Minimalist", "Luxury", "Cozy", "Industrial", "Bohemian", "Coastal", "Scandinavian", "Eclectic"];
 
-export type SuggestStylesInput = z.infer<typeof SuggestStylesInputSchema>;
 const SuggestStylesInputSchema = z.object({
   photoDataUri: z
     .string()
@@ -21,9 +20,10 @@ const SuggestStylesInputSchema = z.object({
       "A photo of a room, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
   roomType: z.string().optional().describe("The type of the room (e.g. Bedroom, Living Room)."),
+  availableColors: z.array(z.string()).describe("A list of available color names for the AI to choose from."),
 });
+export type SuggestStylesInput = z.infer<typeof SuggestStylesInputSchema>;
 
-export type SuggestStylesOutput = z.infer<typeof SuggestStylesOutputSchema>;
 const SuggestStylesOutputSchema = z.object({
   suggestions: z.array(
     z.object({
@@ -32,6 +32,7 @@ const SuggestStylesOutputSchema = z.object({
     })
   ).max(3).describe("An array of up to 3 suggested design styles with color combinations."),
 });
+export type SuggestStylesOutput = z.infer<typeof SuggestStylesOutputSchema>;
 
 
 export async function suggestStyles(input: SuggestStylesInput): Promise<SuggestStylesOutput> {
@@ -44,7 +45,9 @@ const prompt = ai.definePrompt({
   output: {schema: SuggestStylesOutputSchema},
   prompt: `You are an expert interior designer. Analyze the provided image of a {{roomType}} and suggest up to 3 suitable design styles from the following list: ${designStyles.join(', ')}.
 
-  For each suggestion, provide a style and a corresponding color combination of 2-3 colors that would complement the room.
+  For each suggestion, provide a style and a corresponding color combination of 2-3 colors. 
+  
+  IMPORTANT: You MUST ONLY choose colors from this list of available colors: {{#each availableColors}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}.
 
   Analyze the image for existing architecture, lighting, and general space. Base your suggestions on what would realistically enhance the room.
 
