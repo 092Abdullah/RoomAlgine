@@ -13,7 +13,7 @@ import {z} from 'genkit';
 
 const designStyles = ["Minimalist", "Luxury", "Cozy", "Industrial", "Bohemian", "Coastal", "Scandinavian", "Eclectic"];
 
-export const SuggestStylesInputSchema = z.object({
+const SuggestStylesInputSchema = z.object({
   photoDataUri: z
     .string()
     .describe(
@@ -23,7 +23,7 @@ export const SuggestStylesInputSchema = z.object({
 });
 export type SuggestStylesInput = z.infer<typeof SuggestStylesInputSchema>;
 
-export const SuggestStylesOutputSchema = z.object({
+const SuggestStylesOutputSchema = z.object({
   suggestions: z.array(
     z.object({
       style: z.enum(designStyles),
