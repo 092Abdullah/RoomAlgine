@@ -13,6 +13,7 @@ import {
   Bath,
   CookingPot,
   Lightbulb,
+  X,
 } from "lucide-react";
 import {
   Card,
@@ -140,6 +141,7 @@ const RoomAIGineEditor = ({
     getAIStyleIdeas,
     isSuggesting,
     styleSuggestions,
+    setStyleSuggestions,
 }: any) => {
 
     const handleSuggestionClick = (suggestion: StyleSuggestion) => {
@@ -156,6 +158,10 @@ const RoomAIGineEditor = ({
             .map(c => c.value);
         
         setSelectedColors(colorValuesToSelect);
+    };
+    
+    const closeSuggestions = () => {
+        setStyleSuggestions([]);
     };
 
     return (
@@ -196,9 +202,15 @@ const RoomAIGineEditor = ({
                                     key="suggestions"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    className="mb-4"
+                                    className="mb-4 relative"
                                 >
-                                    <h4 className="text-sm font-semibold mb-2 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-amber-400"/> AI Suggestions</h4>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h4 className="text-sm font-semibold flex items-center gap-2"><Lightbulb className="h-4 w-4 text-amber-400"/> AI Suggestions</h4>
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={closeSuggestions}>
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+
                                     <div className="space-y-2">
                                         {styleSuggestions.map((suggestion: StyleSuggestion) => (
                                             <button 
@@ -579,6 +591,7 @@ export default function RoomAIGineClient() {
             getAIStyleIdeas={getAIStyleIdeas}
             isSuggesting={isSuggesting}
             styleSuggestions={styleSuggestions}
+            setStyleSuggestions={setStyleSuggestions}
           />
         )}
          <Input
