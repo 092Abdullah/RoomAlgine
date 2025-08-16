@@ -149,17 +149,12 @@ const RoomAIGineEditor = ({
         }
 
         // Find the color values from the color names and set them
-        const suggestedColorNames = suggestion.colorCombo.split(',').map(name => name.trim());
-        const colorMap = new Map(colorPreferences.map(c => [c.name, c.value]));
-        const suggestedColorValues = suggestedColorNames
-            .map(name => {
-                const normalizedName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-                const matchedColor = colorPreferences.find(c => c.name.toLowerCase() === normalizedName.toLowerCase());
-                return matchedColor ? matchedColor.value : null;
-            })
-            .filter((value): value is string => !!value);
+        const suggestedColorNames = suggestion.colorCombo.split(',').map(name => name.trim().toLowerCase());
+        const colorValuesToSelect = colorPreferences
+            .filter(c => suggestedColorNames.includes(c.name.toLowerCase()))
+            .map(c => c.value);
         
-        setSelectedColors(suggestedColorValues);
+        setSelectedColors(colorValuesToSelect);
     };
 
     return (
