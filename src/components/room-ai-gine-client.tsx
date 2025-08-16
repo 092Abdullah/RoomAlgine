@@ -46,7 +46,7 @@ type GeneratedImage = {
 
 type StyleSuggestion = {
     style: string;
-    reason: string;
+    colorCombo: string;
 };
 
 const designStyles = ["Minimalist", "Luxury", "Cozy", "Industrial", "Bohemian", "Coastal", "Scandinavian", "Eclectic"];
@@ -136,12 +136,29 @@ const RoomAIGineEditor = ({
     isDetectingRoomType,
     selectedColors,
     handleColorSelect,
+    setSelectedColors,
     selectedMoods,
     setSelectedMoods,
     getAIStyleIdeas,
     isSuggesting,
     styleSuggestions,
 }: any) => {
+
+    const handleSuggestionClick = (suggestion: StyleSuggestion) => {
+        // Set the style
+        if (designStyles.includes(suggestion.style)) {
+            setSelectedStyle(suggestion.style);
+        }
+
+        // Find the color values from the color names
+        const suggestedColorNames = suggestion.colorCombo.split(',').map(name => name.trim());
+        const colorMap = new Map(colorPreferences.map(c => [c.name, c.value]));
+        const suggestedColorValues = suggestedColorNames
+            .map(name => colorMap.get(name))
+            .filter((value): value is string => !!value);
+        
+        setSelectedColors(suggestedColorValues);
+    };
 
     return (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-8 flex-grow w-full">
@@ -186,10 +203,14 @@ const RoomAIGineEditor = ({
                                     <h4 className="text-sm font-semibold mb-2 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-amber-400"/> AI Suggestions</h4>
                                     <div className="space-y-2">
                                         {styleSuggestions.map((suggestion: StyleSuggestion) => (
-                                            <div key={suggestion.style} className="p-2 rounded-md border border-border/50 bg-secondary/30">
-                                                <button className="font-semibold text-primary text-sm" onClick={() => setSelectedStyle(suggestion.style)}>{suggestion.style}</button>
-                                                <p className="text-xs text-muted-foreground mt-1">{suggestion.reason}</p>
-                                            </div>
+                                            <button 
+                                                key={suggestion.style} 
+                                                onClick={() => handleSuggestionClick(suggestion)}
+                                                className="w-full text-left p-2 rounded-md border border-border/50 bg-secondary/30 hover:border-primary transition-all"
+                                            >
+                                                <p className="font-semibold text-primary text-sm">{suggestion.style}</p>
+                                                <p className="text-xs text-muted-foreground mt-1">{suggestion.colorCombo}</p>
+                                            </button>
                                         ))}
                                     </div>
                                     <Separator className="my-4" />
@@ -484,10 +505,6 @@ export default function RoomAIGineClient() {
         });
     } else {
         setStyleSuggestions(result.suggestions);
-        // Maybe select the first suggested style automatically
-        if (result.suggestions.length > 0) {
-            setSelectedStyle(result.suggestions[0].style);
-        }
     }
     setIsSuggesting(false);
   };
@@ -555,6 +572,7 @@ export default function RoomAIGineClient() {
             isDetectingRoomType={isDetectingRoomType}
             selectedColors={selectedColors}
             handleColorSelect={handleColorSelect}
+            setSelectedColors={setSelectedColors}
             selectedMoods={selectedMoods}
             setSelectedMoods={setSelectedMoods}
             getAIStyleIdeas={getAIStyleIdeas}
