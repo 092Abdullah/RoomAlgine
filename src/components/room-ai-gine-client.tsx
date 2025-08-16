@@ -150,18 +150,22 @@ const RoomAIGineEditor = ({
             setSelectedStyle(suggestion.style);
         }
 
-        // Find the color values from the color names and set them
-        const suggestedColorNames = suggestion.colorCombo.split(',').map(name => name.trim().toLowerCase());
-        
+        const suggestedColorNames = suggestion.colorCombo
+          .toLowerCase()
+          .split(',')
+          .map(name => name.trim());
+    
         const colorValuesToSelect = colorPreferences
-            .filter(c => suggestedColorNames.includes(c.name.toLowerCase()))
-            .map(c => c.value);
+          .filter(c => suggestedColorNames.includes(c.name.toLowerCase()))
+          .map(c => c.value);
         
         setSelectedColors(colorValuesToSelect);
     };
     
     const closeSuggestions = () => {
         setStyleSuggestions([]);
+        setSelectedStyle("Minimalist"); // Reset to default style
+        setSelectedColors([]); // Clear selected colors
     };
 
     return (
@@ -252,7 +256,7 @@ const RoomAIGineEditor = ({
                             {isLoading ? 'Generating...' : 'Generate Style'}
                         </Button>
                         <Button onClick={getAIStyleIdeas} variant="outline" className="w-full" disabled={isSuggesting || isLoading}>
-                            {isSuggesting ? 'Getting Ideas...' : 'AI-Powered Ideas'}
+                            AI-Powered Ideas
                         </Button>
                         <Button variant="ghost" className="w-full"><MoreFiltersIcon className="h-4 w-4" /> More Filters</Button>
                     </CardFooter>
