@@ -8,7 +8,6 @@ import {
   Download,
   Share2,
   Camera,
-  Paintbrush,
   Sparkles,
   RefreshCw,
   Bath,
@@ -35,7 +34,6 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Link from "next/link";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Helix } from 'ldrs/react'
 import { Separator } from "./ui/separator";
 
@@ -150,11 +148,15 @@ const RoomAIGineEditor = ({
             setSelectedStyle(suggestion.style);
         }
 
-        // Find the color values from the color names
+        // Find the color values from the color names and set them
         const suggestedColorNames = suggestion.colorCombo.split(',').map(name => name.trim());
         const colorMap = new Map(colorPreferences.map(c => [c.name, c.value]));
         const suggestedColorValues = suggestedColorNames
-            .map(name => colorMap.get(name))
+            .map(name => {
+                const normalizedName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+                const matchedColor = colorPreferences.find(c => c.name.toLowerCase() === normalizedName.toLowerCase());
+                return matchedColor ? matchedColor.value : null;
+            })
             .filter((value): value is string => !!value);
         
         setSelectedColors(suggestedColorValues);
@@ -176,7 +178,7 @@ const RoomAIGineEditor = ({
                 </Card>
                 <Card className="bg-secondary/50 border-border">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Paintbrush className="h-5 w-5" /> Choose a Style</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-lg">Choose a Style</CardTitle>
                         <CardDescription>Select a style or get ideas from our AI.</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -206,7 +208,7 @@ const RoomAIGineEditor = ({
                                             <button 
                                                 key={suggestion.style} 
                                                 onClick={() => handleSuggestionClick(suggestion)}
-                                                className="w-full text-left p-2 rounded-md border border-border/50 bg-secondary/30 hover:border-primary transition-all"
+                                                className={`w-full text-left p-2 rounded-md border-2 bg-secondary/30 hover:border-primary transition-all ${selectedStyle === suggestion.style ? 'border-primary' : 'border-border/50'}`}
                                             >
                                                 <p className="font-semibold text-primary text-sm">{suggestion.style}</p>
                                                 <p className="text-xs text-muted-foreground mt-1">{suggestion.colorCombo}</p>
@@ -238,7 +240,7 @@ const RoomAIGineEditor = ({
                     </CardContent>
                     <CardFooter className="flex-col gap-3">
                         <Button onClick={startGeneration} disabled={isLoading || isSuggesting} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                            {isLoading ? <Helix size="24" color="#a855f7" /> : <GenerateIcon className="h-4 w-4" />}
+                            {isLoading ? <Helix size="24" color="#FFFFFF" /> : <GenerateIcon className="h-4 w-4" />}
                             {isLoading ? 'Generating...' : 'Generate Style'}
                         </Button>
                         <Button onClick={getAIStyleIdeas} variant="outline" className="w-full" disabled={isSuggesting || isLoading}>
@@ -255,7 +257,7 @@ const RoomAIGineEditor = ({
                     <CardHeader className="flex flex-row justify-between items-center">
                         <CardTitle className="text-lg">Decorated Room</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-grow flex items-center justify-center">
+                    <CardContent className="flex-grow flex items-center justify-center p-2 sm:p-4">
                         {isLoading ? (
                             <div className="w-full aspect-video flex flex-col items-center justify-center text-center">
                                  <Helix size="45" color="#a855f7" />
@@ -277,19 +279,19 @@ const RoomAIGineEditor = ({
                                 </div>
                             </div>
                         ) : (
-                            <div className="w-full aspect-video rounded-lg bg-muted flex flex-col items-center justify-center text-center p-4">
+                            <div className="w-full aspect-video rounded-lg bg-muted/50 flex flex-col items-center justify-center text-center p-4">
                                 <Sparkles className="h-12 w-12 text-primary/50 mb-4" />
                                 <p className="text-muted-foreground">Your generated designs will appear here.</p>
 
-                                <p className="text-xs text-muted-foreground/50">Select a style and other options to get started.</p>
+                                <p className="text-xs text-muted-foreground/50 mt-2">Select a style and other options to get started.</p>
                             </div>
                         )}
                     </CardContent>
                     {generatedImages.length > 0 && !isLoading && (
-                        <CardFooter className="p-2">
-                            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 w-full">
+                        <CardFooter className="p-2 overflow-x-auto">
+                            <div className="flex gap-2 w-max">
                                 {generatedImages.map((image: GeneratedImage) => (
-                                    <button key={image.style} onClick={() => setActiveGeneratedImage(image)} className={`aspect-square rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
+                                    <button key={image.style} onClick={() => setActiveGeneratedImage(image)} className={`w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
                                         <Image src={image.imageDataUri} alt={image.style} width={100} height={100} className="object-cover w-full h-full" />
                                     </button>
                                 ))}
@@ -319,7 +321,7 @@ const RoomAIGineEditor = ({
                                 Room Type
                                 {isDetectingRoomType && <Helix size="16" color="#a855f7" />}
                             </Label>
-                            <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-2">
+                            <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-3 gap-2">
                                 {roomTypes.map(({ id, label, icon: Icon }) => (
                                     <ToggleGroupItem key={id} value={id} aria-label={label} className="flex-col h-auto p-2 text-xs gap-1">
                                         <Icon className="h-5 w-5" />
@@ -330,12 +332,12 @@ const RoomAIGineEditor = ({
                         </div>
                         <div>
                             <Label className="mb-2 block">Color Preferences</Label>
-                            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-6 gap-2">
+                            <div className="grid grid-cols-6 gap-2">
                                 {colorPreferences.map((color) => (
                                     <button
                                         key={color.id}
                                         onClick={() => handleColorSelect(color.value)}
-                                        className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColors.includes(color.value) ? 'border-primary' : 'border-transparent'}`}
+                                        className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColors.includes(color.value) ? 'border-primary ring-2 ring-primary ring-offset-2 ring-offset-background' : 'border-transparent'}`}
                                         style={{ backgroundColor: color.value }}
                                         aria-label={color.name}
                                     />
@@ -379,7 +381,7 @@ export default function RoomAIGineClient() {
   
   useEffect(() => {
     // This code runs only on the client
-    import('ldrs').then(({ helix }) => helix.register());
+    import('ldrs').then(ldrs => ldrs.helix.register());
   }, []);
 
   const isLoading = isDetectingRoomType || isGenerating;
@@ -503,7 +505,7 @@ export default function RoomAIGineClient() {
             description: result.error,
             variant: "destructive",
         });
-    } else {
+    } else if (result.suggestions) {
         setStyleSuggestions(result.suggestions);
     }
     setIsSuggesting(false);
@@ -591,5 +593,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
