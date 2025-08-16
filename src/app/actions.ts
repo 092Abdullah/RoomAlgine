@@ -3,6 +3,7 @@
 import { ai } from '@/ai/genkit';
 import { generateRoomStyles, GenerateRoomStylesInput } from '@/ai/flows/generate-room-styles';
 import { detectRoomType } from '@/ai/flows/detect-room-type';
+import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flows/suggest-styles';
 
 
 export async function generateRoomStylesAction(
@@ -42,4 +43,20 @@ export async function detectRoomTypeAction(
         console.error(e);
         return { error: 'Error detecting room type.' };
     }
+}
+
+export async function suggestStylesAction(
+  input: SuggestStylesInput
+): Promise<SuggestStylesOutput | { error: string }> {
+  if (!input.photoDataUri) {
+    return { error: 'Please upload an image first.' };
+  }
+
+  try {
+    const result = await suggestStyles(input);
+    return result;
+  } catch (e) {
+    console.error(e);
+    return { error: 'Error suggesting styles.' };
+  }
 }

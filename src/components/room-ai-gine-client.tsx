@@ -13,6 +13,7 @@ import {
   RefreshCw,
   Bath,
   CookingPot,
+  Lightbulb,
 } from "lucide-react";
 import {
   Card,
@@ -26,20 +27,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { generateRoomStylesAction, detectRoomTypeAction } from "@/app/actions";
+import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, LogoIcon } from "./icons";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Helix } from 'ldrs/react'
+import { Separator } from "./ui/separator";
 
 type GeneratedImage = {
   style: string;
   imageDataUri: string;
+};
+
+type StyleSuggestion = {
+    style: string;
+    reason: string;
 };
 
 const designStyles = ["Minimalist", "Luxury", "Cozy", "Industrial", "Bohemian", "Coastal", "Scandinavian", "Eclectic"];
@@ -131,6 +138,9 @@ const RoomAIGineEditor = ({
     handleColorSelect,
     selectedMoods,
     setSelectedMoods,
+    getAIStyleIdeas,
+    isSuggesting,
+    styleSuggestions,
 }: any) => {
 
     return (
@@ -150,9 +160,42 @@ const RoomAIGineEditor = ({
                 <Card className="bg-secondary/50 border-border">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg"><Paintbrush className="h-5 w-5" /> Choose a Style</CardTitle>
-                        <CardDescription>Select a style to apply to your room.</CardDescription>
+                        <CardDescription>Select a style or get ideas from our AI.</CardDescription>
                     </CardHeader>
                     <CardContent>
+                        <AnimatePresence>
+                            {isSuggesting && (
+                                <motion.div
+                                    key="suggestion-loader"
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="flex items-center justify-center p-4"
+                                >
+                                    <Helix size="24" color="#a855f7" />
+                                    <p className="ml-2 text-sm text-muted-foreground">Getting ideas...</p>
+                                </motion.div>
+                            )}
+                            {styleSuggestions.length > 0 && (
+                                <motion.div
+                                    key="suggestions"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mb-4"
+                                >
+                                    <h4 className="text-sm font-semibold mb-2 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-amber-400"/> AI Suggestions</h4>
+                                    <div className="space-y-2">
+                                        {styleSuggestions.map((suggestion: StyleSuggestion) => (
+                                            <div key={suggestion.style} className="p-2 rounded-md border border-border/50 bg-secondary/30">
+                                                <button className="font-semibold text-primary text-sm" onClick={() => setSelectedStyle(suggestion.style)}>{suggestion.style}</button>
+                                                <p className="text-xs text-muted-foreground mt-1">{suggestion.reason}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <Separator className="my-4" />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                         <ToggleGroup
                             type="single"
                             value={selectedStyle}
@@ -173,11 +216,13 @@ const RoomAIGineEditor = ({
                         </ToggleGroup>
                     </CardContent>
                     <CardFooter className="flex-col gap-3">
-                        <Button onClick={startGeneration} disabled={isLoading} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                        <Button onClick={startGeneration} disabled={isLoading || isSuggesting} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                             {isLoading ? <Helix size="24" color="#a855f7" /> : <GenerateIcon className="h-4 w-4" />}
                             {isLoading ? 'Generating...' : 'Generate Style'}
                         </Button>
-                        <Button variant="outline" className="w-full">AI-Powered Ideas</Button>
+                        <Button onClick={getAIStyleIdeas} variant="outline" className="w-full" disabled={isSuggesting || isLoading}>
+                            {isSuggesting ? 'Getting Ideas...' : 'AI-Powered Ideas'}
+                        </Button>
                         <Button variant="ghost" className="w-full"><MoreFiltersIcon className="h-4 w-4" /> More Filters</Button>
                     </CardFooter>
                 </Card>
@@ -305,6 +350,9 @@ export default function RoomAIGineClient() {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>(["Relaxed"]);
 
+  const [isSuggesting, setIsSuggesting] = useState(false);
+  const [styleSuggestions, setStyleSuggestions] = useState<StyleSuggestion[]>([]);
+
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -324,6 +372,7 @@ export default function RoomAIGineClient() {
         setUploadedImage(dataUri);
         setGeneratedImages([]);
         setActiveGeneratedImage(null);
+        setStyleSuggestions([]);
 
         // Start room type detection
         setIsDetectingRoomType(true);
@@ -358,6 +407,7 @@ export default function RoomAIGineClient() {
     setUploadedImage(null);
     setGeneratedImages([]);
     setActiveGeneratedImage(null);
+    setStyleSuggestions([]);
     if(fileInputRef.current) {
         fileInputRef.current.value = "";
     }
@@ -415,6 +465,32 @@ export default function RoomAIGineClient() {
     setIsGenerating(false);
     setLoadingMessage('');
   }
+
+  const getAIStyleIdeas = async () => {
+    if (!uploadedImage) return;
+    setIsSuggesting(true);
+    setStyleSuggestions([]); // Clear previous suggestions
+
+    const result = await suggestStylesAction({
+      photoDataUri: uploadedImage,
+      roomType: roomType,
+    });
+
+    if ('error' in result) {
+        toast({
+            title: "Suggestion Failed",
+            description: result.error,
+            variant: "destructive",
+        });
+    } else {
+        setStyleSuggestions(result.suggestions);
+        // Maybe select the first suggested style automatically
+        if (result.suggestions.length > 0) {
+            setSelectedStyle(result.suggestions[0].style);
+        }
+    }
+    setIsSuggesting(false);
+  };
 
   const handleDownload = (imageDataUri: string, style: string) => {
     const link = document.createElement("a");
@@ -481,6 +557,9 @@ export default function RoomAIGineClient() {
             handleColorSelect={handleColorSelect}
             selectedMoods={selectedMoods}
             setSelectedMoods={setSelectedMoods}
+            getAIStyleIdeas={getAIStyleIdeas}
+            isSuggesting={isSuggesting}
+            styleSuggestions={styleSuggestions}
           />
         )}
          <Input
