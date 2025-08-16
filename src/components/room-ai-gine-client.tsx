@@ -364,7 +364,7 @@ export default function RoomAIGineClient() {
   const [isDetectingRoomType, setIsDetectingRoomType] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
 
-  const [budget, setBudget] = useState([5000]);
+  const [budget, setBudget] = useState([10000]);
   const [roomType, setRoomType] = useState<string>('bedroom');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>(["Relaxed"]);
@@ -592,3 +592,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
