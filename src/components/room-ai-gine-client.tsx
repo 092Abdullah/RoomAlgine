@@ -78,6 +78,7 @@ const colorPreferences = [
 ];
 
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
+const priceRangeOptions = ["Budget-friendly", "Mid-range", "Luxury"];
 
 const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () => void, showGenerateButton: boolean }) => (
     <header className="flex justify-between items-center p-4 border-b border-border">
@@ -144,6 +145,8 @@ const RoomAIGineEditor = ({
     setSelectedColors,
     selectedMoods,
     setSelectedMoods,
+    priceRange,
+    setPriceRange,
     getAIStyleIdeas,
     isSuggesting,
     styleSuggestions,
@@ -362,6 +365,23 @@ const RoomAIGineEditor = ({
                                 ))}
                             </ToggleGroup>
                         </div>
+                        <div>
+                            <Label htmlFor="price-range" className="mb-2 block">Price Range</Label>
+                            <Slider
+                                id="price-range"
+                                min={0}
+                                max={priceRangeOptions.length - 1}
+                                step={1}
+                                value={[priceRange]}
+                                onValueChange={(value) => setPriceRange(value[0])}
+                                className="my-4"
+                            />
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                                {priceRangeOptions.map((label, index) => (
+                                    <span key={label} onClick={() => setPriceRange(index)} className="cursor-pointer">{label}</span>
+                                ))}
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
@@ -382,6 +402,7 @@ export default function RoomAIGineClient() {
   const [roomType, setRoomType] = useState<string>('bedroom');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>(["Relaxed"]);
+  const [priceRange, setPriceRange] = useState<number>(1); // Default to Mid-range
 
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [styleSuggestions, setStyleSuggestions] = useState<StyleSuggestion[]>([]);
@@ -467,7 +488,8 @@ export default function RoomAIGineClient() {
       styles: [selectedStyle],
       roomType,
       colorPreferences: selectedColors.map(hex => colorPreferences.find(c => c.value === hex)?.name).filter(Boolean) as string[],
-      mood: selectedMoods[0]
+      mood: selectedMoods[0],
+      priceRange: priceRangeOptions[priceRange],
     }, uploadedImage);
 
 
@@ -612,6 +634,8 @@ export default function RoomAIGineClient() {
             setSelectedColors={setSelectedColors}
             selectedMoods={selectedMoods}
             setSelectedMoods={setSelectedMoods}
+            priceRange={priceRange}
+            setPriceRange={setPriceRange}
             getAIStyleIdeas={getAIStyleIdeas}
             isSuggesting={isSuggesting}
             styleSuggestions={styleSuggestions}
@@ -629,3 +653,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
