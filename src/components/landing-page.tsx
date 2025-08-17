@@ -48,14 +48,12 @@ const LandingPage = () => {
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
               <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Examples</Link>
               <Link href="#loved-by-creatives" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Reviews</Link>
-              <div className="flex items-center gap-4">
-                  <Link href="/gallery" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Gallery</Link>
-                  <Button asChild>
-                      <Link href="/generate">
-                        Try for Free <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                  </Button>
-              </div>
+              <Link href="/gallery" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Gallery</Link>
+              <Button asChild>
+                  <Link href="/generate">
+                    Try for Free <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+              </Button>
             </nav>
              <div className="md:hidden">
                <Button asChild>
