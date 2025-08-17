@@ -4,14 +4,14 @@
  * @fileOverview A flow to publish a generated room design to a Supabase gallery.
  *
  * - publishToGallery - Uploads original and generated images to Supabase Storage and saves metadata to a Supabase table.
- * - PublishToGalleryInput - The input type for the publishToGallery function.
- * - PublishToGalleryOutput - The return type for the publishToGallery function.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { supabase } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
+import type { PublishToGalleryInput, PublishToGalleryOutput } from '@/app/actions';
+import { PublishToGalleryInputSchema, PublishToGalleryOutputSchema } from '@/app/actions';
 
 // Helper function to decode data URI and convert to Buffer
 function dataUriToBuffer(dataUri: string): Buffer {
@@ -41,27 +41,9 @@ async function uploadImage(imageBuffer: Buffer, fileExtension: string = 'png'): 
     return publicUrl;
 }
 
-
-export const PublishToGalleryInputSchema = z.object({
-    originalImageDataUri: z.string().describe("The original room photo as a data URI."),
-    generatedImageDataUri: z.string().describe("The AI-generated room photo as a data URI."),
-    style: z.string(),
-    roomType: z.string().optional(),
-    colors: z.array(z.string()).optional(),
-    mood: z.string().optional(),
-});
-export type PublishToGalleryInput = z.infer<typeof PublishToGalleryInputSchema>;
-
-export const PublishToGalleryOutputSchema = z.object({
-    galleryUrl: z.string().describe("The URL to the newly created gallery entry."),
-});
-export type PublishToGalleryOutput = z.infer<typeof PublishToGalleryOutputSchema>;
-
-
 export async function publishToGallery(input: PublishToGalleryInput): Promise<PublishToGalleryOutput> {
     return publishToGalleryFlow(input);
 }
-
 
 const publishToGalleryFlow = ai.defineFlow(
     {
