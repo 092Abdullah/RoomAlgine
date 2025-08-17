@@ -37,23 +37,30 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md">
+       <header className="sticky top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <Link href="#">
+            <Link href="/">
               <LogoIcon />
             </Link>
-            <nav className="hidden md:flex md:gap-8">
+            <nav className="hidden md:flex md:gap-8 items-center">
               <Link href="/gallery" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Gallery</Link>
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-              <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
+              <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Examples</Link>
               <Link href="#loved-by-creatives" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Reviews</Link>
+               <Button asChild>
+                  <Link href="/generate">
+                    Try for Free <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
             </nav>
-            <Button asChild>
-              <Link href="/generate">
-                Try for Free <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+             <div className="md:hidden">
+               <Button asChild>
+                  <Link href="/generate">
+                    Start Designing
+                  </Link>
+                </Button>
+            </div>
           </div>
         </div>
       </header>
