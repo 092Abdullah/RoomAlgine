@@ -178,7 +178,7 @@ const RoomAIGineEditor = ({
 
     const formatCurrency = (value: number) => {
         if (value >= 1000) {
-            return `$${value / 1000}k`;
+            return `$${Math.round(value / 1000)}k`;
         }
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
