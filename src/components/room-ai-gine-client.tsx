@@ -378,10 +378,7 @@ const RoomAIGineEditor = ({
                             </ToggleGroup>
                         </div>
                         <div>
-                             <div className="flex justify-between items-center mb-2">
-                                <Label htmlFor="price-range">Price Range</Label>
-                                <span className="text-sm font-medium text-primary">{formatCurrency(priceRange)}</span>
-                            </div>
+                            <Label htmlFor="price-range" className="mb-2 block">Price Range</Label>
                             <Slider
                                 id="price-range"
                                 min={0}
