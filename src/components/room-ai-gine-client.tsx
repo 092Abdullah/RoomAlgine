@@ -177,6 +177,9 @@ const RoomAIGineEditor = ({
     };
 
     const formatCurrency = (value: number) => {
+        if (value >= 1000) {
+            return `$${value / 1000}k`;
+        }
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
@@ -390,7 +393,7 @@ const RoomAIGineEditor = ({
                             />
                             <div className="flex justify-between text-xs text-muted-foreground">
                                 <span>{formatCurrency(priceRange)}</span>
-                                <span>$50,000</span>
+                                <span>{formatCurrency(50000)}</span>
                             </div>
                         </div>
                     </CardContent>
