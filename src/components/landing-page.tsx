@@ -13,6 +13,7 @@ import {
   Instagram,
   Linkedin,
   Github,
+  GalleryThumbnails
 } from "lucide-react";
 import { LogoIcon } from "./icons";
 import { Button } from "./ui/button";
@@ -43,6 +44,7 @@ const LandingPage = () => {
               <LogoIcon />
             </Link>
             <nav className="hidden md:flex md:gap-8">
+              <Link href="/gallery" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Gallery</Link>
               <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</Link>
               <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Testimonials</Link>
               <Link href="#loved-by-creatives" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Reviews</Link>
@@ -85,10 +87,15 @@ const LandingPage = () => {
             >
               Transform your space with AI. Upload a photo of your room and let our advanced algorithm generate stunning redesigns in any style you can imagine.
             </motion.p>
-            <motion.div variants={FADE_IN_ANIMATION_VARIANTS}>
+            <motion.div variants={FADE_IN_ANIMATION_VARIANTS} className="flex justify-center items-center gap-4">
               <Button size="lg" className="mt-8" asChild>
                 <Link href="/generate">
                   Try It Free – No Signup Needed
+                </Link>
+              </Button>
+               <Button size="lg" variant="outline" className="mt-8" asChild>
+                <Link href="/gallery">
+                  <GalleryThumbnails className="mr-2 h-5 w-5" /> View Gallery
                 </Link>
               </Button>
             </motion.div>
@@ -157,7 +164,7 @@ const LandingPage = () => {
                 { title: "Multiple Styles", description: "From Industrial to Scandinavian, find the perfect look." },
                 { title: "Instant Preview", description: "See your new room in seconds, not weeks." },
                 { title: "HD Quality", description: "Download high-resolution images for a detailed view." },
-                { title: "Free to Try", description: "Experiment with styles before committing." },
+                { title: "Community Gallery", description: "Get inspired by creations from other users." },
               ].map((feature, i) => (
                 <motion.div
                   key={i}

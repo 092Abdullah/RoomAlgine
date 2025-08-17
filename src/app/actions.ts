@@ -4,6 +4,7 @@ import { ai } from '@/ai/genkit';
 import { generateRoomStyles, GenerateRoomStylesInput } from '@/ai/flows/generate-room-styles';
 import { detectRoomType } from '@/ai/flows/detect-room-type';
 import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flows/suggest-styles';
+import { publishToGallery, PublishToGalleryInput } from '@/ai/flows/publish-to-gallery';
 
 
 export async function generateRoomStylesAction(
@@ -20,10 +21,9 @@ export async function generateRoomStylesAction(
   try {
     const result = await generateRoomStyles({ ...input, photoDataUri });
     return result;
-  } catch (e) {
+  } catch (e: any) {
     console.error(e);
-    // Return a user-friendly error message
-    return { error: 'Error creating image, please try again.' };
+    return { error: e.message || 'Error creating image, please try again.' };
   }
 }
 
@@ -36,12 +36,11 @@ export async function detectRoomTypeAction(
 
     try {
         const result = await detectRoomType({ photoDataUri });
-        // Convert to the format expected by the frontend (e.g., 'Living Room' -> 'living-room')
         const formattedRoomType = result.roomType.toLowerCase().replace(/\s+/g, '-');
         return { roomType: formattedRoomType };
-    } catch (e) {
+    } catch (e: any) {
         console.error(e);
-        return { error: 'Error detecting room type.' };
+        return { error: e.message || 'Error detecting room type.' };
     }
 }
 
@@ -55,8 +54,20 @@ export async function suggestStylesAction(
   try {
     const result = await suggestStyles(input);
     return result;
-  } catch (e) {
+  } catch (e: any) {
     console.error(e);
-    return { error: 'Error suggesting styles.' };
+    return { error: e.message || 'Error suggesting styles.' };
+  }
+}
+
+export async function publishToGalleryAction(
+  input: PublishToGalleryInput
+): Promise<{ success: boolean; galleryUrl?: string; error?: string }> {
+  try {
+    const result = await publishToGallery(input);
+    return { success: true, galleryUrl: result.galleryUrl };
+  } catch (e: any) {
+    console.error('Publishing failed:', e);
+    return { success: false, error: e.message || 'Failed to publish to gallery.' };
   }
 }

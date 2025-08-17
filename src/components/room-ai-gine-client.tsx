@@ -14,6 +14,7 @@ import {
   CookingPot,
   Lightbulb,
   X,
+  GalleryThumbnails
 } from "lucide-react";
 import {
   Card,
@@ -27,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction } from "@/app/actions";
+import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, LogoIcon } from "./icons";
 import { motion, AnimatePresence } from "framer-motion";
@@ -83,11 +84,16 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
       <Link href="/">
         <LogoIcon />
       </Link>
-      {showGenerateButton && (
-        <Button variant="outline" onClick={onGenerateNew} size="sm">
-          <RefreshCw className="mr-2 h-4 w-4" /> Generate New
+      <div className="flex items-center gap-2">
+        <Button variant="outline" asChild size="sm">
+            <Link href="/gallery"><GalleryThumbnails className="mr-2 h-4 w-4" /> Gallery</Link>
         </Button>
-      )}
+        {showGenerateButton && (
+          <Button variant="outline" onClick={onGenerateNew} size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" /> Generate New
+          </Button>
+        )}
+      </div>
     </header>
 );
 
@@ -128,8 +134,8 @@ const RoomAIGineEditor = ({
     setActiveGeneratedImage,
     handleDownload,
     handleShare,
-    budget,
-    setBudget,
+    handlePublish,
+    isPublishing,
     roomType,
     setRoomType,
     isDetectingRoomType,
@@ -145,7 +151,6 @@ const RoomAIGineEditor = ({
 }: any) => {
 
     const handleSuggestionClick = (suggestion: StyleSuggestion) => {
-        // Set the style
         if (designStyles.includes(suggestion.style)) {
             setSelectedStyle(suggestion.style);
         }
@@ -164,8 +169,8 @@ const RoomAIGineEditor = ({
     
     const closeSuggestions = () => {
         setStyleSuggestions([]);
-        setSelectedStyle("Minimalist"); // Reset to default style
-        setSelectedColors([]); // Clear selected colors
+        setSelectedStyle("Minimalist");
+        setSelectedColors([]);
     };
 
     return (
@@ -258,7 +263,6 @@ const RoomAIGineEditor = ({
                         <Button onClick={getAIStyleIdeas} variant="outline" className="w-full" disabled={isSuggesting || isLoading}>
                             AI-Powered Ideas
                         </Button>
-                        <Button variant="ghost" className="w-full"><MoreFiltersIcon className="h-4 w-4" /> More Filters</Button>
                     </CardFooter>
                 </Card>
             </div>
@@ -285,6 +289,9 @@ const RoomAIGineEditor = ({
                                 <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex gap-2">
                                     <Button size="icon" variant="secondary" onClick={() => handleDownload(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Download className="h-4 w-4" /></Button>
                                     <Button size="icon" variant="secondary" onClick={() => handleShare(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Share2 className="h-4 w-4" /></Button>
+                                    <Button size="icon" variant="secondary" onClick={() => handlePublish(activeGeneratedImage)} disabled={isPublishing}>
+                                      {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
+                                    </Button>
                                 </div>
                                 <div className="absolute top-2 right-2 md:top-4 md:right-4">
                                     <Badge variant="secondary">{activeGeneratedImage.style}</Badge>
@@ -294,7 +301,6 @@ const RoomAIGineEditor = ({
                             <div className="w-full aspect-video rounded-lg bg-muted/50 flex flex-col items-center justify-center text-center p-4">
                                 <Sparkles className="h-12 w-12 text-primary/50 mb-4" />
                                 <p className="text-muted-foreground">Your generated designs will appear here.</p>
-
                                 <p className="text-xs text-muted-foreground/50 mt-2">Select a style and other options to get started.</p>
                             </div>
                         )}
@@ -320,15 +326,7 @@ const RoomAIGineEditor = ({
                         <CardTitle className="text-lg">Personalize</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div>
-                            <Label className="mb-2 block">Budget</Label>
-                            <div className="flex items-center gap-2 md:gap-4">
-                                <span className="text-sm text-muted-foreground">${(budget[0] / 1000)}k</span>
-                                <Slider value={budget} onValueChange={setBudget} max={50000} step={1000} />
-                                <span className="text-sm text-muted-foreground">$50k</span>
-                            </div>
-                        </div>
-                        <div>
+                         <div>
                              <Label className="mb-2 block flex items-center gap-2">
                                 Room Type
                                 {isDetectingRoomType && <Helix size="16" color="#a855f7" />}
@@ -375,12 +373,12 @@ export default function RoomAIGineClient() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>("Minimalist");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [activeGeneratedImage, setActiveGeneratedImage] = useState<GeneratedImage | null>(null);
   const [isDetectingRoomType, setIsDetectingRoomType] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
-
-  const [budget, setBudget] = useState([10000]);
+  
   const [roomType, setRoomType] = useState<string>('bedroom');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>(["Relaxed"]);
@@ -409,20 +407,16 @@ export default function RoomAIGineClient() {
         setActiveGeneratedImage(null);
         setStyleSuggestions([]);
 
-        // Start room type detection
         setIsDetectingRoomType(true);
         setLoadingMessage("Detecting room type...");
 
         const detectionResult = await detectRoomTypeAction(dataUri);
         if ('roomType' in detectionResult) {
-            // Check if the detected room type is one of the available options
             const isValidRoomType = roomTypes.some(rt => rt.id === detectionResult.roomType);
             if (isValidRoomType) {
                 setRoomType(detectionResult.roomType);
             } else {
-                // Handle cases where the detected room is 'other' or not in our list
                 console.warn(`Detected room type "${detectionResult.roomType}" is not a selectable option.`);
-                // Optionally, set to a default or 'other' if you add it to roomTypes
             }
         } else {
             toast({
@@ -467,13 +461,12 @@ export default function RoomAIGineClient() {
 
     setIsGenerating(true);
     setLoadingMessage(`Generating your new ${selectedStyle} room...`);
-    // Keep existing images but deactivate them
     setActiveGeneratedImage(null);
 
     const result = await generateRoomStylesAction({ 
       styles: [selectedStyle],
       roomType,
-      colorPreferences: selectedColors,
+      colorPreferences: selectedColors.map(hex => colorPreferences.find(c => c.value === hex)?.name).filter(Boolean) as string[],
       mood: selectedMoods[0]
     }, uploadedImage);
 
@@ -486,7 +479,6 @@ export default function RoomAIGineClient() {
       });
     } else {
         const newImages = result.styledRoomImages;
-        // Add new images, avoiding duplicates by style
         setGeneratedImages(prevImages => {
             const existingStyles = new Set(prevImages.map(img => img.style));
             const filteredNewImages = newImages.filter(img => !existingStyles.has(img.style));
@@ -504,7 +496,7 @@ export default function RoomAIGineClient() {
   const getAIStyleIdeas = async () => {
     if (!uploadedImage) return;
     setIsSuggesting(true);
-    setStyleSuggestions([]); // Clear previous suggestions
+    setStyleSuggestions([]);
 
     const availableColorNames = colorPreferences.map(c => c.name);
 
@@ -524,6 +516,34 @@ export default function RoomAIGineClient() {
         setStyleSuggestions(result.suggestions);
     }
     setIsSuggesting(false);
+  };
+
+  const handlePublish = async (imageToPublish: GeneratedImage) => {
+    if (!uploadedImage || !imageToPublish) return;
+
+    setIsPublishing(true);
+    const result = await publishToGalleryAction({
+        originalImageDataUri: uploadedImage,
+        generatedImageDataUri: imageToPublish.imageDataUri,
+        style: imageToPublish.style,
+        roomType: roomType,
+        colors: selectedColors.map(hex => colorPreferences.find(c => c.value === hex)?.name).filter(Boolean) as string[],
+        mood: selectedMoods[0],
+    });
+
+    if (result.success) {
+        toast({
+            title: "Published to Gallery!",
+            description: "Your creation is now live.",
+        });
+    } else {
+        toast({
+            title: "Publishing Failed",
+            description: result.error,
+            variant: "destructive",
+        });
+    }
+    setIsPublishing(false);
   };
 
   const handleDownload = (imageDataUri: string, style: string) => {
@@ -582,8 +602,8 @@ export default function RoomAIGineClient() {
             setActiveGeneratedImage={setActiveGeneratedImage}
             handleDownload={handleDownload}
             handleShare={handleShare}
-            budget={budget}
-            setBudget={setBudget}
+            handlePublish={handlePublish}
+            isPublishing={isPublishing}
             roomType={roomType}
             setRoomType={setRoomType}
             isDetectingRoomType={isDetectingRoomType}
@@ -609,5 +629,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
