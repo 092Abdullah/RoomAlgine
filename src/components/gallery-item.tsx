@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { incrementKudosAction } from '@/app/actions';
 import type { Creation } from '@/app/gallery/page';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 
 export function GalleryItem({ creation }: { creation: Creation }) {
   const [kudos, setKudos] = useState(creation.kudos);
@@ -82,6 +82,12 @@ export function GalleryItem({ creation }: { creation: Creation }) {
         </DialogTrigger>
       </Card>
       <DialogContent className="max-w-4xl p-2 sm:p-4">
+        <DialogHeader className='sr-only'>
+            <DialogTitle>Room Transformation</DialogTitle>
+            <DialogDescription>
+                An enlarged view of the before and after room transformation using AI. Style: {creation.style}. Room Type: {creation.room_type || 'N/A'}.
+            </DialogDescription>
+        </DialogHeader>
         <div className="w-full aspect-video rounded-lg overflow-hidden">
             <ReactCompareSlider
                 itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" />}
