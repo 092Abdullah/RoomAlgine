@@ -1,5 +1,3 @@
-'use server';
-
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
