@@ -389,7 +389,7 @@ const RoomAIGineEditor = ({
                                 className="my-4"
                             />
                             <div className="flex justify-between text-xs text-muted-foreground">
-                                <span>$0</span>
+                                <span>{formatCurrency(priceRange)}</span>
                                 <span>$50,000</span>
                             </div>
                         </div>
