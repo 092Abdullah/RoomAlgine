@@ -9,7 +9,7 @@ import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { incrementKudosAction } from '@/app/actions';
 import type { Creation } from '@/app/gallery/page';
-import { useToast } from './hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 export function GalleryItem({ creation }: { creation: Creation }) {
   const [kudos, setKudos] = useState(creation.kudos);
