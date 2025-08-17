@@ -38,6 +38,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Link from "next/link";
 import { Helix } from 'ldrs/react'
 import { Separator } from "./ui/separator";
+import type { PublishToGalleryInput } from "@/app/types";
 
 type GeneratedImage = {
   style: string;
@@ -78,7 +79,6 @@ const colorPreferences = [
 ];
 
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
-const priceRangeOptions = ["Budget-friendly", "Mid-range", "Luxury"];
 
 const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () => void, showGenerateButton: boolean }) => (
     <header className="flex justify-between items-center p-4 border-b border-border">
@@ -175,6 +175,15 @@ const RoomAIGineEditor = ({
         setSelectedStyle("Minimalist");
         setSelectedColors([]);
     };
+
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(value);
+    }
 
     return (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-8 flex-grow w-full">
@@ -366,20 +375,22 @@ const RoomAIGineEditor = ({
                             </ToggleGroup>
                         </div>
                         <div>
-                            <Label htmlFor="price-range" className="mb-2 block">Price Range</Label>
+                             <div className="flex justify-between items-center mb-2">
+                                <Label htmlFor="price-range">Price Range</Label>
+                                <span className="text-sm font-medium text-primary">{formatCurrency(priceRange)}</span>
+                            </div>
                             <Slider
                                 id="price-range"
                                 min={0}
-                                max={priceRangeOptions.length - 1}
-                                step={1}
+                                max={50000}
+                                step={100}
                                 value={[priceRange]}
                                 onValueChange={(value) => setPriceRange(value[0])}
                                 className="my-4"
                             />
                             <div className="flex justify-between text-xs text-muted-foreground">
-                                {priceRangeOptions.map((label, index) => (
-                                    <span key={label} onClick={() => setPriceRange(index)} className="cursor-pointer">{label}</span>
-                                ))}
+                                <span>$0</span>
+                                <span>$50,000</span>
                             </div>
                         </div>
                     </CardContent>
@@ -402,7 +413,7 @@ export default function RoomAIGineClient() {
   const [roomType, setRoomType] = useState<string>('bedroom');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>(["Relaxed"]);
-  const [priceRange, setPriceRange] = useState<number>(1); // Default to Mid-range
+  const [priceRange, setPriceRange] = useState<number>(10000);
 
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [styleSuggestions, setStyleSuggestions] = useState<StyleSuggestion[]>([]);
@@ -489,7 +500,7 @@ export default function RoomAIGineClient() {
       roomType,
       colorPreferences: selectedColors.map(hex => colorPreferences.find(c => c.value === hex)?.name).filter(Boolean) as string[],
       mood: selectedMoods[0],
-      priceRange: priceRangeOptions[priceRange],
+      priceRange: `$${priceRange.toLocaleString()}`,
     }, uploadedImage);
 
 
@@ -653,5 +664,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    

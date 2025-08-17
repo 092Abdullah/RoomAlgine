@@ -24,7 +24,7 @@ const GenerateRoomStylesInputSchema = z.object({
   roomType: z.string().optional().describe("The type of the room (e.g. Bedroom, Living Room)."),
   colorPreferences: z.array(z.string()).optional().describe("An array of preferred colors."),
   mood: z.string().optional().describe("The desired mood for the room (e.g. Relaxed, Energetic)."),
-  priceRange: z.string().optional().describe("The desired price range for the furniture and decor (e.g. Budget-friendly, Mid-range, Luxury)."),
+  priceRange: z.string().optional().describe("The desired price range for the furniture and decor (e.g. $10,000, $50,000)."),
 });
 export type GenerateRoomStylesInput = z.infer<typeof GenerateRoomStylesInputSchema>;
 
@@ -57,7 +57,7 @@ const generateRoomStylesFlow = ai.defineFlow(
         promptText += ` It is a ${input.roomType}.`;
       }
       if (input.priceRange) {
-        promptText += ` The overall budget is ${input.priceRange}, so the furniture and decor should reflect that.`;
+        promptText += ` The overall budget is around ${input.priceRange}, so the furniture and decor should reflect that.`;
       }
       if (input.colorPreferences && input.colorPreferences.length > 0) {
         promptText += ` Use the following color preferences: ${input.colorPreferences.join(', ')}.`;
@@ -89,5 +89,3 @@ const generateRoomStylesFlow = ai.defineFlow(
     };
   }
 );
-
-    
