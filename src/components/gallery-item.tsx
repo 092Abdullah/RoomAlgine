@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
@@ -14,7 +14,13 @@ import { useToast } from '@/hooks/use-toast';
 export function GalleryItem({ creation }: { creation: Creation }) {
   const [kudos, setKudos] = useState(creation.kudos);
   const [isKudoed, setIsKudoed] = useState(false);
+  const [formattedDate, setFormattedDate] = useState('');
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Format date only on the client to avoid hydration mismatch
+    setFormattedDate(new Date(creation.created_at).toLocaleDateString());
+  }, [creation.created_at]);
 
   const handleKudosClick = async () => {
     if (isKudoed) {
@@ -63,9 +69,11 @@ export function GalleryItem({ creation }: { creation: Creation }) {
           <Badge variant="secondary">{creation.style}</Badge>
           {creation.room_type && <Badge variant="outline">{creation.room_type}</Badge>}
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Created {new Date(creation.created_at).toLocaleDateString()}
-        </p>
+        {formattedDate && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Created {formattedDate}
+          </p>
+        )}
       </div>
     </Card>
   );
