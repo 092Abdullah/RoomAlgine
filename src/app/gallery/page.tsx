@@ -7,16 +7,18 @@ import { ArrowRight } from 'lucide-react';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { LogoIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { GalleryItem } from '@/components/gallery-item';
 
-export const revalidate = 60; // Revalidate data every 60 seconds
+export const revalidate = 60; 
 
-type Creation = {
+export type Creation = {
   id: string;
   created_at: string;
   original_image_url: string;
   generated_image_url: string;
   style: string;
   room_type: string | null;
+  kudos: number;
 };
 
 async function getCreations() {
@@ -81,23 +83,7 @@ export default async function GalleryPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {creations.map((creation) => (
-              <Card key={creation.id} className="overflow-hidden group">
-                <div className="w-full aspect-video rounded-t-lg overflow-hidden">
-                    <ReactCompareSlider
-                        itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" />}
-                        itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" />}
-                    />
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary">{creation.style}</Badge>
-                    {creation.room_type && <Badge variant="outline">{creation.room_type}</Badge>}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Created {new Date(creation.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </Card>
+              <GalleryItem key={creation.id} creation={creation} />
             ))}
           </div>
         )}

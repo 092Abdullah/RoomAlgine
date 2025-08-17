@@ -5,8 +5,8 @@ import { z } from 'zod';
 import { generateRoomStyles, GenerateRoomStylesInput } from '@/ai/flows/generate-room-styles';
 import { detectRoomType } from '@/ai/flows/detect-room-type';
 import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flows/suggest-styles';
-import { publishToGallery } from '@/ai/flows/publish-to-gallery';
-import type { PublishToGalleryInput } from '@/app/types';
+import { publishToGallery, PublishToGalleryInput } from '@/ai/flows/publish-to-gallery';
+import { supabase } from '@/lib/supabase';
 
 export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,
@@ -70,5 +70,16 @@ export async function publishToGalleryAction(
   } catch (e: any) {
     console.error('Publishing failed:', e);
     return { success: false, error: e.message || 'Failed to publish to gallery.' };
+  }
+}
+
+export async function incrementKudosAction(creationId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { error } = await supabase.rpc('increment_kudos', { creation_id: creationId });
+    if (error) throw error;
+    return { success: true };
+  } catch (e: any) {
+    console.error('Failed to increment kudos:', e);
+    return { success: false, error: e.message || 'Could not update kudos count.' };
   }
 }
