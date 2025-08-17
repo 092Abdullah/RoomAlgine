@@ -1,27 +1,11 @@
 'use server';
 
-import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { generateRoomStyles, GenerateRoomStylesInput } from '@/ai/flows/generate-room-styles';
 import { detectRoomType } from '@/ai/flows/detect-room-type';
 import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flows/suggest-styles';
 import { publishToGallery } from '@/ai/flows/publish-to-gallery';
-
-export const PublishToGalleryInputSchema = z.object({
-    originalImageDataUri: z.string().describe("The original room photo as a data URI."),
-    generatedImageDataUri: z.string().describe("The AI-generated room photo as a data URI."),
-    style: z.string(),
-    roomType: z.string().optional(),
-    colors: z.array(z.string()).optional(),
-    mood: z.string().optional(),
-});
-export type PublishToGalleryInput = z.infer<typeof PublishToGalleryInputSchema>;
-
-export const PublishToGalleryOutputSchema = z.object({
-    galleryUrl: z.string().describe("The URL to the newly created gallery entry."),
-});
-export type PublishToGalleryOutput = z.infer<typeof PublishToGalleryOutputSchema>;
-
+import type { PublishToGalleryInput } from '@/app/types';
 
 export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,

@@ -7,11 +7,9 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'zod';
 import { supabase } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
-import type { PublishToGalleryInput, PublishToGalleryOutput } from '@/app/actions';
-import { PublishToGalleryInputSchema, PublishToGalleryOutputSchema } from '@/app/actions';
+import { PublishToGalleryInputSchema, PublishToGalleryOutputSchema, type PublishToGalleryInput, type PublishToGalleryOutput } from '@/app/types';
 
 // Helper function to decode data URI and convert to Buffer
 function dataUriToBuffer(dataUri: string): Buffer {
