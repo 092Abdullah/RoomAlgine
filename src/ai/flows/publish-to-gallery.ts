@@ -65,9 +65,7 @@ const publishToGalleryFlow = ai.defineFlow(
                 original_image_url,
                 generated_image_url,
                 style: input.style,
-                room_type: input.roomType,
-                colors: input.colors,
-                mood: input.mood
+                room_type: input.roomType
             });
         
         if (dbError) {

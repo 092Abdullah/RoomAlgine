@@ -560,8 +560,6 @@ export default function RoomAIGineClient() {
         generatedImageDataUri: imageToPublish.imageDataUri,
         style: imageToPublish.style,
         roomType: roomType,
-        colors: selectedColors.map(hex => colorPreferences.find(c => c.value === hex)?.name).filter(Boolean) as string[],
-        mood: selectedMoods[0],
     });
 
     if (result.success) {
