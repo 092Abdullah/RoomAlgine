@@ -301,9 +301,9 @@ const RoomAIGineEditor = ({
                             ) : activeGeneratedImage ? (
                                 <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
                                     <ReactCompareSlider
+                                        className="w-full h-full"
                                         itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-cover w-full h-full"/>}
                                         itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-cover w-full h-full"/>}
-                                        className="w-full h-full"
                                     />
                                     <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex gap-2">
                                     <TooltipProvider>
@@ -379,6 +379,7 @@ const RoomAIGineEditor = ({
                             </DialogHeader>
                             <div className="w-full aspect-video rounded-lg overflow-hidden">
                                 <ReactCompareSlider
+                                    className="w-full h-full"
                                     itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-cover w-full h-full"/>}
                                     itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-cover w-full h-full"/>}
                                 />

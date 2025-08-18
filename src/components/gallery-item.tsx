@@ -55,6 +55,7 @@ export function GalleryItem({ creation }: { creation: Creation }) {
       <Card className="overflow-hidden group">
         <div className="w-full aspect-video rounded-t-lg overflow-hidden relative">
           <ReactCompareSlider
+            className="w-full h-full"
             itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" className="object-cover w-full h-full" />}
             itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" className="object-cover w-full h-full" />}
           />
@@ -90,6 +91,7 @@ export function GalleryItem({ creation }: { creation: Creation }) {
         </DialogHeader>
         <div className="w-full aspect-video rounded-lg overflow-hidden">
             <ReactCompareSlider
+                className="w-full h-full"
                 itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" className="object-cover w-full h-full" />}
                 itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" className="object-cover w-full h-full" />}
             />
