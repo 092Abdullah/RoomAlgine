@@ -101,7 +101,7 @@ const LandingPage = () => {
                   Try It Free – No Signup Needed
                 </Link>
               </Button>
-               <Button size="lg" variant="outline" className="mt-8" asChild>
+               <Button size="lg" variant="outline" className="mt-8 hover:bg-primary/10 hover:text-primary" asChild>
                 <Link href="/gallery">
                   <GalleryThumbnails className="mr-2 h-5 w-5" /> View Gallery
                 </Link>
