@@ -56,7 +56,6 @@ const generateRoomStylesFlow = ai.defineFlow(
       `5) Do NOT change the overall layout, proportions, or apparent depth.\n` +
       `6) If possible, use image editing/inpainting (preserve structure). Do NOT hallucinate new structural elements.`;
 
-
     const styledRoomImagePromises = input.styles.map(async style => {
       let promptText = `Restyle this room in a ${style} style.`;
 
@@ -74,7 +73,6 @@ const generateRoomStylesFlow = ai.defineFlow(
       }
 
       promptText += ARCHITECTURE_CONSTRAINTS;
-
       promptText += `\nNOTE: Keep the same camera angle, perspective, framing and lighting direction as the input photo so before/after align perfectly.`;
 
       const promptPayload = [
@@ -86,7 +84,11 @@ const generateRoomStylesFlow = ai.defineFlow(
         responseModalities: ['TEXT', 'IMAGE'],
       };
 
-      for (let attempt = 0; attempt < 2; attempt++) {
+      const maxRetries = 3;
+      let attempt = 0;
+      let delay = 1000; // start with 1s
+
+      while (attempt < maxRetries) {
         try {
           const { media, text } = await ai.generate({
             model: 'googleai/gemini-2.0-flash-preview-image-generation',
@@ -94,7 +96,6 @@ const generateRoomStylesFlow = ai.defineFlow(
             config: generateConfig,
           });
 
-          // If the model returns an image URL
           if (media && media.url) {
             return {
               style: style,
@@ -102,20 +103,37 @@ const generateRoomStylesFlow = ai.defineFlow(
               debugText: text,
             };
           }
-        } catch (err) {
-          if (attempt === 1) throw err;
+          // If no media is returned, we can retry with a stronger prompt.
+          promptPayload.push({ text: '\nRETRY: You must return an image. Absolutely do NOT change windows, doors, walls or camera angle. Preserve all architectural features exactly.' });
+
+        } catch (err: any) {
+          // Check for rate limit error (429)
+          if (err.message && err.message.includes('429')) {
+              console.warn(`Rate limit exceeded for style: ${style}. Retrying in ${delay / 1000}s...`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+              delay *= 2; // Exponential backoff
+          } else {
+            // For other errors, we can log them and stop retrying for this style.
+            console.error(`Image generation failed for style "${style}" on attempt ${attempt + 1}:`, err);
+            // Break the loop and return null or throw. Returning null will filter it out later.
+            return null;
+          }
         }
-
-        promptPayload.push({ text: '\nRETRY: Absolutely do NOT change windows, doors, walls or camera angle. Preserve all architectural features exactly.' });
+        attempt++;
       }
-
-      throw new Error('Image generation failed for style: ' + style);
+      console.error(`Image generation failed for style: ${style} after ${maxRetries} attempts.`);
+      return null;
     });
 
-    const styledRoomImages = await Promise.all(styledRoomImagePromises);
+    const results = await Promise.all(styledRoomImagePromises);
+    const styledRoomImages = results.filter(image => image !== null) as { style: string, imageDataUri: string }[];
+    
+    if (styledRoomImages.length === 0 && input.styles.length > 0) {
+      throw new Error('Image generation failed for all selected styles. Please try again later.');
+    }
 
     return {
-      styledRoomImages: styledRoomImages,
+      styledRoomImages,
     };
   }
 );
