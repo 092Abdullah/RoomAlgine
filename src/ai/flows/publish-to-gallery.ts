@@ -1,43 +1,35 @@
 'use server';
 
 /**
- * @fileOverview A flow to publish a generated room design to a Supabase gallery.
+ * @fileOverview A flow to publish a generated room design to a Cloudinary and a Supabase gallery.
  *
- * - publishToGallery - Uploads original and generated images to Supabase Storage and saves metadata to a Supabase table.
+ * - publishToGallery - Uploads original and generated images to Cloudinary Storage and saves metadata to a Supabase table.
  */
 
 import { ai } from '@/ai/genkit';
 import { supabase } from '@/lib/supabase';
-import { v4 as uuidv4 } from 'uuid';
+import { v2 as cloudinary } from 'cloudinary';
 import { PublishToGalleryInputSchema, PublishToGalleryOutputSchema, type PublishToGalleryInput, type PublishToGalleryOutput } from '@/app/types';
 
-// Helper function to decode data URI and convert to Buffer
-function dataUriToBuffer(dataUri: string): Buffer {
-    const base64 = dataUri.split(',')[1];
-    if (!base64) {
-        throw new Error('Invalid data URI');
-    }
-    return Buffer.from(base64, 'base64');
-}
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-// Helper function to upload an image buffer to Supabase Storage
-async function uploadImage(imageBuffer: Buffer, fileExtension: string = 'png'): Promise<string> {
-    const fileName = `${uuidv4()}.${fileExtension}`;
-    const { data, error } = await supabase.storage
-        .from('gallery_images')
-        .upload(fileName, imageBuffer, {
-            contentType: `image/${fileExtension}`,
-            upsert: false,
+async function uploadImage(dataUri: string): Promise<string> {
+    try {
+        const result = await cloudinary.uploader.upload(dataUri, {
+            folder: 'room-ai-gine',
+            resource_type: 'image'
         });
-
-    if (error) {
-        console.error('Supabase upload error:', error);
-        throw new Error(`Failed to upload image to Supabase Storage: ${error.message}`);
+        return result.secure_url;
+    } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        throw new Error('Failed to upload image to Cloudinary.');
     }
-
-    const { data: { publicUrl } } = supabase.storage.from('gallery_images').getPublicUrl(data.path);
-    return publicUrl;
 }
+
 
 export async function publishToGallery(input: PublishToGalleryInput): Promise<PublishToGalleryOutput> {
     return publishToGalleryFlow(input);
@@ -51,12 +43,9 @@ const publishToGalleryFlow = ai.defineFlow(
     },
     async (input) => {
 
-        const originalImageBuffer = dataUriToBuffer(input.originalImageDataUri);
-        const generatedImageBuffer = dataUriToBuffer(input.generatedImageDataUri);
-
         const [original_image_url, generated_image_url] = await Promise.all([
-            uploadImage(originalImageBuffer),
-            uploadImage(generatedImageBuffer)
+            uploadImage(input.originalImageDataUri),
+            uploadImage(input.generatedImageDataUri)
         ]);
 
         const { error: dbError } = await supabase
@@ -73,8 +62,6 @@ const publishToGalleryFlow = ai.defineFlow(
             throw new Error(`Failed to save creation to database: ${dbError.message}`);
         }
 
-        // For now, we can just return a success message or the main gallery URL
-        // In a real app, you might return the URL for the specific new creation
         return {
             galleryUrl: '/gallery' 
         };
