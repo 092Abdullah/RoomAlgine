@@ -14,7 +14,8 @@ import {
   CookingPot,
   Lightbulb,
   X,
-  GalleryThumbnails
+  GalleryThumbnails,
+  Expand
 } from "lucide-react";
 import {
   Card,
@@ -40,6 +41,7 @@ import { Helix } from 'ldrs/react'
 import { Separator } from "./ui/separator";
 import type { PublishToGalleryInput } from "@/app/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 
 type GeneratedImage = {
   style: string;
@@ -285,77 +287,105 @@ const RoomAIGineEditor = ({
 
             {/* Middle Column */}
             <div className="col-span-1 xl:col-span-6">
-                <Card className="bg-secondary/50 border-border h-full flex flex-col">
-                    <CardHeader className="flex flex-row justify-between items-center">
-                        <CardTitle className="text-lg">Decorated Room</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow flex items-center justify-center p-2 sm:p-4">
-                        {isLoading ? (
-                            <div className="w-full aspect-video flex flex-col items-center justify-center text-center">
-                                 <Helix size="45" color="#a855f7" />
-                                 <p className="mt-4 text-muted-foreground">{loadingMessage}</p>
-                            </div>
-                        ) : activeGeneratedImage ? (
-                            <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
+                 <Dialog>
+                    <Card className="bg-secondary/50 border-border h-full flex flex-col">
+                        <CardHeader className="flex flex-row justify-between items-center">
+                            <CardTitle className="text-lg">Decorated Room</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-grow flex items-center justify-center p-2 sm:p-4">
+                            {isLoading ? (
+                                <div className="w-full aspect-video flex flex-col items-center justify-center text-center">
+                                     <Helix size="45" color="#a855f7" />
+                                     <p className="mt-4 text-muted-foreground">{loadingMessage}</p>
+                                </div>
+                            ) : activeGeneratedImage ? (
+                                <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
+                                    <ReactCompareSlider
+                                        itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" />}
+                                        itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" />}
+                                        className="w-full h-full"
+                                    />
+                                    <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex gap-2">
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <DialogTrigger asChild>
+                                                    <Button size="icon" variant="secondary"><Expand className="h-4 w-4" /></Button>
+                                                </DialogTrigger>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Expand</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button size="icon" variant="secondary" onClick={() => handleDownload(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Download className="h-4 w-4" /></Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Download</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                 <Button size="icon" variant="secondary" onClick={() => handleShare(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Share2 className="h-4 w-4" /></Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Share</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button size="icon" variant="secondary" onClick={() => handlePublish(activeGeneratedImage)} disabled={isPublishing}>
+                                                    {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Publish to Public Gallery</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                    </div>
+                                    <div className="absolute top-2 right-2 md:top-4 md:right-4">
+                                        <Badge variant="secondary">{activeGeneratedImage.style}</Badge>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="w-full aspect-video rounded-lg bg-muted/50 flex flex-col items-center justify-center text-center p-4">
+                                    <Sparkles className="h-12 w-12 text-primary/50 mb-4" />
+                                    <p className="text-muted-foreground">Your generated designs will appear here.</p>
+                                    <p className="text-xs text-muted-foreground/50 mt-2">Select a style and other options to get started.</p>
+                                </div>
+                            )}
+                        </CardContent>
+                        {generatedImages.length > 0 && !isLoading && (
+                            <CardFooter className="p-2 overflow-x-auto">
+                                <div className="flex gap-2 w-max">
+                                    {generatedImages.map((image: GeneratedImage) => (
+                                        <button key={image.style} onClick={() => setActiveGeneratedImage(image)} className={`w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
+                                            <Image src={image.imageDataUri} alt={image.style} width={100} height={100} className="object-cover w-full h-full" />
+                                        </button>
+                                    ))}
+                                </div>
+                            </CardFooter>
+                        )}
+                    </Card>
+                    {activeGeneratedImage && (
+                        <DialogContent className="max-w-4xl p-2 sm:p-4">
+                            <DialogHeader className='sr-only'>
+                                <DialogTitle>Room Transformation</DialogTitle>
+                                <DialogDescription>
+                                    An enlarged view of the before and after room transformation using AI. Style: {activeGeneratedImage.style}.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="w-full aspect-video rounded-lg overflow-hidden">
                                 <ReactCompareSlider
                                     itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" />}
                                     itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" />}
-                                    className="w-full h-full"
                                 />
-                                <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex gap-2">
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button size="icon" variant="secondary" onClick={() => handleDownload(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Download className="h-4 w-4" /></Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Download</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                             <Button size="icon" variant="secondary" onClick={() => handleShare(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Share2 className="h-4 w-4" /></Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Share</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button size="icon" variant="secondary" onClick={() => handlePublish(activeGeneratedImage)} disabled={isPublishing}>
-                                                {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Publish to Public Gallery</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                                </div>
-                                <div className="absolute top-2 right-2 md:top-4 md:right-4">
-                                    <Badge variant="secondary">{activeGeneratedImage.style}</Badge>
-                                </div>
                             </div>
-                        ) : (
-                            <div className="w-full aspect-video rounded-lg bg-muted/50 flex flex-col items-center justify-center text-center p-4">
-                                <Sparkles className="h-12 w-12 text-primary/50 mb-4" />
-                                <p className="text-muted-foreground">Your generated designs will appear here.</p>
-                                <p className="text-xs text-muted-foreground/50 mt-2">Select a style and other options to get started.</p>
-                            </div>
-                        )}
-                    </CardContent>
-                    {generatedImages.length > 0 && !isLoading && (
-                        <CardFooter className="p-2 overflow-x-auto">
-                            <div className="flex gap-2 w-max">
-                                {generatedImages.map((image: GeneratedImage) => (
-                                    <button key={image.style} onClick={() => setActiveGeneratedImage(image)} className={`w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
-                                        <Image src={image.imageDataUri} alt={image.style} width={100} height={100} className="object-cover w-full h-full" />
-                                    </button>
-                                ))}
-                            </div>
-                        </CardFooter>
+                        </DialogContent>
                     )}
-                </Card>
+                 </Dialog>
             </div>
 
             {/* Right Column */}
@@ -686,3 +716,4 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
