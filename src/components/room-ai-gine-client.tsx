@@ -39,6 +39,7 @@ import Link from "next/link";
 import { Helix } from 'ldrs/react'
 import { Separator } from "./ui/separator";
 import type { PublishToGalleryInput } from "@/app/types";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 type GeneratedImage = {
   style: string;
@@ -302,11 +303,34 @@ const RoomAIGineEditor = ({
                                     className="w-full h-full"
                                 />
                                 <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex gap-2">
-                                    <Button size="icon" variant="secondary" onClick={() => handleDownload(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Download className="h-4 w-4" /></Button>
-                                    <Button size="icon" variant="secondary" onClick={() => handleShare(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Share2 className="h-4 w-4" /></Button>
-                                    <Button size="icon" variant="secondary" onClick={() => handlePublish(activeGeneratedImage)} disabled={isPublishing}>
-                                      {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
-                                    </Button>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button size="icon" variant="secondary" onClick={() => handleDownload(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Download className="h-4 w-4" /></Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Download</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                             <Button size="icon" variant="secondary" onClick={() => handleShare(activeGeneratedImage!.imageDataUri, activeGeneratedImage!.style)}><Share2 className="h-4 w-4" /></Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Share</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button size="icon" variant="secondary" onClick={() => handlePublish(activeGeneratedImage)} disabled={isPublishing}>
+                                                {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Publish to Public Gallery</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                                 </div>
                                 <div className="absolute top-2 right-2 md:top-4 md:right-4">
                                     <Badge variant="secondary">{activeGeneratedImage.style}</Badge>
@@ -662,5 +686,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
