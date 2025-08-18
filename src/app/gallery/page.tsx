@@ -8,6 +8,7 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { LogoIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { GalleryItem } from '@/components/gallery-item';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 
 export const revalidate = 60; 
 
@@ -50,6 +51,7 @@ export default async function GalleryPage() {
               <Link href="/#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Examples</Link>
               <Link href="/#loved-by-creatives" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Reviews</Link>
               <Link href="/gallery" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">Gallery</Link>
+              <ThemeSwitcher />
               <Button asChild>
                   <Link href="/generate">
                     Try for Free <ArrowRight className="ml-2 h-4 w-4" />

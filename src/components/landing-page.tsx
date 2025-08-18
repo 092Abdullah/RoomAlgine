@@ -27,6 +27,7 @@ import {
   CarouselPrevious,
 } from "./ui/carousel";
 import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider";
+import { ThemeSwitcher } from "./theme-switcher";
 
 
 const FADE_IN_ANIMATION_VARIANTS = {
@@ -49,6 +50,7 @@ const LandingPage = () => {
               <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Examples</Link>
               <Link href="#loved-by-creatives" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Reviews</Link>
               <Link href="/gallery" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Gallery</Link>
+              <ThemeSwitcher />
               <Button asChild>
                   <Link href="/generate">
                     Try for Free <ArrowRight className="ml-2 h-4 w-4" />
@@ -84,7 +86,7 @@ const LandingPage = () => {
             }}
           >
             <motion.h1 
-              className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-300"
+              className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70"
               variants={FADE_IN_ANIMATION_VARIANTS}
             >
               Visualize Your Dream Room in Seconds
@@ -101,7 +103,7 @@ const LandingPage = () => {
                   Try It Free – No Signup Needed
                 </Link>
               </Button>
-               <Button size="lg" variant="outline" className="mt-8 hover:bg-primary/10 hover:text-primary" asChild>
+               <Button size="lg" variant="outline" className="mt-8" asChild>
                 <Link href="/gallery">
                   <GalleryThumbnails className="mr-2 h-5 w-5" /> View Gallery
                 </Link>
@@ -183,7 +185,7 @@ const LandingPage = () => {
                 >
                     <Card className="glassmorphic-card p-6 h-full">
                         <CardContent className="p-0">
-                            <h3 className="text-lg font-semibold text-white">{feature.title}</h3>
+                            <h3 className="text-lg font-semibold text-card-foreground">{feature.title}</h3>
                             <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
                         </CardContent>
                     </Card>
@@ -248,7 +250,7 @@ const LandingPage = () => {
                             <div className="flex items-center mb-4">
                                 <Image src={testimonial.img} alt={testimonial.name} width={48} height={48} className="rounded-full" data-ai-hint="person"/>
                                 <div className="ml-4">
-                                <p className="font-semibold text-white">{testimonial.name}</p>
+                                <p className="font-semibold text-card-foreground">{testimonial.name}</p>
                                 <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                                 </div>
                             </div>

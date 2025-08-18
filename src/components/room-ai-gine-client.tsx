@@ -42,6 +42,7 @@ import { Separator } from "./ui/separator";
 import type { PublishToGalleryInput } from "@/app/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { ThemeSwitcher } from "./theme-switcher";
 
 type GeneratedImage = {
   style: string;
@@ -89,14 +90,15 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
         <LogoIcon />
       </Link>
       <div className="flex items-center gap-2">
-        <Button variant="outline" asChild size="sm" className="hover:bg-primary/10 hover:text-primary">
+        <Button variant="outline" asChild size="sm">
             <Link href="/gallery"><GalleryThumbnails className="mr-2 h-4 w-4" /> Gallery</Link>
         </Button>
         {showGenerateButton && (
-          <Button variant="outline" onClick={onGenerateNew} size="sm" className="hover:bg-primary/10 hover:text-primary">
+          <Button variant="outline" onClick={onGenerateNew} size="sm">
             <RefreshCw className="mr-2 h-4 w-4" /> Generate New
           </Button>
         )}
+        <ThemeSwitcher />
       </div>
     </header>
 );
@@ -108,7 +110,7 @@ const UploadScreen = ({ onUploadClick }: { onUploadClick: () => void }) => (
       exit={{ opacity: 0, y: -20 }}
       className="text-center max-w-2xl mx-auto p-4"
     >
-      <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
+      <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
         Visualize Your Dream Room
       </h1>
       <p className="mt-4 text-lg text-muted-foreground">
@@ -117,7 +119,7 @@ const UploadScreen = ({ onUploadClick }: { onUploadClick: () => void }) => (
       </p>
       <Button
         size="lg"
-        className="mt-8 bg-primary hover:bg-primary/90 text-primary-foreground"
+        className="mt-8"
         onClick={onUploadClick}
       >
         <Upload className="mr-2 h-5 w-5" /> Upload Your Room
@@ -195,7 +197,7 @@ const RoomAIGineEditor = ({
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-8 flex-grow w-full">
             {/* Left Column */}
             <div className="col-span-1 xl:col-span-3 space-y-4 md:space-y-6">
-                <Card className="bg-secondary/50 border-border">
+                <Card className="bg-card">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg"><Camera className="h-5 w-5" /> Your Room</CardTitle>
                     </CardHeader>
@@ -205,7 +207,7 @@ const RoomAIGineEditor = ({
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-secondary/50 border-border">
+                <Card className="bg-card">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">Choose a Style</CardTitle>
                         <CardDescription>Select a style or get ideas from our AI.</CardDescription>
@@ -220,7 +222,7 @@ const RoomAIGineEditor = ({
                                     exit={{ opacity: 0, height: 0 }}
                                     className="flex items-center justify-center p-4"
                                 >
-                                    <Helix size="24" color="#a855f7" />
+                                    <Helix size="24" color="hsl(var(--primary))" />
                                     <p className="ml-2 text-sm text-muted-foreground">Getting ideas...</p>
                                 </motion.div>
                             )}
@@ -243,7 +245,7 @@ const RoomAIGineEditor = ({
                                             <button 
                                                 key={suggestion.style} 
                                                 onClick={() => handleSuggestionClick(suggestion)}
-                                                className={`w-full text-left p-2 rounded-md border-2 bg-secondary/30 hover:border-primary transition-all ${selectedStyle === suggestion.style ? 'border-primary' : 'border-border/50'}`}
+                                                className={`w-full text-left p-2 rounded-md border-2 bg-secondary hover:border-primary transition-all ${selectedStyle === suggestion.style ? 'border-primary' : 'border-border'}`}
                                             >
                                                 <p className="font-semibold text-primary text-sm">{suggestion.style}</p>
                                                 <p className="text-xs text-muted-foreground mt-1">{suggestion.colorCombo}</p>
@@ -266,15 +268,15 @@ const RoomAIGineEditor = ({
                                 <ToggleGroupItem
                                     key={style}
                                     value={style}
-                                    className="h-auto p-3 flex-col items-start justify-start rounded-md border-2 border-border data-[state=on]:border-primary data-[state=on]:bg-primary/10"
+                                    className="h-auto p-3 flex-col items-start justify-start rounded-md border data-[state=on]:border-primary data-[state=on]:bg-accent"
                                 >
-                                    <p className="font-semibold text-sm data-[state=on]:text-primary">{style}</p>
+                                    <p className="font-semibold text-sm data-[state=on]:text-accent-foreground">{style}</p>
                                 </ToggleGroupItem>
                             ))}
                         </ToggleGroup>
                     </CardContent>
                     <CardFooter className="flex-col gap-3">
-                        <Button onClick={startGeneration} disabled={isLoading || isSuggesting} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                        <Button onClick={startGeneration} disabled={isLoading || isSuggesting} className="w-full">
                             {isLoading ? <Helix size="24" color="#FFFFFF" /> : <GenerateIcon className="h-4 w-4" />}
                             {isLoading ? 'Generating...' : 'Generate Style'}
                         </Button>
@@ -288,14 +290,14 @@ const RoomAIGineEditor = ({
             {/* Middle Column */}
             <div className="col-span-1 xl:col-span-6">
                  <Dialog>
-                    <Card className="bg-secondary/50 border-border h-full flex flex-col">
+                    <Card className="bg-card h-full flex flex-col">
                         <CardHeader className="flex flex-row justify-between items-center">
                             <CardTitle className="text-lg">Decorated Room</CardTitle>
                         </CardHeader>
                         <CardContent className="flex-grow flex items-center justify-center p-2 sm:p-4">
                             {isLoading ? (
                                 <div className="w-full aspect-video flex flex-col items-center justify-center text-center">
-                                     <Helix size="45" color="#a855f7" />
+                                     <Helix size="45" color="hsl(var(--primary))" />
                                      <p className="mt-4 text-muted-foreground">{loadingMessage}</p>
                                 </div>
                             ) : activeGeneratedImage ? (
@@ -350,8 +352,8 @@ const RoomAIGineEditor = ({
                                     </div>
                                 </div>
                             ) : (
-                                <div className="w-full aspect-video rounded-lg bg-muted/50 flex flex-col items-center justify-center text-center p-4">
-                                    <Sparkles className="h-12 w-12 text-primary/50 mb-4" />
+                                <div className="w-full aspect-video rounded-lg bg-muted/30 flex flex-col items-center justify-center text-center p-4">
+                                    <Sparkles className="h-12 w-12 text-muted-foreground/50 mb-4" />
                                     <p className="text-muted-foreground">Your generated designs will appear here.</p>
                                     <p className="text-xs text-muted-foreground/50 mt-2">Select a style and other options to get started.</p>
                                 </div>
@@ -391,7 +393,7 @@ const RoomAIGineEditor = ({
 
             {/* Right Column */}
              <div className="col-span-1 xl:col-span-3">
-                <Card className="bg-secondary/50 border-border">
+                <Card className="bg-card">
                     <CardHeader>
                         <CardTitle className="text-lg">Personalize</CardTitle>
                     </CardHeader>
@@ -399,7 +401,7 @@ const RoomAIGineEditor = ({
                          <div>
                              <Label className="mb-2 block flex items-center gap-2">
                                 Room Type
-                                {isDetectingRoomType && <Helix size="16" color="#a855f7" />}
+                                {isDetectingRoomType && <Helix size="16" color="hsl(var(--primary))" />}
                             </Label>
                             <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-3 gap-2">
                                 {roomTypes.map(({ id, label, icon: Icon }) => (
