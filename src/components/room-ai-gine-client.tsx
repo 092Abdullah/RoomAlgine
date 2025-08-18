@@ -301,8 +301,8 @@ const RoomAIGineEditor = ({
                             ) : activeGeneratedImage ? (
                                 <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
                                     <ReactCompareSlider
-                                        itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" />}
-                                        itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" />}
+                                        itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-cover w-full h-full"/>}
+                                        itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-cover w-full h-full"/>}
                                         className="w-full h-full"
                                     />
                                     <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex gap-2">
@@ -379,8 +379,8 @@ const RoomAIGineEditor = ({
                             </DialogHeader>
                             <div className="w-full aspect-video rounded-lg overflow-hidden">
                                 <ReactCompareSlider
-                                    itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" />}
-                                    itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" />}
+                                    itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-cover w-full h-full"/>}
+                                    itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-cover w-full h-full"/>}
                                 />
                             </div>
                         </DialogContent>
@@ -716,4 +716,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-

@@ -55,8 +55,8 @@ export function GalleryItem({ creation }: { creation: Creation }) {
       <Card className="overflow-hidden group">
         <div className="w-full aspect-video rounded-t-lg overflow-hidden relative">
           <ReactCompareSlider
-            itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" />}
-            itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" />}
+            itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" className="object-cover w-full h-full" />}
+            itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" className="object-cover w-full h-full" />}
           />
           <button
             onClick={handleKudosClick}
@@ -90,8 +90,8 @@ export function GalleryItem({ creation }: { creation: Creation }) {
         </DialogHeader>
         <div className="w-full aspect-video rounded-lg overflow-hidden">
             <ReactCompareSlider
-                itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" />}
-                itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" />}
+                itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" className="object-cover w-full h-full" />}
+                itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" className="object-cover w-full h-full" />}
             />
         </div>
       </DialogContent>
