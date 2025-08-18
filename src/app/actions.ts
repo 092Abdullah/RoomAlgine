@@ -63,14 +63,25 @@ export async function suggestStylesAction(
 
 export async function publishToGalleryAction(
   input: PublishToGalleryInput
-): Promise<{ success: boolean; galleryUrl?: string; error?: string }> {
+): Promise<{ success: boolean; galleryUrl?: string; creationId?: string; error?: string }> {
   try {
     const result = await publishToGallery(input);
-    return { success: true, galleryUrl: result.galleryUrl };
+    return { success: true, galleryUrl: result.galleryUrl, creationId: result.creationId };
   } catch (e: any) {
     console.error('Publishing failed:', e);
     return { success: false, error: e.message || 'Failed to publish to gallery.' };
   }
+}
+
+export async function deleteCreationAction(creationId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+        const { error } = await supabase.from('creations').delete().eq('id', creationId);
+        if (error) throw error;
+        return { success: true };
+    } catch (e: any) {
+        console.error('Failed to delete creation:', e);
+        return { success: false, error: e.message || 'Could not delete the creation.' };
+    }
 }
 
 export async function incrementKudosAction(creationId: string): Promise<{ success: boolean; error?: string }> {

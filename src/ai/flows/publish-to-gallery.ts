@@ -48,22 +48,29 @@ const publishToGalleryFlow = ai.defineFlow(
             uploadImage(input.generatedImageDataUri)
         ]);
 
-        const { error: dbError } = await supabase
+        const { data, error: dbError } = await supabase
             .from('creations')
             .insert({
                 original_image_url,
                 generated_image_url,
                 style: input.style,
                 room_type: input.roomType
-            });
+            })
+            .select('id')
+            .single();
         
         if (dbError) {
             console.error('Supabase DB insert error:', dbError);
             throw new Error(`Failed to save creation to database: ${dbError.message}`);
         }
+        
+        if (!data) {
+            throw new Error('Failed to retrieve creation ID after insert.');
+        }
 
         return {
-            galleryUrl: '/gallery' 
+            galleryUrl: '/gallery',
+            creationId: data.id,
         };
     }
 );

@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction } from "@/app/actions";
+import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction, deleteCreationAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, LogoIcon } from "./icons";
 import { motion, AnimatePresence } from "framer-motion";
@@ -610,9 +610,24 @@ export default function RoomAIGineClient() {
         roomType: roomType,
     });
 
-    if (result.success) {
+    if (result.success && result.creationId) {
+        const creationId = result.creationId;
         toast("Published to Gallery!", {
-            description: "Your creation is now live.",
+            description: "Your creation is now live for others to see.",
+            action: {
+                label: "Undo",
+                onClick: async () => {
+                    toast.dismiss();
+                    const deleteResult = await deleteCreationAction(creationId);
+                    if (deleteResult.success) {
+                        toast.success("Publication reverted.");
+                    } else {
+                        toast.error("Undo failed.", {
+                            description: deleteResult.error
+                        });
+                    }
+                },
+            },
         });
     } else {
         toast.error("Publishing Failed", {

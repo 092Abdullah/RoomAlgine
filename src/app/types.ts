@@ -10,5 +10,6 @@ export type PublishToGalleryInput = z.infer<typeof PublishToGalleryInputSchema>;
 
 export const PublishToGalleryOutputSchema = z.object({
     galleryUrl: z.string().describe("The URL to the newly created gallery entry."),
+    creationId: z.string().describe("The unique ID of the created gallery item."),
 });
 export type PublishToGalleryOutput = z.infer<typeof PublishToGalleryOutputSchema>;
