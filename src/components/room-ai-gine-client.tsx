@@ -86,7 +86,7 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
         <LogoIcon />
       </Link>
       <div className="flex items-center gap-2">
-        <Button variant="outline" asChild size="sm">
+        <Button variant="outline" asChild size="sm" className="hover:bg-primary/10 hover:text-primary">
             <Link href="/gallery"><GalleryThumbnails className="mr-2 h-4 w-4" /> Gallery</Link>
         </Button>
         {showGenerateButton && (
@@ -662,3 +662,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
