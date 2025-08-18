@@ -90,7 +90,7 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
             <Link href="/gallery"><GalleryThumbnails className="mr-2 h-4 w-4" /> Gallery</Link>
         </Button>
         {showGenerateButton && (
-          <Button variant="outline" onClick={onGenerateNew} size="sm">
+          <Button variant="outline" onClick={onGenerateNew} size="sm" className="hover:bg-primary/10 hover:text-primary">
             <RefreshCw className="mr-2 h-4 w-4" /> Generate New
           </Button>
         )}
