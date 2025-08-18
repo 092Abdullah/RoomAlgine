@@ -46,10 +46,10 @@ const LandingPage = () => {
               <LogoIcon />
             </Link>
             <nav className="hidden md:flex md:gap-4 items-center">
-              <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-md">Features</Link>
-              <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-md">Examples</Link>
-              <Link href="#loved-by-creatives" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-md">Reviews</Link>
-              <Link href="/gallery" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-md">Gallery</Link>
+              <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Features</Link>
+              <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Examples</Link>
+              <Link href="#loved-by-creatives" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Reviews</Link>
+              <Link href="/gallery" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Gallery</Link>
               <ThemeSwitcher />
               <Button asChild>
                   <Link href="/generate">
