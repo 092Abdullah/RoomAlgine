@@ -71,7 +71,7 @@ export default async function GalleryPage() {
         <div className="text-center py-8 md:py-12">
             <h1 className="text-4xl font-bold text-foreground">Inspirational Gallery</h1>
             <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
-                A showcase of real user uploads: see how our community reimagined their spaces with AI.
+                Explore real user uploads and see how our community has reimagined their spaces with AI.
             </p>
         </div>
 
