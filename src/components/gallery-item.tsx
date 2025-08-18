@@ -8,14 +8,13 @@ import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { incrementKudosAction } from '@/app/actions';
 import type { Creation } from '@/app/gallery/page';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 
 export function GalleryItem({ creation }: { creation: Creation }) {
   const [kudos, setKudos] = useState(creation.kudos);
   const [isKudoed, setIsKudoed] = useState(false);
   const [formattedDate, setFormattedDate] = useState('');
-  const { toast } = useToast();
 
   useEffect(() => {
     // Format date only on the client to avoid hydration mismatch
@@ -25,8 +24,7 @@ export function GalleryItem({ creation }: { creation: Creation }) {
   const handleKudosClick = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent dialog from opening when heart is clicked
     if (isKudoed) {
-        toast({
-            title: "Already Appreciated!",
+        toast("Already Appreciated!", {
             description: "You can only give kudos once per design.",
         });
         return;
@@ -41,10 +39,8 @@ export function GalleryItem({ creation }: { creation: Creation }) {
       // Revert optimistic update on failure
       setKudos(prev => prev - 1);
       setIsKudoed(false);
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Could not add your kudos. Please try again.",
-        variant: "destructive",
       });
     }
   };

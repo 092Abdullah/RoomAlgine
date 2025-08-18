@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 import { Analytics } from '@vercel/analytics/react';
 import { ThemeProvider } from '@/components/theme-provider';
 
@@ -41,7 +41,7 @@ export default function RootLayout({
             disableTransitionOnChange
         >
             {children}
-            <Toaster />
+            <SonnerToaster />
             <Analytics />
         </ThemeProvider>
       </body>

@@ -28,7 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, LogoIcon } from "./icons";
@@ -475,7 +475,6 @@ export default function RoomAIGineClient() {
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [styleSuggestions, setStyleSuggestions] = useState<StyleSuggestion[]>([]);
 
-  const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
@@ -508,10 +507,8 @@ export default function RoomAIGineClient() {
                 console.warn(`Detected room type "${detectionResult.roomType}" is not a selectable option.`);
             }
         } else {
-            toast({
-                title: "Room Detection Failed",
+            toast.error("Room Detection Failed", {
                 description: detectionResult.error,
-                variant: "destructive",
             });
         }
         setIsDetectingRoomType(false);
@@ -540,10 +537,8 @@ export default function RoomAIGineClient() {
 
   const startGeneration = async () => {
     if (!selectedStyle) {
-      toast({
-        title: "No Style Selected",
+      toast.error("No Style Selected", {
         description: "Please choose a design style.",
-        variant: "destructive",
       });
       return;
     }
@@ -562,10 +557,8 @@ export default function RoomAIGineClient() {
 
 
     if ("error" in result) {
-      toast({
-        title: "Generation Failed",
+      toast.error("Generation Failed", {
         description: result.error,
-        variant: "destructive",
       });
     } else {
         const newImages = result.styledRoomImages;
@@ -597,10 +590,8 @@ export default function RoomAIGineClient() {
     });
 
     if ('error' in result) {
-        toast({
-            title: "Suggestion Failed",
+        toast.error("Suggestion Failed", {
             description: result.error,
-            variant: "destructive",
         });
     } else if (result.suggestions) {
         setStyleSuggestions(result.suggestions);
@@ -620,15 +611,12 @@ export default function RoomAIGineClient() {
     });
 
     if (result.success) {
-        toast({
-            title: "Published to Gallery!",
+        toast("Published to Gallery!", {
             description: "Your creation is now live.",
         });
     } else {
-        toast({
-            title: "Publishing Failed",
+        toast.error("Publishing Failed", {
             description: result.error,
-            variant: "destructive",
         });
     }
     setIsPublishing(false);
@@ -656,14 +644,12 @@ export default function RoomAIGineClient() {
                 files: [file],
             });
         } else {
-            toast({
-                title: 'Sharing not supported',
+            toast('Sharing not supported', {
                 description: 'Your browser does not support sharing files.',
             });
         }
     } catch (error) {
-        toast({
-            title: 'Sharing failed',
+        toast('Sharing failed', {
             description: 'Could not share the image.',
             variant: 'destructive',
         });
