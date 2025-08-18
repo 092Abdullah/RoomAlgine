@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -49,7 +48,15 @@ const generateRoomStylesFlow = ai.defineFlow(
     outputSchema: GenerateRoomStylesOutputSchema,
   },
   async input => {
-    // Generate images in parallel for better performance
+    const ARCHITECTURE_CONSTRAINTS = `\nCONSTRAINTS (READ CAREFULLY):\n` +
+      `1) Do NOT change the room architecture: preserve walls, windows, doors, built-in fixtures, ceiling height, and structural elements exactly as in the reference image.\n` +
+      `2) Preserve the camera viewpoint, perspective, and crop. The generated image must match the original camera angle and framing so the before/after comparison lines up.\n` +
+      `3) Do NOT add or remove windows, doors, columns, or architectural openings.\n` +
+      `4) Only modify: wall colors/finishes, floor materials, movable furniture, fabrics, small decor and lighting fixtures. Do NOT move fixed items.\n` +
+      `5) Do NOT change the overall layout, proportions, or apparent depth.\n` +
+      `6) If possible, use image editing/inpainting (preserve structure). Do NOT hallucinate new structural elements.`;
+
+
     const styledRoomImagePromises = input.styles.map(async style => {
       let promptText = `Restyle this room in a ${style} style.`;
 
@@ -65,21 +72,44 @@ const generateRoomStylesFlow = ai.defineFlow(
       if (input.mood) {
         promptText += ` The mood should be ${input.mood}.`;
       }
-      
-      const {media} = await ai.generate({
-        model: 'googleai/gemini-2.0-flash-preview-image-generation',
-        prompt: [
-          {media: {url: input.photoDataUri}},
-          {text: promptText},
-        ],
-        config: {
-          responseModalities: ['TEXT', 'IMAGE'],
-        },
-      });
-      return {
-        style: style,
-        imageDataUri: media.url,
+
+      promptText += ARCHITECTURE_CONSTRAINTS;
+
+      promptText += `\nNOTE: Keep the same camera angle, perspective, framing and lighting direction as the input photo so before/after align perfectly.`;
+
+      const promptPayload = [
+        { media: { url: input.photoDataUri } },
+        { text: promptText },
+      ];
+
+      const generateConfig = {
+        responseModalities: ['TEXT', 'IMAGE'],
       };
+
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const { media, text } = await ai.generate({
+            model: 'googleai/gemini-2.0-flash-preview-image-generation',
+            prompt: promptPayload,
+            config: generateConfig,
+          });
+
+          // If the model returns an image URL
+          if (media && media.url) {
+            return {
+              style: style,
+              imageDataUri: media.url,
+              debugText: text,
+            };
+          }
+        } catch (err) {
+          if (attempt === 1) throw err;
+        }
+
+        promptPayload.push({ text: '\nRETRY: Absolutely do NOT change windows, doors, walls or camera angle. Preserve all architectural features exactly.' });
+      }
+
+      throw new Error('Image generation failed for style: ' + style);
     });
 
     const styledRoomImages = await Promise.all(styledRoomImagePromises);
