@@ -74,5 +74,5 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glassmorphic-card {
-    @apply bg-card/60 backdrop-blur-lg border border-border/20 hover:border-border/60 rounded-2xl transition-colors;
+    @apply bg-card/75 backdrop-blur-lg border border-border/30 hover:border-border/70 rounded-2xl transition-colors;
 }
