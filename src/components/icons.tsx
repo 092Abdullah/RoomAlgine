@@ -21,6 +21,7 @@ export function HeaderLogoIcon(props: SVGProps<SVGSVGElement>) {
                 <Home className="h-full w-full text-primary" />
                 <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-purple-400" />
             </div>
+            <span className="hidden sm:inline text-xl font-bold tracking-tight">RoomAIgine</span>
         </div>
     )
 }
