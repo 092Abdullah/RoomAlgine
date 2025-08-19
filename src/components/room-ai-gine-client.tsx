@@ -102,11 +102,11 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
             )}
         </div>
         <div className="md:hidden">
-            <Button asChild>
+             <Button asChild>
                 <Link href="/generate">
-                    Start Designing
+                  Start Designing
                 </Link>
-            </Button>
+              </Button>
         </div>
         <ThemeSwitcher />
       </div>
@@ -730,3 +730,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
