@@ -39,7 +39,7 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
       {/* Header */}
-       <header className="sticky top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <header className="sticky top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <Link href="/">
@@ -52,17 +52,17 @@ const LandingPage = () => {
               <Link href="/gallery" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Gallery</Link>
               <ThemeSwitcher />
               <Button asChild>
-                  <Link href="/generate">
-                    Try for Free <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
+                <Link href="/generate">
+                  Try for Free <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </nav>
-             <div className="md:hidden">
-               <Button asChild>
-                  <Link href="/generate">
-                    Start Designing
-                  </Link>
-                </Button>
+            <div className="md:hidden">
+              <Button asChild>
+                <Link href="/generate">
+                  Start Designing
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -85,13 +85,13 @@ const LandingPage = () => {
               },
             }}
           >
-            <motion.h1 
+            <motion.h1
               className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70"
               variants={FADE_IN_ANIMATION_VARIANTS}
             >
               Visualize Your Dream Room in Seconds
             </motion.h1>
-            <motion.p 
+            <motion.p
               className="mt-6 max-w-2xl mx-auto text-md md:text-lg text-muted-foreground"
               variants={FADE_IN_ANIMATION_VARIANTS}
             >
@@ -103,27 +103,27 @@ const LandingPage = () => {
                   Try It Free – No Signup Needed
                 </Link>
               </Button>
-               <Button size="lg" variant="outline" className="mt-8 sm:mt-8" asChild>
+              <Button size="lg" variant="outline" className="mt-8 sm:mt-8" asChild>
                 <Link href="/gallery">
                   <GalleryThumbnails className="mr-2 h-5 w-5" /> View Gallery
                 </Link>
               </Button>
             </motion.div>
           </motion.div>
-          <motion.div 
+          <motion.div
             className="relative container mx-auto mt-12 px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Image 
-                src="https://i.ibb.co/1Y512tmL/hero1.jpg" 
-                alt="AI generated room" 
-                width={1200}
-                height={600}
-                className="w-full max-w-4xl mx-auto h-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
-                data-ai-hint="minimalist bedroom"
-                priority
+            <Image
+              src="https://i.ibb.co/1Y512tmL/hero1.jpg"
+              alt="AI generated room"
+              width={1200}
+              height={600}
+              className="w-full max-w-4xl mx-auto h-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
+              data-ai-hint="minimalist bedroom"
+              priority
             />
           </motion.div>
         </section>
@@ -161,7 +161,7 @@ const LandingPage = () => {
             </div>
           </div>
         </section>
-        
+
         {/* Features Section */}
         <section id="features" className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -170,7 +170,7 @@ const LandingPage = () => {
               <p className="mt-2 text-lg text-muted-foreground">Everything you need to create the perfect space.</p>
             </div>
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-               {[
+              {[
                 { title: "Multiple Styles", description: "From Industrial to Scandinavian, find the perfect look." },
                 { title: "Instant Preview", description: "See your new room in seconds, not weeks." },
                 { title: "HD Quality", description: "Download high-resolution images for a detailed view." },
@@ -183,46 +183,47 @@ const LandingPage = () => {
                   viewport={{ once: true, amount: 0.5 }}
                   variants={FADE_IN_ANIMATION_VARIANTS}
                 >
-                    <Card className="glassmorphic-card p-6 h-full">
-                        <CardContent className="p-0">
-                            <h3 className="text-lg font-semibold text-card-foreground">{feature.title}</h3>
-                            <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
-                        </CardContent>
-                    </Card>
+                  <Card className="glassmorphic-card p-6 h-full">
+                    <CardContent className="p-0">
+                      <h3 className="text-lg font-semibold text-card-foreground">{feature.title}</h3>
+                      <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
-        
+
         {/* Live Preview Carousel */}
         <section id="see-the-magic" className="py-20 bg-secondary/30">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold tracking-tight">See the Magic</h2>
-                    <p className="mt-2 text-lg text-muted-foreground">Drag the slider to see the before-and-after transformation.</p>
-                </div>
-                <Carousel className="mt-12 w-full max-w-4xl mx-auto">
-                    <CarouselContent>
-                        <CarouselItem>
-                             <ReactCompareSlider
-                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/spCKd6WL/before.webp" alt="Before image" data-ai-hint="messy bedroom" className="object-cover w-full h-full"/>}
-                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/NgKGqxJ0/after.png" alt="After image" data-ai-hint="minimalist bedroom" className="object-cover w-full h-full"/>}
-                                className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
-                            />
-                        </CarouselItem>
-                        <CarouselItem>
-                             <ReactCompareSlider
-                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/nq3QGF2t/before1.jpg" alt="Before image" data-ai-hint="old kitchen" className="object-cover w-full h-full"/>}
-                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/G4KRf34j/after1.png" alt="After image" data-ai-hint="luxury kitchen" className="object-cover w-full h-full"/>}
-                                className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
-                            />
-                        </CarouselItem>
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                </Carousel>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold tracking-tight">See the Magic</h2>
+              <p className="mt-2 text-lg text-muted-foreground">Drag the slider to see the before-and-after transformation.</p>
             </div>
+            <Carousel className="mt-12 w-full max-w-4xl mx-auto">
+              <CarouselContent>
+                <CarouselItem>
+                  <ReactCompareSlider
+                    itemOne={<ReactCompareSliderImage src="https://i.ibb.co/nq3QGF2t/before1.jpg" alt="Before image" data-ai-hint="old kitchen" className="object-cover w-full h-full" />}
+                    itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/G4KRf34j/after1.png" alt="After image" data-ai-hint="luxury kitchen" className="object-cover w-full h-full" />}
+                    className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
+                  />
+                </CarouselItem>
+                <CarouselItem>
+                  <ReactCompareSlider
+                    itemOne={<ReactCompareSliderImage src="https://i.ibb.co/spCKd6WL/before.webp" alt="Before image" data-ai-hint="messy bedroom" className="object-cover w-full h-full" />}
+                    itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/NgKGqxJ0/after.png" alt="After image" data-ai-hint="minimalist bedroom" className="object-cover w-full h-full" />}
+                    className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
+                  />
+
+                </CarouselItem>
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          </div>
         </section>
 
         {/* Testimonials Section */}
@@ -239,32 +240,32 @@ const LandingPage = () => {
                 { name: "Abdullah Maqbool", role: "Renter", review: "I wasn't sure what to do with my small apartment, but this app gave me incredible ideas. Highly recommend!", rating: 5 },
               ].map((testimonial, i) => (
                 <motion.div
-                    key={i}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, amount: 0.5 }}
-                    variants={FADE_IN_ANIMATION_VARIANTS}
+                  key={i}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.5 }}
+                  variants={FADE_IN_ANIMATION_VARIANTS}
                 >
-                    <Card className="glassmorphic-card p-6 h-full">
-                        <CardContent className="p-0">
-                            <div className="flex items-center mb-4">
-                                <div>
-                                    <p className="font-semibold text-card-foreground">{testimonial.name}</p>
-                                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                                </div>
-                            </div>
-                            <div className="flex mb-2">
-                                {[...Array(testimonial.rating)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
-                            </div>
-                            <p className="text-muted-foreground">{`"${testimonial.review}"`}</p>
-                        </CardContent>
-                    </Card>
+                  <Card className="glassmorphic-card p-6 h-full">
+                    <CardContent className="p-0">
+                      <div className="flex items-center mb-4">
+                        <div>
+                          <p className="font-semibold text-card-foreground">{testimonial.name}</p>
+                          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                        </div>
+                      </div>
+                      <div className="flex mb-2">
+                        {[...Array(testimonial.rating)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
+                      </div>
+                      <p className="text-muted-foreground">{`"${testimonial.review}"`}</p>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
-        
+
         {/* CTA Section */}
         <section className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -284,14 +285,14 @@ const LandingPage = () => {
         <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="flex justify-center space-x-6 md:order-2">
-                <Link href="https://github.com/Abdullah-Maqbool1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
-                <Link href="https://www.instagram.com/abdullah__maqbool" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Instagram /></Link>
-                <Link href="https://www.linkedin.com/in/abdullah-maqbool-se" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
+              <Link href="https://github.com/Abdullah-Maqbool1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
+              <Link href="https://www.instagram.com/abdullah__maqbool" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Instagram /></Link>
+              <Link href="https://www.linkedin.com/in/abdullah-maqbool-se" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
             </div>
             <div className="mt-8 md:mt-0 md:order-1">
-                <p className="text-center text-sm text-muted-foreground">
-                    &copy; {new Date().getFullYear()} RoomAIgine. All rights reserved.
-                </p>
+              <p className="text-center text-sm text-muted-foreground">
+                &copy; {new Date().getFullYear()} RoomAIgine. All rights reserved.
+              </p>
             </div>
           </div>
         </div>
