@@ -15,7 +15,8 @@ import {
   Lightbulb,
   X,
   GalleryThumbnails,
-  Expand
+  Expand,
+  ArrowRight
 } from "lucide-react";
 import {
   Card,
@@ -90,14 +91,23 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
         <LogoIcon />
       </Link>
       <div className="flex items-center gap-2">
-        <Button variant="outline" asChild size="sm">
-            <Link href="/gallery"><GalleryThumbnails className="mr-2 h-4 w-4" /> Gallery</Link>
-        </Button>
-        {showGenerateButton && (
-          <Button variant="outline" onClick={onGenerateNew} size="sm">
-            <RefreshCw className="mr-2 h-4 w-4" /> Generate New
-          </Button>
-        )}
+        <div className="hidden md:flex items-center gap-2">
+            <Button variant="outline" asChild size="sm">
+                <Link href="/gallery"><GalleryThumbnails className="mr-2 h-4 w-4" /> Gallery</Link>
+            </Button>
+            {showGenerateButton && (
+            <Button variant="outline" onClick={onGenerateNew} size="sm">
+                <RefreshCw className="mr-2 h-4 w-4" /> Generate New
+            </Button>
+            )}
+        </div>
+        <div className="md:hidden">
+            <Button asChild>
+                <Link href="/generate">
+                    Start Designing
+                </Link>
+            </Button>
+        </div>
         <ThemeSwitcher />
       </div>
     </header>
@@ -194,7 +204,7 @@ const RoomAIGineEditor = ({
     }
 
     return (
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-8 flex-grow w-full">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-6 flex-grow w-full">
             {/* Left Column */}
             <div className="col-span-1 xl:col-span-3 space-y-4 md:space-y-6">
                 <Card className="bg-card">
@@ -361,7 +371,7 @@ const RoomAIGineEditor = ({
                         </CardContent>
                         {generatedImages.length > 0 && !isLoading && (
                             <CardFooter className="p-2 overflow-x-auto">
-                                <div className="flex gap-2 w-max">
+                                <div className="flex gap-2 w-max p-2">
                                     {generatedImages.map((image: GeneratedImage) => (
                                         <button key={image.style} onClick={() => setActiveGeneratedImage(image)} className={`w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all ${activeGeneratedImage?.style === image.style ? 'ring-primary' : ''}`}>
                                             <Image src={image.imageDataUri} alt={image.style} width={100} height={100} className="object-cover w-full h-full" />
@@ -414,7 +424,7 @@ const RoomAIGineEditor = ({
                         </div>
                         <div>
                             <Label className="mb-2 block">Color Preferences</Label>
-                            <div className="grid grid-cols-6 gap-2">
+                            <div className="grid grid-cols-6 sm:grid-cols-5 md:grid-cols-6 gap-2">
                                 {colorPreferences.map((color) => (
                                     <button
                                         key={color.id}

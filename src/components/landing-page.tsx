@@ -70,7 +70,7 @@ const LandingPage = () => {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 text-center overflow-hidden">
+        <section className="relative pt-24 pb-16 md:pt-40 md:pb-24 text-center overflow-hidden">
           <motion.div
             className="container mx-auto px-4 sm:px-6 lg:px-8"
             initial="hidden"
@@ -92,18 +92,18 @@ const LandingPage = () => {
               Visualize Your Dream Room in Seconds
             </motion.h1>
             <motion.p 
-              className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground"
+              className="mt-6 max-w-2xl mx-auto text-md md:text-lg text-muted-foreground"
               variants={FADE_IN_ANIMATION_VARIANTS}
             >
               Transform your space with AI. Upload a photo of your room and let our advanced algorithm generate stunning redesigns in any style you can imagine.
             </motion.p>
-            <motion.div variants={FADE_IN_ANIMATION_VARIANTS} className="flex justify-center items-center gap-4">
+            <motion.div variants={FADE_IN_ANIMATION_VARIANTS} className="flex flex-col sm:flex-row justify-center items-center gap-4">
               <Button size="lg" className="mt-8" asChild>
                 <Link href="/generate">
                   Try It Free – No Signup Needed
                 </Link>
               </Button>
-               <Button size="lg" variant="outline" className="mt-8" asChild>
+               <Button size="lg" variant="outline" className="mt-8 sm:mt-8" asChild>
                 <Link href="/gallery">
                   <GalleryThumbnails className="mr-2 h-5 w-5" /> View Gallery
                 </Link>
