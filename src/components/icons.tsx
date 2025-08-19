@@ -9,7 +9,7 @@ export function LogoIcon(props: SVGProps<SVGSVGElement>) {
         <Home {...props} className="h-full w-full text-primary" />
         <Sparkles {...props} className="absolute -top-1 -right-1 h-4 w-4 text-purple-400" />
       </div>
-      <span className="text-xl font-bold tracking-tight">RoomAIgine</span>
+      <span className="hidden sm:inline text-xl font-bold tracking-tight">RoomAIgine</span>
     </div>
   )
 }
