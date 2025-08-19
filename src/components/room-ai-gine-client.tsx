@@ -32,7 +32,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction, deleteCreationAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
-import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, LogoIcon } from "./icons";
+import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, HeaderLogoIcon } from "./icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { Slider } from "@/components/ui/slider";
@@ -86,30 +86,34 @@ const colorPreferences = [
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 
 const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () => void, showGenerateButton: boolean }) => (
-    <header className="flex justify-between items-center p-4 border-b border-border">
-      <Link href="/">
-        <LogoIcon />
-      </Link>
-      <div className="flex items-center gap-2">
-        <div className="hidden md:flex items-center gap-2">
-            <Button variant="outline" asChild size="sm">
-                <Link href="/gallery"><GalleryThumbnails className="mr-2 h-4 w-4" /> Gallery</Link>
-            </Button>
-            {showGenerateButton && (
-            <Button variant="outline" onClick={onGenerateNew} size="sm">
-                <RefreshCw className="mr-2 h-4 w-4" /> Generate New
-            </Button>
-            )}
-        </div>
-        <div className="md:hidden">
-             <Button asChild>
-                <Link href="/generate">
-                  Start Designing
+    <header className="fixed top-4 left-0 right-0 z-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="floating-header">
+                <Link href="/">
+                    <HeaderLogoIcon />
                 </Link>
-              </Button>
+                <div className="flex items-center gap-2">
+                    <div className="hidden md:flex items-center gap-2">
+                        <Button variant="outline" asChild>
+                            <Link href="/gallery"><GalleryThumbnails className="mr-2 h-4 w-4" /> Gallery</Link>
+                        </Button>
+                        {showGenerateButton && (
+                        <Button variant="ghost" onClick={onGenerateNew}>
+                            <RefreshCw className="mr-2 h-4 w-4" /> New Design
+                        </Button>
+                        )}
+                    </div>
+                    <div className="md:hidden">
+                        <Button asChild>
+                            <Link href="/generate">
+                            Start Designing
+                            </Link>
+                        </Button>
+                    </div>
+                    <ThemeSwitcher />
+                </div>
+            </div>
         </div>
-        <ThemeSwitcher />
-      </div>
     </header>
 );
 
@@ -685,7 +689,7 @@ export default function RoomAIGineClient() {
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
       <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={!!uploadedImage} />
-      <main className="flex-grow flex items-center justify-center">
+      <main className="flex-grow flex items-center justify-center pt-24">
         {!uploadedImage ? (
           <UploadScreen onUploadClick={() => fileInputRef.current?.click()} />
         ) : (

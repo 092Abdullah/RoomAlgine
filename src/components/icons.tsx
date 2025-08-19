@@ -27,4 +27,4 @@ export function HeaderLogoIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 
-export { Wand2 as GenerateIcon, BedDouble, Sofa as LivingRoomIcon, Armchair as OfficeIcon, MoreHorizontal as MoreFiltersIcon };
+export { Wand2 as GenerateIcon, BedDouble, Sofa as LivingRoomIcon, Armchair as OfficeIcon, MoreFiltersIcon };
