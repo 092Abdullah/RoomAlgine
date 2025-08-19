@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
-import { LogoIcon } from '@/components/icons';
+import { LogoIcon, LogoIconPill } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { GalleryItem } from '@/components/gallery-item';
 import { ThemeSwitcher } from '@/components/theme-switcher';
@@ -40,19 +40,19 @@ export default async function GalleryPage() {
 
   return (
     <div className="bg-background min-h-screen">
-       <header className="sticky top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+       <header className="fixed top-4 left-0 right-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
+          <div className="floating-header">
             <Link href="/">
-              <LogoIcon />
+              <LogoIconPill />
             </Link>
-            <nav className="hidden md:flex md:gap-4 items-center">
-              <Link href="/#features" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Features</Link>
-              <Link href="/#see-the-magic" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Examples</Link>
-              <Link href="/#loved-by-creatives" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Reviews</Link>
-              <Link href="/gallery" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors px-3 py-2 rounded-full">Gallery</Link>
+            <nav className="hidden md:flex md:gap-2 items-center">
+              <Link href="/#features" className="header-link">Features</Link>
+              <Link href="/#see-the-magic" className="header-link">Examples</Link>
+              <Link href="/#loved-by-creatives" className="header-link">Reviews</Link>
+              <Link href="/gallery" className="header-link text-white">Gallery</Link>
               <ThemeSwitcher />
-              <Button asChild>
+              <Button asChild variant="secondary" className="bg-white text-black hover:bg-gray-200">
                   <Link href="/generate">
                     Try for Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -69,7 +69,7 @@ export default async function GalleryPage() {
         </div>
       </header>
       
-      <main className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <main className="container mx-auto py-24 px-4 sm:px-6 lg:px-8">
         <div className="text-center py-8 md:py-12">
             <h1 className="text-4xl font-bold text-foreground">Inspirational Gallery</h1>
             <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">

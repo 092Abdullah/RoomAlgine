@@ -16,7 +16,7 @@ import {
   Github,
   GalleryThumbnails
 } from "lucide-react";
-import { LogoIcon } from "./icons";
+import { LogoIcon, LogoIconPill } from "./icons";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import {
@@ -62,20 +62,20 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
       {/* Header */}
-      <header className="sticky top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <header className="fixed top-4 left-0 right-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
+          <div className="floating-header">
             <Link href="/">
-              <LogoIcon />
+              <LogoIconPill />
             </Link>
-            <nav className="hidden md:flex md:gap-4 items-center">
-              <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Features</Link>
-              <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Examples</Link>
-              <Link href="#loved-by-creatives" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Reviews</Link>
-              <Link href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">FAQs</Link>
-              <Link href="/gallery" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Gallery</Link>
+            <nav className="hidden md:flex md:gap-2 items-center">
+              <Link href="#features" className="header-link">Features</Link>
+              <Link href="#see-the-magic" className="header-link">Examples</Link>
+              <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
+              <Link href="#faq" className="header-link">FAQs</Link>
+              <Link href="/gallery" className="header-link">Gallery</Link>
               <ThemeSwitcher />
-              <Button asChild>
+              <Button asChild variant="secondary" className="bg-white text-black hover:bg-gray-200">
                 <Link href="/generate">
                   Try for Free <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
