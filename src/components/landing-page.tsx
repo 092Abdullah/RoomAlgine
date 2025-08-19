@@ -28,6 +28,7 @@ import {
 } from "./ui/carousel";
 import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider";
 import { ThemeSwitcher } from "./theme-switcher";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 
 
 const FADE_IN_ANIMATION_VARIANTS = {
@@ -36,6 +37,28 @@ const FADE_IN_ANIMATION_VARIANTS = {
 };
 
 const LandingPage = () => {
+  const faqs = [
+      {
+        question: "What is RoomAIgine?",
+        answer: "RoomAIgine is an AI-powered interior design tool that allows you to upload a photo of your room and instantly visualize it in various design styles. It's a fast, easy, and fun way to get design inspiration and see your room's potential."
+      },
+      {
+        question: "How accurate are the AI redesigns?",
+        answer: "Our AI is trained to preserve the core architectural elements of your room, such as walls, windows, and doors, while creatively reimagining the furniture, decor, colors, and materials. The results are highly realistic visualizations designed to inspire you."
+      },
+      {
+        question: "Can I use photos from my phone?",
+        answer: "Absolutely! Photos taken with your phone work perfectly. For best results, take a clear, well-lit photo of your room from a good angle."
+      },
+      {
+        question: "What styles can I choose from?",
+        answer: "We offer a wide range of popular interior design styles, including Minimalist, Luxury, Cozy, Industrial, Bohemian, and more. You can also use our AI-powered suggestion tool to get ideas based on your room's photo."
+      },
+      {
+        question: "Is my data private?",
+        answer: "Yes, your privacy is important to us. Your uploaded photos are used only to generate your designs and are not shared or used for any other purpose. You have the option to publish your creations to our public gallery if you wish to share them."
+      }
+  ];
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
       {/* Header */}
@@ -49,6 +72,7 @@ const LandingPage = () => {
               <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Features</Link>
               <Link href="#see-the-magic" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Examples</Link>
               <Link href="#loved-by-creatives" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Reviews</Link>
+              <Link href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">FAQs</Link>
               <Link href="/gallery" className="text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground px-3 py-2 rounded-full">Gallery</Link>
               <ThemeSwitcher />
               <Button asChild>
@@ -266,6 +290,35 @@ const LandingPage = () => {
           </div>
         </section>
 
+        {/* FAQ Section */}
+        <section id="faq" className="py-20 bg-secondary/30">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center">
+                    <h2 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
+                    <p className="mt-2 text-lg text-muted-foreground">Have questions? We have answers.</p>
+                </div>
+                <motion.div 
+                    className="mt-12 max-w-3xl mx-auto"
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.3 }}
+                    variants={FADE_IN_ANIMATION_VARIANTS}
+                >
+                    <Accordion type="single" collapsible className="w-full">
+                        {faqs.map((faq, index) => (
+                            <AccordionItem key={index} value={`item-${index}`}>
+                                <AccordionTrigger>{faq.question}</AccordionTrigger>
+                                <AccordionContent className="text-muted-foreground">
+                                    {faq.answer}
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </motion.div>
+            </div>
+        </section>
+
+
         {/* CTA Section */}
         <section className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -302,3 +355,5 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
+    
