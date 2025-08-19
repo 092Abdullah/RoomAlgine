@@ -51,7 +51,7 @@ export default async function GalleryPage() {
               <Link href="/#features" className="header-link">Features</Link>
               <Link href="/#see-the-magic" className="header-link">Examples</Link>
               <Link href="/#loved-by-creatives" className="header-link">Reviews</Link>
-              <Link href="/gallery" className="header-link text-white">Gallery</Link>
+              <Link href="/gallery" className="header-link text-foreground">Gallery</Link>
               <ThemeSwitcher />
               <Button asChild variant="secondary" className="bg-white text-black hover:bg-gray-200">
                   <Link href="/generate">
