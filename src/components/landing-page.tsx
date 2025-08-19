@@ -135,7 +135,7 @@ const LandingPage = () => {
             >
              Upload a photo of your room, pick your favorite styles, and let our AI bring your vision to life in seconds. No credit card required.
             </motion.p>
-            <motion.div variants={FADE_IN_ANIMATION_VARIANTS} className="mt-8 flex justify-center items-center gap-4">
+            <motion.div variants={FADE_IN_ANIMATION_VARIANTS} className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
                <Button size="lg" asChild>
                 <Link href="/generate">
                   <UploadCloud className="mr-2 h-5 w-5" /> Upload Your Room
