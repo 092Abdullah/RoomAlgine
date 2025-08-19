@@ -19,11 +19,12 @@ import {
   Paintbrush,
   Globe,
   Zap,
-  Sofa
+  Sofa,
+  CheckCircle,
 } from "lucide-react";
 import { HeaderLogoIcon } from "./icons";
 import { Button } from "./ui/button";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent, CardFooter } from "./ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -132,15 +133,15 @@ const LandingPage = () => {
               className="mt-6 max-w-2xl mx-auto text-md md:text-lg text-muted-foreground"
               variants={FADE_IN_ANIMATION_VARIANTS}
             >
-              Transform your space with AI. Upload a photo of your room and let our advanced algorithm generate stunning redesigns in any style you can imagine.
+             Upload a photo of your room, pick your favorite styles, and let our AI bring your vision to life in seconds. No credit card required.
             </motion.p>
-            <motion.div variants={FADE_IN_ANIMATION_VARIANTS} className="flex flex-col sm:flex-row justify-center items-center gap-4">
-              <Button size="lg" className="mt-8" asChild>
+            <motion.div variants={FADE_IN_ANIMATION_VARIANTS} className="mt-8 flex justify-center items-center gap-4">
+               <Button size="lg" asChild>
                 <Link href="/generate">
-                  Try It Free – No Signup Needed
+                  <UploadCloud className="mr-2 h-5 w-5" /> Upload Your Room
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="mt-8 sm:mt-8" asChild>
+              <Button size="lg" variant="outline" asChild>
                 <Link href="/gallery">
                   <GalleryThumbnails className="mr-2 h-5 w-5" /> View Gallery
                 </Link>
@@ -201,35 +202,56 @@ const LandingPage = () => {
         
         {/* Why Choose Us Section */}
         <section id="why-choose-us" className="py-20">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight">Why Choose Us?</h2>
-              <p className="mt-2 text-lg text-muted-foreground">Discover the advantages of using RoomAIgine.</p>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <motion.div
+                        initial={{ opacity: 0, x: -50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.5 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <Image
+                            src="https://i.ibb.co/G4KRf34j/after1.png"
+                            alt="Beautifully designed modern room"
+                            width={600}
+                            height={600}
+                            className="rounded-xl shadow-lg w-full h-auto"
+                            data-ai-hint="luxury kitchen"
+                        />
+                    </motion.div>
+                    <motion.div
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={{
+                          hidden: {},
+                          show: { transition: { staggerChildren: 0.15 } },
+                        }}
+                    >
+                        <h2 className="text-3xl font-bold tracking-tight">The Ultimate AI Interior Designer</h2>
+                        <p className="mt-4 text-lg text-muted-foreground">
+                            RoomAIgine empowers you to create stunning, professional-quality designs with ease. Here’s why we’re the best choice for your next project.
+                        </p>
+                        <ul className="mt-8 space-y-6">
+                            {[
+                                { icon: Zap, title: "Blazing Fast Results", description: "Get your redesigned room in seconds, not days. Our AI is optimized for speed and efficiency." },
+                                { icon: Paintbrush, title: "Photorealistic Quality", description: "Our models create stunning, high-resolution images that are hard to distinguish from real photos." },
+                                { icon: Sofa, title: "Endless Style Options", description: "Choose from a vast library of styles or mix and match to find the perfect look for your space." },
+                            ].map((feature, index) => (
+                                <motion.li key={index} className="flex items-start gap-4" variants={FADE_IN_ANIMATION_VARIANTS}>
+                                    <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-primary/10 text-primary mt-1">
+                                        <feature.icon className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-semibold">{feature.title}</h3>
+                                        <p className="mt-1 text-muted-foreground">{feature.description}</p>
+                                    </div>
+                                </motion.li>
+                            ))}
+                        </ul>
+                    </motion.div>
+                </div>
             </div>
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { icon: Zap, title: "Fast AI Processing", description: "Get your redesigned room in seconds, not days. Our AI is optimized for speed." },
-                { icon: Paintbrush, title: "Realistic Designs", description: "Our models create photorealistic images that are hard to distinguish from real photos." },
-                { icon: Sofa, title: "Wide Style Options", description: "Choose from a vast library of styles to find the perfect look for your space." },
-              ].map((feature, index) => (
-                <motion.div
-                  key={index}
-                  className="text-center p-6"
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.5 }}
-                  variants={FADE_IN_ANIMATION_VARIANTS}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 text-primary mx-auto mb-4">
-                    <feature.icon className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-xl font-semibold">{feature.title}</h3>
-                  <p className="mt-2 text-muted-foreground">{feature.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
         </section>
 
         {/* By the Numbers Section */}
@@ -265,37 +287,52 @@ const LandingPage = () => {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-20">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight">Powerful Features</h2>
-              <p className="mt-2 text-lg text-muted-foreground">Everything you need to create the perfect space.</p>
+        <section id="features" className="py-20 relative overflow-hidden">
+            <div
+                aria-hidden="true"
+                className="absolute inset-0 z-0"
+            >
+                <Image
+                    src="https://i.ibb.co/spCKd6WL/before.webp"
+                    alt="abstract background"
+                    fill
+                    className="object-cover object-center opacity-10"
+                    data-ai-hint="messy bedroom"
+                />
+                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
             </div>
-            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[
-                { title: "Multiple Styles", description: "From Industrial to Scandinavian, find the perfect look." },
-                { title: "Instant Preview", description: "See your new room in seconds, not weeks." },
-                { title: "HD Quality", description: "Download high-resolution images for a detailed view." },
-                { title: "Community Gallery", description: "Get inspired by creations from other users." },
-              ].map((feature, i) => (
-                <motion.div
-                  key={i}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.5 }}
-                  variants={FADE_IN_ANIMATION_VARIANTS}
-                >
-                  <Card className="glassmorphic-card p-6 h-full">
-                    <CardContent className="p-0">
-                      <h3 className="text-lg font-semibold text-card-foreground">{feature.title}</h3>
-                      <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="text-center">
+                <h2 className="text-3xl font-bold tracking-tight">Powerful Features for Everyone</h2>
+                <p className="mt-2 text-lg text-muted-foreground">Everything you need to create the perfect space, whether you're a homeowner or a pro.</p>
+                </div>
+                <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {[
+                    { title: "Multiple Styles", description: "From Industrial to Scandinavian, find the perfect look." },
+                    { title: "Instant Preview", description: "See your new room in seconds, not weeks." },
+                    { title: "HD Quality", description: "Download high-resolution images for a detailed view." },
+                    { title: "Community Gallery", description: "Get inspired by creations from other users." },
+                ].map((feature, i) => (
+                    <motion.div
+                    key={i}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.5 }}
+                    variants={FADE_IN_ANIMATION_VARIANTS}
+                    >
+                    <Card className="glassmorphic-card p-6 h-full">
+                        <CardContent className="p-0">
+                          <CheckCircle className="h-8 w-8 text-primary mb-4" />
+                          <h3 className="text-lg font-semibold text-card-foreground">{feature.title}</h3>
+                          <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
+                        </CardContent>
+                    </Card>
+                    </motion.div>
+                ))}
+                </div>
             </div>
-          </div>
         </section>
+
 
         {/* Live Preview Carousel */}
         <section id="see-the-magic" className="py-20 bg-secondary/30">
@@ -371,28 +408,37 @@ const LandingPage = () => {
         {/* FAQ Section */}
         <section id="faq" className="py-20 bg-secondary/30">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
-                    <p className="mt-2 text-lg text-muted-foreground">Have questions? We have answers.</p>
+                <div className="grid md:grid-cols-2 gap-10 items-start">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={FADE_IN_ANIMATION_VARIANTS}
+                    >
+                        <h2 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
+                        <p className="mt-4 text-lg text-muted-foreground">
+                            Have questions? We have answers. If you can't find what you're looking for, feel free to contact our support team.
+                        </p>
+                    </motion.div>
+                    <motion.div 
+                        className="max-w-3xl"
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={FADE_IN_ANIMATION_VARIANTS}
+                    >
+                        <Accordion type="single" collapsible className="w-full">
+                            {faqs.map((faq, index) => (
+                                <AccordionItem key={index} value={`item-${index}`}>
+                                    <AccordionTrigger>{faq.question}</AccordionTrigger>
+                                    <AccordionContent className="text-muted-foreground">
+                                        {faq.answer}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </motion.div>
                 </div>
-                <motion.div 
-                    className="mt-12 max-w-3xl mx-auto"
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, amount: 0.3 }}
-                    variants={FADE_IN_ANIMATION_VARIANTS}
-                >
-                    <Accordion type="single" collapsible className="w-full">
-                        {faqs.map((faq, index) => (
-                            <AccordionItem key={index} value={`item-${index}`}>
-                                <AccordionTrigger>{faq.question}</AccordionTrigger>
-                                <AccordionContent className="text-muted-foreground">
-                                    {faq.answer}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                </motion.div>
             </div>
         </section>
 
@@ -433,3 +479,5 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
+    
