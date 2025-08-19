@@ -1,5 +1,6 @@
+
 import type { SVGProps } from "react";
-import { Home, Sparkles, Wand2, BedDouble, Sofa, Armchair, MoreHorizontal, Asterisk } from 'lucide-react';
+import { Home, Sparkles, Wand2, BedDouble, Sofa, Armchair, MoreHorizontal } from 'lucide-react';
 
 export function LogoIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -13,11 +14,12 @@ export function LogoIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
-export function LogoIconPill(props: SVGProps<SVGSVGElement>) {
+export function HeaderLogoIcon(props: SVGProps<SVGSVGElement>) {
     return (
         <div className="flex items-center gap-2" {...props}>
-            <div className="bg-[#a3e635] p-1.5 rounded-lg">
-                <Asterisk className="h-5 w-5 text-black" />
+            <div className="relative h-8 w-8">
+                <Home className="h-full w-full text-primary" />
+                <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-purple-400" />
             </div>
         </div>
     )

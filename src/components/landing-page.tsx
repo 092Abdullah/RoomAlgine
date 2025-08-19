@@ -16,7 +16,7 @@ import {
   Github,
   GalleryThumbnails
 } from "lucide-react";
-import { LogoIcon, LogoIconPill } from "./icons";
+import { HeaderLogoIcon } from "./icons";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import {
@@ -66,7 +66,7 @@ const LandingPage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="floating-header">
             <Link href="/">
-              <LogoIconPill />
+              <HeaderLogoIcon />
             </Link>
             <nav className="hidden md:flex md:gap-2 items-center">
               <Link href="#features" className="header-link">Features</Link>
@@ -355,5 +355,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
-    

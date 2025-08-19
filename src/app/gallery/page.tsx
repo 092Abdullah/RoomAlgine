@@ -1,3 +1,4 @@
+
 import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
@@ -5,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
-import { LogoIcon, LogoIconPill } from '@/components/icons';
+import { HeaderLogoIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { GalleryItem } from '@/components/gallery-item';
 import { ThemeSwitcher } from '@/components/theme-switcher';
@@ -44,7 +45,7 @@ export default async function GalleryPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="floating-header">
             <Link href="/">
-              <LogoIconPill />
+              <HeaderLogoIcon />
             </Link>
             <nav className="hidden md:flex md:gap-2 items-center">
               <Link href="/#features" className="header-link">Features</Link>
