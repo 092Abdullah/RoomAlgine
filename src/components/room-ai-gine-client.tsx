@@ -93,24 +93,25 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
                     <HeaderLogoIcon />
                 </Link>
                 <div className="flex items-center gap-2">
-                    <div className="hidden md:flex items-center gap-2">
-                        <Button variant="outline" asChild>
-                            <Link href="/gallery"><GalleryThumbnails className="mr-2 h-4 w-4" /> Gallery</Link>
-                        </Button>
-                        {showGenerateButton && (
-                        <Button variant="ghost" onClick={onGenerateNew}>
-                            <RefreshCw className="mr-2 h-4 w-4" /> New Design
-                        </Button>
-                        )}
-                    </div>
-                    <div className="md:hidden">
-                        <Button asChild>
-                            <Link href="/generate">
-                            Start Designing
-                            </Link>
-                        </Button>
-                    </div>
+                    <Button variant="outline" asChild className="p-2 sm:px-4">
+                        <Link href="/gallery">
+                            <GalleryThumbnails className="h-4 w-4 md:mr-2" />
+                            <span className="hidden md:inline">Gallery</span>
+                        </Link>
+                    </Button>
+                    {showGenerateButton && (
+                    <Button variant="ghost" onClick={onGenerateNew} className="hidden md:inline-flex">
+                        <RefreshCw className="mr-2 h-4 w-4" /> New Design
+                    </Button>
+                    )}
                     <ThemeSwitcher />
+                    {showGenerateButton && (
+                         <div className="md:hidden">
+                            <Button onClick={onGenerateNew} size="icon">
+                                <RefreshCw className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -734,5 +735,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
