@@ -17,7 +17,9 @@ import {
   GalleryThumbnails,
   Users,
   Paintbrush,
-  Globe
+  Globe,
+  Zap,
+  Sofa
 } from "lucide-react";
 import { HeaderLogoIcon } from "./icons";
 import { Button } from "./ui/button";
@@ -197,8 +199,41 @@ const LandingPage = () => {
           </div>
         </section>
         
+        {/* Why Choose Us Section */}
+        <section id="why-choose-us" className="py-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold tracking-tight">Why Choose Us?</h2>
+              <p className="mt-2 text-lg text-muted-foreground">Discover the advantages of using RoomAIgine.</p>
+            </div>
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { icon: Zap, title: "Fast AI Processing", description: "Get your redesigned room in seconds, not days. Our AI is optimized for speed." },
+                { icon: Paintbrush, title: "Realistic Designs", description: "Our models create photorealistic images that are hard to distinguish from real photos." },
+                { icon: Sofa, title: "Wide Style Options", description: "Choose from a vast library of styles to find the perfect look for your space." },
+              ].map((feature, index) => (
+                <motion.div
+                  key={index}
+                  className="text-center p-6"
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.5 }}
+                  variants={FADE_IN_ANIMATION_VARIANTS}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 text-primary mx-auto mb-4">
+                    <feature.icon className="h-8 w-8" />
+                  </div>
+                  <h3 className="text-xl font-semibold">{feature.title}</h3>
+                  <p className="mt-2 text-muted-foreground">{feature.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* By the Numbers Section */}
-        <section id="by-the-numbers" className="py-20">
+        <section id="by-the-numbers" className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight">Trusted by creators worldwide</h2>
@@ -230,7 +265,7 @@ const LandingPage = () => {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-20 bg-secondary/30">
+        <section id="features" className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight">Powerful Features</h2>
@@ -263,7 +298,7 @@ const LandingPage = () => {
         </section>
 
         {/* Live Preview Carousel */}
-        <section id="see-the-magic" className="py-20">
+        <section id="see-the-magic" className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight">See the Magic</h2>
@@ -294,7 +329,7 @@ const LandingPage = () => {
         </section>
 
         {/* Testimonials Section */}
-        <section id="loved-by-creatives" className="py-20 bg-secondary/30">
+        <section id="loved-by-creatives" className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight">Loved by Creatives</h2>
@@ -334,7 +369,7 @@ const LandingPage = () => {
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="py-20">
+        <section id="faq" className="py-20 bg-secondary/30">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
                     <h2 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
@@ -363,7 +398,7 @@ const LandingPage = () => {
 
 
         {/* CTA Section */}
-        <section className="py-20 bg-secondary/30">
+        <section className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Ready to Redesign Your Space?</h2>
             <p className="mt-4 max-w-xl mx-auto text-lg text-muted-foreground">
@@ -398,5 +433,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
-    
