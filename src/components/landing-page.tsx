@@ -206,15 +206,15 @@ const LandingPage = () => {
                     <CarouselContent>
                         <CarouselItem>
                              <ReactCompareSlider
-                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/nq3QGF2t/before1.jpg" alt="Before image" data-ai-hint="old kitchen" className="object-cover w-full h-full"/>}
-                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/G4KRf34j/after1.png" alt="After image" data-ai-hint="luxury kitchen" className="object-cover w-full h-full"/>}
+                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/spCKd6WL/before.webp" alt="Before image" data-ai-hint="messy bedroom" className="object-cover w-full h-full"/>}
+                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/NgKGqxJ0/after.png" alt="After image" data-ai-hint="minimalist bedroom" className="object-cover w-full h-full"/>}
                                 className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
                             />
                         </CarouselItem>
                         <CarouselItem>
                              <ReactCompareSlider
-                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/spCKd6WL/before.webp" alt="Before image" data-ai-hint="messy bedroom" className="object-cover w-full h-full"/>}
-                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/NgKGqxJ0/after.png" alt="After image" data-ai-hint="minimalist bedroom" className="object-cover w-full h-full"/>}
+                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/nq3QGF2t/before1.jpg" alt="Before image" data-ai-hint="old kitchen" className="object-cover w-full h-full"/>}
+                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/G4KRf34j/after1.png" alt="After image" data-ai-hint="luxury kitchen" className="object-cover w-full h-full"/>}
                                 className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
                             />
                         </CarouselItem>
@@ -255,7 +255,7 @@ const LandingPage = () => {
                                 </div>
                             </div>
                             <div className="flex mb-2">
-                                {[...Array(testimonial.rating)].map((_, i) => <Star key={i} className="h-5 w-5 text-accent fill-accent" />)}
+                                {[...Array(testimonial.rating)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
                             </div>
                             <p className="text-muted-foreground">{`"${testimonial.review}"`}</p>
                         </CardContent>
