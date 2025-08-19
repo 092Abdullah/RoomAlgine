@@ -206,15 +206,15 @@ const LandingPage = () => {
                     <CarouselContent>
                         <CarouselItem>
                              <ReactCompareSlider
-                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/spCKd6WL/before.webp" alt="Before image" data-ai-hint="messy bedroom" className="object-cover w-full h-full"/>}
-                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/NgKGqxJ0/after.png" alt="After image" data-ai-hint="minimalist bedroom" className="object-cover w-full h-full"/>}
+                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/nq3QGF2t/before1.jpg" alt="Before image" data-ai-hint="old kitchen" className="object-cover w-full h-full"/>}
+                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/G4KRf34j/after1.png" alt="After image" data-ai-hint="luxury kitchen" className="object-cover w-full h-full"/>}
                                 className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
                             />
                         </CarouselItem>
                         <CarouselItem>
                              <ReactCompareSlider
-                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/nq3QGF2t/before1.jpg" alt="Before image" data-ai-hint="old kitchen" className="object-cover w-full h-full"/>}
-                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/G4KRf34j/after1.png" alt="After image" data-ai-hint="luxury kitchen" className="object-cover w-full h-full"/>}
+                                itemOne={<ReactCompareSliderImage src="https://i.ibb.co/spCKd6WL/before.webp" alt="Before image" data-ai-hint="messy bedroom" className="object-cover w-full h-full"/>}
+                                itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/NgKGqxJ0/after.png" alt="After image" data-ai-hint="minimalist bedroom" className="object-cover w-full h-full"/>}
                                 className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
                             />
                         </CarouselItem>
