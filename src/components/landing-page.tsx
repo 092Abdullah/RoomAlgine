@@ -14,7 +14,10 @@ import {
   Instagram,
   Linkedin,
   Github,
-  GalleryThumbnails
+  GalleryThumbnails,
+  Users,
+  Paintbrush,
+  Globe
 } from "lucide-react";
 import { HeaderLogoIcon } from "./icons";
 import { Button } from "./ui/button";
@@ -29,6 +32,7 @@ import {
 import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider";
 import { ThemeSwitcher } from "./theme-switcher";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
+import AnimatedCounter from "./animated-counter";
 
 
 const FADE_IN_ANIMATION_VARIANTS = {
@@ -58,6 +62,13 @@ const LandingPage = () => {
         question: "Is my data private?",
         answer: "Yes, your privacy is important to us. Your uploaded photos are used only to generate your designs and are not shared or used for any other purpose. You have the option to publish your creations to our public gallery if you wish to share them."
       }
+  ];
+  
+    const stats = [
+    { value: 150, text: "k+", label: "Designs Generated", icon: Sparkles },
+    { value: 50, text: "k+", label: "Happy Users", icon: Users },
+    { value: 200, text: "+", label: "Room Styles", icon: Paintbrush },
+    { value: 30, text: "+", label: "Countries Reached", icon: Globe },
   ];
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
@@ -185,9 +196,41 @@ const LandingPage = () => {
             </div>
           </div>
         </section>
+        
+        {/* By the Numbers Section */}
+        <section id="by-the-numbers" className="py-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold tracking-tight">By the Numbers</h2>
+              <p className="mt-2 text-lg text-muted-foreground">Trusted by a growing global community.</p>
+            </div>
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={index}
+                  className="text-center p-6"
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.5 }}
+                  variants={FADE_IN_ANIMATION_VARIANTS}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 text-primary mx-auto mb-4">
+                    <stat.icon className="h-8 w-8" />
+                  </div>
+                  <p className="text-4xl font-bold text-primary">
+                    <AnimatedCounter targetValue={stat.value} />
+                    {stat.text}
+                  </p>
+                  <p className="mt-2 text-muted-foreground">{stat.label}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* Features Section */}
-        <section id="features" className="py-20">
+        <section id="features" className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight">Powerful Features</h2>
@@ -220,7 +263,7 @@ const LandingPage = () => {
         </section>
 
         {/* Live Preview Carousel */}
-        <section id="see-the-magic" className="py-20 bg-secondary/30">
+        <section id="see-the-magic" className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight">See the Magic</h2>
@@ -251,7 +294,7 @@ const LandingPage = () => {
         </section>
 
         {/* Testimonials Section */}
-        <section id="loved-by-creatives" className="py-20">
+        <section id="loved-by-creatives" className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight">Loved by Creatives</h2>
@@ -291,7 +334,7 @@ const LandingPage = () => {
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="py-20 bg-secondary/30">
+        <section id="faq" className="py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
                     <h2 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
@@ -320,7 +363,7 @@ const LandingPage = () => {
 
 
         {/* CTA Section */}
-        <section className="py-20">
+        <section className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Ready to Redesign Your Space?</h2>
             <p className="mt-4 max-w-xl mx-auto text-lg text-muted-foreground">
