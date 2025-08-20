@@ -52,12 +52,13 @@ const generateRoomStylesFlow = ai.defineFlow(
       `1) Do NOT change the room architecture: preserve walls, windows, doors, built-in fixtures, ceiling height, and structural elements exactly as in the reference image.\n` +
       `2) Preserve the camera viewpoint, perspective, and crop. The generated image must match the original camera angle and framing so the before/after comparison lines up.\n` +
       `3) Do NOT add or remove windows, doors, columns, or architectural openings.\n` +
-      `4) Only modify: wall colors/finishes, floor materials, movable furniture, fabrics, small decor and lighting fixtures. Do NOT move fixed items.\n` +
-      `5) Do NOT change the overall layout, proportions, or apparent depth.\n` +
-      `6) If possible, use image editing/inpainting (preserve structure). Do NOT hallucinate new structural elements.`;
+      `4) You MUST replace all existing movable furniture, lighting, and decor with new items that fit the requested style. Do NOT keep any original furniture.\n` +
+      `5) Only modify: wall colors/finishes, floor materials, movable furniture, fabrics, small decor and lighting fixtures. Do NOT move fixed items.\n` +
+      `6) Do NOT change the overall layout, proportions, or apparent depth.\n` +
+      `7) If possible, use image editing/inpainting (preserve structure). Do NOT hallucinate new structural elements.`;
 
     const styledRoomImagePromises = input.styles.map(async style => {
-      let promptText = `Restyle this room in a ${style} style.`;
+      let promptText = `You are an expert AI interior designer. Your task is to completely redesign the given room in a ${style} style. This means replacing ALL furniture, rugs, lighting, and decor with new items that fit the style. Change wall colors and flooring as appropriate.`;
 
       if (input.roomType) {
         promptText += ` It is a ${input.roomType}.`;
