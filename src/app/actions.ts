@@ -5,7 +5,8 @@ import { z } from 'zod';
 import { generateRoomStyles, GenerateRoomStylesInput } from '@/ai/flows/generate-room-styles';
 import { detectRoomType } from '@/ai/flows/detect-room-type';
 import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flows/suggest-styles';
-import { publishToGallery, PublishToGalleryInput } from '@/ai/flows/publish-to-gallery';
+import { publishToGallery } from '@/ai/flows/publish-to-gallery';
+import type { PublishToGalleryInput } from '@/app/types';
 import { supabase } from '@/lib/supabase';
 
 export async function generateRoomStylesAction(
