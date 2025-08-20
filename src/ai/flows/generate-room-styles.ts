@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -48,33 +49,21 @@ const generateRoomStylesFlow = ai.defineFlow(
     outputSchema: GenerateRoomStylesOutputSchema,
   },
   async input => {
-    const ARCHITECTURE_CONSTRAINTS = `\nCONSTRAINTS (READ CAREFULLY):\n` +
-      `1) Do NOT change the room architecture: preserve walls, windows, doors, built-in fixtures, ceiling height, and structural elements exactly as in the reference image.\n` +
-      `2) Preserve the camera viewpoint, perspective, and crop. The generated image must match the original camera angle and framing so the before/after comparison lines up.\n` +
-      `3) Do NOT add or remove windows, doors, columns, or architectural openings.\n` +
-      `4) You MUST replace all existing movable furniture, lighting, and decor with new items that fit the requested style. Do NOT keep any original furniture.\n` +
-      `5) Only modify: wall colors/finishes, floor materials, movable furniture, fabrics, small decor and lighting fixtures. Do NOT move fixed items.\n` +
-      `6) Do NOT change the overall layout, proportions, or apparent depth.\n` +
-      `7) If possible, use image editing/inpainting (preserve structure). Do NOT hallucinate new structural elements.`;
-
     const styledRoomImagePromises = input.styles.map(async style => {
-      let promptText = `You are an expert AI interior designer. Your task is to completely redesign the given room in a ${style} style. This means replacing ALL furniture, rugs, lighting, and decor with new items that fit the style. Change wall colors and flooring as appropriate.`;
+      // This is a much clearer, more direct prompt.
+      const promptText = 
+`You are an expert AI interior designer. Your task is to redesign the provided room image.
 
-      if (input.roomType) {
-        promptText += ` It is a ${input.roomType}.`;
-      }
-      if (input.priceRange) {
-        promptText += ` The overall budget is around ${input.priceRange}, so the furniture and decor should reflect that.`;
-      }
-      if (input.colorPreferences && input.colorPreferences.length > 0) {
-        promptText += ` Use the following color preferences: ${input.colorPreferences.join(', ')}.`;
-      }
-      if (input.mood) {
-        promptText += ` The mood should be ${input.mood}.`;
-      }
+IMPORTANT INSTRUCTIONS:
+1.  **Transform the Room's Function:** The user wants to see this space as a **'${input.roomType || 'default style'}'**. You MUST replace all existing furniture, decor, and items to fit this new room function. For example, if the original is a bedroom but the user requested a living room, you must add sofas, coffee tables, etc.
+2.  **Apply the Design Style:** The specific style to apply is **'${style}'**. All new furniture, color palettes, textures, and decor must adhere to this style.
+3.  **Preserve Architecture (Non-negotiable):** You MUST NOT change the room's core structure. The walls, windows, doors, ceiling, and any permanent fixtures (like a fireplace) must remain in the exact same position and size as the original photo. The camera angle and perspective must also be identical.
+4.  **Use Preferences:** Incorporate the following user preferences:
+    -   **Color Preferences:** ${input.colorPreferences && input.colorPreferences.length > 0 ? input.colorPreferences.join(', ') : 'Not specified'}
+    -   **Desired Mood:** ${input.mood || 'Not specified'}
+    -   **Budget Level:** The furniture and materials should reflect a budget of around ${input.priceRange || 'moderate'}.
 
-      promptText += ARCHITECTURE_CONSTRAINTS;
-      promptText += `\nNOTE: Keep the same camera angle, perspective, framing and lighting direction as the input photo so before/after align perfectly.`;
+Your output should be a photorealistic image of the redesigned room, following all instructions precisely.`;
 
       const promptPayload = [
         { media: { url: input.photoDataUri } },
@@ -85,52 +74,32 @@ const generateRoomStylesFlow = ai.defineFlow(
         responseModalities: ['TEXT', 'IMAGE'],
       };
 
-      const maxRetries = 3;
-      let attempt = 0;
-      let delay = 1000; // start with 1s
+      try {
+        const { media } = await ai.generate({
+          model: 'googleai/gemini-2.0-flash-preview-image-generation',
+          prompt: promptPayload,
+          config: generateConfig,
+        });
 
-      while (attempt < maxRetries) {
-        try {
-          const { media, text } = await ai.generate({
-            model: 'googleai/gemini-2.0-flash-preview-image-generation',
-            prompt: promptPayload,
-            config: generateConfig,
-          });
-
-          if (media && media.url) {
-            return {
-              style: style,
-              imageDataUri: media.url,
-              debugText: text,
-            };
-          }
-          // If no media is returned, we can retry with a stronger prompt.
-          promptPayload.push({ text: '\nRETRY: You must return an image. Absolutely do NOT change windows, doors, walls or camera angle. Preserve all architectural features exactly.' });
-
-        } catch (err: any) {
-          // Check for rate limit error (429)
-          if (err.message && err.message.includes('429')) {
-              console.warn(`Rate limit exceeded for style: ${style}. Retrying in ${delay / 1000}s...`);
-              await new Promise(resolve => setTimeout(resolve, delay));
-              delay *= 2; // Exponential backoff
-          } else {
-            // For other errors, we can log them and stop retrying for this style.
-            console.error(`Image generation failed for style "${style}" on attempt ${attempt + 1}:`, err);
-            // Break the loop and return null or throw. Returning null will filter it out later.
-            return null;
-          }
+        if (media && media.url) {
+          return {
+            style: style,
+            imageDataUri: media.url,
+          };
         }
-        attempt++;
+        return null; // Return null if generation succeeds but returns no media
+      } catch (err) {
+        console.error(`Image generation failed for style "${style}":`, err);
+        return null; // Return null on error
       }
-      console.error(`Image generation failed for style: ${style} after ${maxRetries} attempts.`);
-      return null;
     });
 
     const results = await Promise.all(styledRoomImagePromises);
+    // Filter out any null results from failed generations
     const styledRoomImages = results.filter(image => image !== null) as { style: string, imageDataUri: string }[];
     
     if (styledRoomImages.length === 0 && input.styles.length > 0) {
-      throw new Error('Image generation failed for all selected styles. Please try again later.');
+      throw new Error('Image generation failed for all selected styles. Please try again or adjust your preferences.');
     }
 
     return {
