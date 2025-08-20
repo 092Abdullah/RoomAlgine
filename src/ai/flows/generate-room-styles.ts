@@ -51,18 +51,21 @@ const generateRoomStylesFlow = ai.defineFlow(
   async input => {
     const styledRoomImagePromises = input.styles.map(async style => {
       const promptText = 
-`You are an expert AI interior designer. Your task is to redesign the provided room image.
+`You are an expert AI interior designer. Your task is to redesign the provided room image based on a new style and function.
 
-IMPORTANT INSTRUCTIONS:
-1.  **Transform the Room's Function:** The user wants to see this space as a **'${input.roomType || 'default style'}'**. You MUST replace all existing furniture, decor, and items to fit this new room function. For example, if the original is a bedroom but the user requested a living room, you must add sofas, coffee tables, etc.
-2.  **Apply the Design Style:** The specific style to apply is **'${style}'**. All new furniture, color palettes, textures, and decor must adhere to this style.
-3.  **Preserve Architecture (Non-negotiable):** You MUST NOT change the room's core structure. The walls, windows, doors, ceiling, and any permanent fixtures (like a fireplace) must remain in the exact same position and size as the original photo. The camera angle and perspective must also be identical.
-4.  **Use Preferences:** Incorporate the following user preferences:
-    -   **Color Preferences:** ${input.colorPreferences && input.colorPreferences.length > 0 ? input.colorPreferences.join(', ') : 'Not specified'}
-    -   **Desired Mood:** ${input.mood || 'Not specified'}
-    -   **Budget Level:** The furniture and materials should reflect a budget of around ${input.priceRange || 'moderate'}.
+**CRITICAL, NON-NEGOTIABLE RULES:**
+1.  **PRESERVE ARCHITECTURE:** You MUST NOT alter the room's fundamental structure. The walls, windows, doors, ceiling, and floor must remain in the exact same position and size. Do not add, remove, or change any architectural elements.
+2.  **MAINTAIN CAMERA ANGLE:** The camera's perspective, angle, and field of view MUST remain IDENTICAL to the original photo. The output image must perfectly align with the input image for a smooth before/after comparison.
 
-Your output should be a photorealistic image of the redesigned room, following all instructions precisely.`;
+**REDESIGN INSTRUCTIONS:**
+*   **New Room Function:** The user wants to see this space transformed into a **'${input.roomType || 'default style'}'**. You MUST replace all existing furniture, decor, and items to fit this new room function. For example, if the original is a bedroom but the user requested a living room, you must introduce sofas, coffee tables, etc., and remove the bed.
+*   **New Design Style:** Apply the **'${style}'** design style. All new furniture, color palettes, textures, lighting, and decor must strictly adhere to this style's principles.
+*   **User Preferences:** Incorporate these user preferences into your design:
+    *   **Color Preferences:** ${input.colorPreferences && input.colorPreferences.length > 0 ? input.colorPreferences.join(', ') : 'Not specified'}
+    *   **Desired Mood:** ${input.mood || 'Not specified'}
+    *   **Budget Level:** The furniture and materials should reflect a budget of around ${input.priceRange || 'moderate'}.
+
+Your output must be a single, photorealistic image of the redesigned room that strictly follows all rules and instructions.`;
 
       const promptPayload = [
         { media: { url: input.photoDataUri } },
