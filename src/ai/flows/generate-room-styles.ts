@@ -9,8 +9,8 @@
  * - GenerateRoomStylesOutput - The return type for the generateRoomStyles function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const GenerateRoomStylesInputSchema = z.object({
   photoDataUri: z
@@ -50,43 +50,44 @@ const generateRoomStylesFlow = ai.defineFlow(
   },
   async (input) => {
     const styledRoomImagePromises = input.styles.map(async (style) => {
-        
-        // Base prompt components
-        const baseKeywords = "professional interior design photo, photorealistic, cinematic lighting, 8k, ultra-detailed, award-winning, high-end furniture and decor";
-        const negativeKeywords = "blurry, pixelated, unrealistic, cartoon, amateur, watermark, text, signature, human, people";
-        
-        // Dynamic components from user input
-        const styleKeywords = `${style} style`;
-        const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, color palette includes ${input.colorPreferences.join(', ')}` : '';
-        const moodKeywords = input.mood ? `, with a ${input.mood} mood` : '';
 
-        // Room-specific keywords
-        let roomSpecificKeywords = 'furniture, decor, lighting'; // Fallback
-        switch (input.roomType?.toLowerCase()) {
-            case 'bedroom':
-                roomSpecificKeywords = 'king-size bed with upholstered headboard, matching nightstands, dresser, accent chair, area rug, curtains, decorative pillows, table lamps, ceiling fixture';
-                break;
-            case 'living-room':
-                roomSpecificKeywords = 'large sectional sofa, coffee table, side tables, media console, bookshelf, floor lamp, statement artwork, throw blankets';
-                break;
-            case 'kitchen':
-                roomSpecificKeywords = 'modern cabinets, quartz countertops, kitchen island with seating, pendant lights, stainless steel appliances (refrigerator, stove, oven), backsplash, bar stools';
-                break;
-            case 'bathroom':
-                roomSpecificKeywords = 'vanity with sink, large mirror, walk-in shower with glass door, freestanding bathtub, toilet, recessed lighting, floor tiles, wall tiles';
-                break;
-            case 'office':
-                roomSpecificKeywords = 'large executive desk, ergonomic office chair, bookshelves, filing cabinet, desk lamp, task lighting, inspirational art';
-                break;
-            case 'dining-room':
-                roomSpecificKeywords = 'dining table that seats 8, matching dining chairs, sideboard or buffet, chandelier, area rug, centerpiece';
-                break;
-        }
-        
-        // Assemble the final positive prompt
-        const positivePrompt = `A ${styleKeywords} ${input.roomType || 'room'} interior featuring ${roomSpecificKeywords}. ${baseKeywords}${colorKeywords}${moodKeywords}.`;
+      // Base prompt components
+      const baseKeywords = "professional interior design photo, photorealistic, cinematic lighting, 8k, ultra-detailed, award-winning, high-end furniture and decor";
+      const negativeKeywords = "blurry, pixelated, unrealistic, cartoon, amateur, watermark, text, signature, human, people";
 
-        const instructionPrompt = `
+      // Dynamic components from user input
+      const styleKeywords = `${style} style`;
+      const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, color palette includes ${input.colorPreferences.join(', ')}` : '';
+      const moodKeywords = input.mood ? `, with a ${input.mood} mood` : '';
+
+      // Room-specific keywords
+      let roomSpecificKeywords = 'furniture, decor, lighting'; // Fallback
+      switch (input.roomType?.toLowerCase()) {
+        case 'bedroom':
+          roomSpecificKeywords = 'keep existing bed and furniture, transform into a cozy modern bedroom with warm tones, soft lighting, layered textiles, elegant curtains, decorative accents, minimal clutter';
+          break;
+        case 'living-room':
+          roomSpecificKeywords = 'preserve current sofa and layout, redesign into a contemporary living room with neutral walls, stylish textures, warm lighting, cozy accents, and modern artwork';
+          break;
+        case 'kitchen':
+          roomSpecificKeywords = 'keep cabinets and appliances, redesign into a sleek modern kitchen with updated colors, stylish backsplash, improved lighting, clean finishes, clutter-free surfaces';
+          break;
+        case 'bathroom':
+          roomSpecificKeywords = 'retain existing layout, transform into a spa-like bathroom with bright tiles, glass accents, soft lighting, clean lines, and elegant modern finishes';
+          break;
+        case 'office':
+          roomSpecificKeywords = 'keep current desk and chair, redesign into a productive modern office with better lighting, minimalistic decor, fresh colors, and stylish accents';
+          break;
+        case 'dining-room':
+          roomSpecificKeywords = 'retain existing dining set, redesign into an elegant dining space with warm tones, stylish chandelier lighting, decorative accents, and modern wall finishes';
+          break;
+
+      }
+
+      // Assemble the final positive prompt
+      const positivePrompt = `A ${styleKeywords} ${input.roomType || 'room'} interior featuring ${roomSpecificKeywords}. ${baseKeywords}${colorKeywords}${moodKeywords}.`;
+
+      const instructionPrompt = `
 You are an AI interior designer. Your task is to edit the provided image based on my instructions.
 
 **NON-NEGOTIABLE RULES:**
@@ -123,7 +124,7 @@ Redesign the room's interior based *only* on the positive and negative prompts, 
             imageDataUri: media.url,
           };
         }
-        return null; 
+        return null;
       } catch (err) {
         console.error(`Image generation failed for style "${style}":`, err);
         return null;
