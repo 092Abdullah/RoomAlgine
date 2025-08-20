@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -20,7 +21,7 @@ const DetectRoomTypeInputSchema = z.object({
 });
 export type DetectRoomTypeInput = z.infer<typeof DetectRoomTypeInputSchema>;
 
-const roomTypes = ["Bedroom", "Living Room", "Kitchen", "Bathroom", "Office", "Dining Room", "Other"];
+const roomTypes = ["Bedroom", "Living Room", "Kitchen", "Bathroom", "Office", "Dining Room", "Other"] as const;
 
 const DetectRoomTypeOutputSchema = z.object({
   roomType: z.enum(roomTypes).describe("The detected type of the room."),
