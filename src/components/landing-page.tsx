@@ -217,6 +217,7 @@ const LandingPage = () => {
                             height={600}
                             className="rounded-xl shadow-lg w-full h-auto"
                             data-ai-hint="luxury kitchen"
+                            loading="lazy"
                         />
                     </motion.div>
                     <motion.div
@@ -298,6 +299,7 @@ const LandingPage = () => {
                     fill
                     className="object-cover object-center opacity-10"
                     data-ai-hint="messy bedroom"
+                    loading="lazy"
                 />
                 <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
             </div>
