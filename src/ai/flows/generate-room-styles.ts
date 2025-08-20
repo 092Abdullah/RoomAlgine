@@ -50,7 +50,6 @@ const generateRoomStylesFlow = ai.defineFlow(
   },
   async input => {
     const styledRoomImagePromises = input.styles.map(async style => {
-      // This is a much clearer, more direct prompt.
       const promptText = 
 `You are an expert AI interior designer. Your task is to redesign the provided room image.
 
