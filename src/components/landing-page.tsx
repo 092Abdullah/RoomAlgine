@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { HeaderLogoIcon } from "./icons";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardFooter } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -36,6 +36,8 @@ import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slide
 import { ThemeSwitcher } from "./theme-switcher";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import AnimatedCounter from "./animated-counter";
+import { useScrollDirection } from "@/hooks/use-scroll-direction";
+import { cn } from "@/lib/utils";
 
 
 const FADE_IN_ANIMATION_VARIANTS = {
@@ -44,6 +46,7 @@ const FADE_IN_ANIMATION_VARIANTS = {
 };
 
 const LandingPage = () => {
+  const scrollDirection = useScrollDirection();
   const faqs = [
       {
         question: "What is RoomAIgine?",
@@ -76,7 +79,10 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
       {/* Header */}
-      <header className="fixed top-4 left-0 right-0 z-50">
+      <header className={cn(
+        "fixed top-4 left-0 right-0 z-50 transition-transform duration-300",
+        scrollDirection === "down" ? "-translate-y-24" : "translate-y-0"
+      )}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="floating-header">
             <Link href="/">

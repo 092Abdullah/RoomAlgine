@@ -44,6 +44,8 @@ import type { PublishToGalleryInput } from "@/app/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { ThemeSwitcher } from "./theme-switcher";
+import { useScrollDirection } from "@/hooks/use-scroll-direction";
+import { cn } from "@/lib/utils";
 
 type GeneratedImage = {
   style: string;
@@ -85,38 +87,44 @@ const colorPreferences = [
 
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 
-const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () => void, showGenerateButton: boolean }) => (
-    <header className="fixed top-4 left-0 right-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="floating-header">
-                <Link href="/">
-                    <HeaderLogoIcon />
-                </Link>
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" asChild className="p-2 sm:px-4">
-                        <Link href="/gallery">
-                            <GalleryThumbnails className="h-4 w-4 md:mr-2" />
-                            <span className="hidden md:inline">Gallery</span>
-                        </Link>
-                    </Button>
-                    {showGenerateButton && (
-                    <Button variant="ghost" onClick={onGenerateNew} className="hidden md:inline-flex">
-                        <RefreshCw className="mr-2 h-4 w-4" /> Generate New
-                    </Button>
-                    )}
-                    <ThemeSwitcher />
-                    {showGenerateButton && (
-                         <div className="md:hidden">
-                            <Button onClick={onGenerateNew} size="icon">
-                                <RefreshCw className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    )}
+const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () => void, showGenerateButton: boolean }) => {
+    const scrollDirection = useScrollDirection();
+    return (
+        <header className={cn(
+            "fixed top-4 left-0 right-0 z-50 transition-transform duration-300",
+            scrollDirection === "down" ? "-translate-y-24" : "translate-y-0"
+        )}>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="floating-header">
+                    <Link href="/">
+                        <HeaderLogoIcon />
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" asChild className="p-2 sm:px-4">
+                            <Link href="/gallery">
+                                <GalleryThumbnails className="h-4 w-4 md:mr-2" />
+                                <span className="hidden md:inline">Gallery</span>
+                            </Link>
+                        </Button>
+                        {showGenerateButton && (
+                        <Button variant="ghost" onClick={onGenerateNew} className="hidden md:inline-flex">
+                            <RefreshCw className="mr-2 h-4 w-4" /> Generate New
+                        </Button>
+                        )}
+                        <ThemeSwitcher />
+                        {showGenerateButton && (
+                             <div className="md:hidden">
+                                <Button onClick={onGenerateNew} size="icon">
+                                    <RefreshCw className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
-    </header>
-);
+        </header>
+    );
+}
 
 const UploadScreen = ({ onUploadClick }: { onUploadClick: () => void }) => (
     <motion.section
@@ -734,3 +742,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
