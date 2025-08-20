@@ -32,7 +32,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction, deleteCreationAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
-import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreHorizontal as MoreFiltersIcon, HeaderLogoIcon } from "./icons";
+import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, HeaderLogoIcon } from "./icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { Slider } from "@/components/ui/slider";
