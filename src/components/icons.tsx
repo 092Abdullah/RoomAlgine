@@ -14,7 +14,7 @@ export function LogoIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
-export function HeaderLogoIcon(props: SVGProps<SVGSVGElement>) {
+export function HeaderLogoIcon(props: React.HTMLAttributes<HTMLDivElement>) {
     return (
         <div className="flex items-center gap-2" {...props}>
             <div className="relative h-8 w-8">
