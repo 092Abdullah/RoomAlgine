@@ -24,7 +24,7 @@ export default function AnimatedCounter({ targetValue }: AnimatedCounterProps) {
         onUpdate(latest) {
             if (ref.current) {
                ref.current.textContent = Intl.NumberFormat("en-US").format(
-                latest.toFixed(0)
+                Math.round(latest)
                );
             }
         }
