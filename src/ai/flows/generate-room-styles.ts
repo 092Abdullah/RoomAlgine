@@ -53,16 +53,38 @@ const generateRoomStylesFlow = ai.defineFlow(
         
         // Base prompt components
         const baseKeywords = "professional interior design photo, photorealistic, cinematic lighting, 8k, ultra-detailed, award-winning, high-end furniture and decor";
-        const negativeKeywords = "blurry, pixelated, unrealistic, cartoon, amateur, watermark, text, signature";
+        const negativeKeywords = "blurry, pixelated, unrealistic, cartoon, amateur, watermark, text, signature, human, people";
         
         // Dynamic components from user input
         const styleKeywords = `${style} style`;
-        const roomTypeKeywords = input.roomType ? `, transformed into a ${input.roomType}` : '';
         const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, color palette includes ${input.colorPreferences.join(', ')}` : '';
         const moodKeywords = input.mood ? `, with a ${input.mood} mood` : '';
+
+        // Room-specific keywords
+        let roomSpecificKeywords = 'furniture, decor, lighting'; // Fallback
+        switch (input.roomType?.toLowerCase()) {
+            case 'bedroom':
+                roomSpecificKeywords = 'king-size bed with upholstered headboard, matching nightstands, dresser, accent chair, area rug, curtains, decorative pillows, table lamps, ceiling fixture';
+                break;
+            case 'living-room':
+                roomSpecificKeywords = 'large sectional sofa, coffee table, side tables, media console, bookshelf, floor lamp, statement artwork, throw blankets';
+                break;
+            case 'kitchen':
+                roomSpecificKeywords = 'modern cabinets, quartz countertops, kitchen island with seating, pendant lights, stainless steel appliances (refrigerator, stove, oven), backsplash, bar stools';
+                break;
+            case 'bathroom':
+                roomSpecificKeywords = 'vanity with sink, large mirror, walk-in shower with glass door, freestanding bathtub, toilet, recessed lighting, floor tiles, wall tiles';
+                break;
+            case 'office':
+                roomSpecificKeywords = 'large executive desk, ergonomic office chair, bookshelves, filing cabinet, desk lamp, task lighting, inspirational art';
+                break;
+            case 'dining-room':
+                roomSpecificKeywords = 'dining table that seats 8, matching dining chairs, sideboard or buffet, chandelier, area rug, centerpiece';
+                break;
+        }
         
         // Assemble the final positive prompt
-        const positivePrompt = `A ${styleKeywords}${roomTypeKeywords} interior. ${baseKeywords}${colorKeywords}${moodKeywords}.`;
+        const positivePrompt = `A ${styleKeywords} ${input.roomType || 'room'} interior featuring ${roomSpecificKeywords}. ${baseKeywords}${colorKeywords}${moodKeywords}.`;
 
         const instructionPrompt = `
 You are an AI interior designer. Your task is to edit the provided image based on my instructions.
@@ -70,7 +92,7 @@ You are an AI interior designer. Your task is to edit the provided image based o
 **NON-NEGOTIABLE RULES:**
 1.  **PRESERVE ARCHITECTURE:** Do NOT alter the room's fundamental structure. Walls, windows, doors, ceiling, and floor must remain in the exact same position and size.
 2.  **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
-3.  **REMOVE ALL FURNITURE:** Completely remove all existing furniture, decorations, and items from the original image before adding new ones.
+3.  **REMOVE ALL FURNISHINGS:** Completely remove all existing furniture, decorations, and other items from the original image before adding new ones that fit the new design.
 
 **TASK:**
 - **Positive Prompt (Your Goal):** ${positivePrompt}
