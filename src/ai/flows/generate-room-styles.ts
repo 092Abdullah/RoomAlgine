@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -52,7 +51,7 @@ const generateRoomStylesFlow = ai.defineFlow(
     const styledRoomImagePromises = input.styles.map(async (style) => {
 
       // Base prompt components
-      const baseKeywords = "professional interior design photo, photorealistic, cinematic lighting, 8k, ultra-detailed, award-winning, high-end furniture and decor";
+      const baseKeywords = "professional interior design photo, photorealistic, cinematic lighting, 8k, ultra-detailed, high-end finishes, stylish decor";
       const negativeKeywords = "blurry, pixelated, unrealistic, cartoon, amateur, watermark, text, signature, human, people";
 
       // Dynamic components from user input
@@ -60,47 +59,45 @@ const generateRoomStylesFlow = ai.defineFlow(
       const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, color palette includes ${input.colorPreferences.join(', ')}` : '';
       const moodKeywords = input.mood ? `, with a ${input.mood} mood` : '';
 
-      // Room-specific keywords
-      let roomSpecificKeywords = 'furniture, decor, lighting'; // Fallback
+      // Room-specific keywords (preserve furniture, only restyle)
+      let roomSpecificKeywords = 'retain all existing furniture and layout, restyle with updated colors, materials, and finishes'; // Fallback
       switch (input.roomType?.toLowerCase()) {
         case 'bedroom':
-          roomSpecificKeywords = 'keep existing bed and furniture, transform into a cozy modern bedroom with warm tones, soft lighting, layered textiles, elegant curtains, decorative accents, minimal clutter';
+          roomSpecificKeywords = 'keep existing bed and furniture, restyle into a cozy modern bedroom with warm tones, layered textiles, elegant curtains, decorative accents, and soft lighting';
           break;
         case 'living-room':
-          roomSpecificKeywords = 'preserve current sofa and layout, redesign into a contemporary living room with neutral walls, stylish textures, warm lighting, cozy accents, and modern artwork';
+          roomSpecificKeywords = 'preserve current sofa and layout, restyle into a contemporary living room with neutral walls, stylish textures, cozy accents, and modern artwork';
           break;
         case 'kitchen':
-          roomSpecificKeywords = 'keep cabinets and appliances, redesign into a sleek modern kitchen with updated colors, stylish backsplash, improved lighting, clean finishes, clutter-free surfaces';
+          roomSpecificKeywords = 'keep cabinets and appliances, restyle into a sleek modern kitchen with updated finishes, stylish backsplash, improved lighting, and clutter-free surfaces';
           break;
         case 'bathroom':
-          roomSpecificKeywords = 'retain existing layout, transform into a spa-like bathroom with bright tiles, glass accents, soft lighting, clean lines, and elegant modern finishes';
+          roomSpecificKeywords = 'retain existing layout, restyle into a spa-like bathroom with bright tiles, glass accents, soft lighting, and clean modern finishes';
           break;
         case 'office':
-          roomSpecificKeywords = 'keep current desk and chair, redesign into a productive modern office with better lighting, minimalistic decor, fresh colors, and stylish accents';
+          roomSpecificKeywords = 'keep current desk and chair, restyle into a productive modern office with better lighting, minimalistic decor, fresh colors, and stylish accents';
           break;
         case 'dining-room':
-          roomSpecificKeywords = 'retain existing dining set, redesign into an elegant dining space with warm tones, stylish chandelier lighting, decorative accents, and modern wall finishes';
+          roomSpecificKeywords = 'retain existing dining set, restyle into an elegant dining space with warm tones, stylish chandelier lighting, decorative accents, and modern wall finishes';
           break;
-
       }
 
       // Assemble the final positive prompt
-      const positivePrompt = `A ${styleKeywords} ${input.roomType || 'room'} interior featuring ${roomSpecificKeywords}. ${baseKeywords}${colorKeywords}${moodKeywords}.`;
+      const positivePrompt = `A ${styleKeywords} ${input.roomType || 'room'} interior. ${roomSpecificKeywords}. ${baseKeywords}${colorKeywords}${moodKeywords}.`;
 
       const instructionPrompt = `
 You are an AI interior designer. Your task is to edit the provided image based on my instructions.
 
 **NON-NEGOTIABLE RULES:**
-1.  **PRESERVE ARCHITECTURE:** Do NOT alter the room's fundamental structure. Walls, windows, doors, ceiling, and floor must remain in the exact same position and size.
-2.  **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
-3.  **REMOVE ALL FURNISHINGS:** Completely remove all existing furniture, decorations, and other items from the original image before adding new ones that fit the new design.
+1. **PRESERVE ARCHITECTURE:** Do NOT alter the room's fundamental structure. Walls, windows, doors, ceiling, and floor must remain the same.
+2. **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
+3. **KEEP EXISTING FURNITURE:** Keep all furniture, layout, and major items in place. Do NOT replace them. Only restyle with new colors, textures, finishes, and decor adjustments.
 
 **TASK:**
 - **Positive Prompt (Your Goal):** ${positivePrompt}
 - **Negative Prompt (What to Avoid):** ${negativeKeywords}
 
-Redesign the room's interior based *only* on the positive and negative prompts, while strictly following all rules. The output must be a single, photorealistic image.`;
-
+Restyle the room's interior strictly according to the positive prompt, while following all rules. The output must be a single, photorealistic image.`;
 
       const promptPayload = [
         { media: { url: input.photoDataUri } },
