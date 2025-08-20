@@ -101,7 +101,7 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
                     </Button>
                     {showGenerateButton && (
                     <Button variant="ghost" onClick={onGenerateNew} className="hidden md:inline-flex">
-                        <RefreshCw className="mr-2 h-4 w-4" /> New Design
+                        <RefreshCw className="mr-2 h-4 w-4" /> Generate New
                     </Button>
                     )}
                     <ThemeSwitcher />
@@ -735,3 +735,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    
