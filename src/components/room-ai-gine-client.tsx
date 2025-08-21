@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, type ChangeEvent, useEffect } from "react";
+import { useState, useRef, type ChangeEvent, useEffect, type DragEvent } from "react";
 import Image from "next/image";
 import {
   Upload,
@@ -126,29 +126,71 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
     );
 }
 
-const UploadScreen = ({ onUploadClick }: { onUploadClick: () => void }) => (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="text-center max-w-2xl mx-auto p-4"
-    >
-      <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
-        Visualize Your Dream Room
-      </h1>
-      <p className="mt-4 text-lg text-muted-foreground">
-        Upload a photo of your room, pick your favorite styles, and let
-        our AI bring your vision to life in seconds.
-      </p>
-      <Button
-        size="lg"
-        className="mt-8"
-        onClick={onUploadClick}
-      >
-        <Upload className="mr-2 h-5 w-5" /> Upload Your Room
-      </Button>
-    </motion.section>
-);
+const UploadScreen = ({ onUploadClick, onFileDrop }: { onUploadClick: () => void, onFileDrop: (file: File) => void }) => {
+    const [isDragging, setIsDragging] = useState(false);
+
+    const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            onFileDrop(e.dataTransfer.files[0]);
+            e.dataTransfer.clearData();
+        }
+    };
+
+    return (
+        <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="text-center max-w-2xl mx-auto p-4 w-full"
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+        >
+            <div className={cn(
+                "w-full h-full border-2 border-dashed rounded-xl p-8 sm:p-12 transition-colors duration-300",
+                isDragging ? "border-primary bg-primary/10" : "border-border"
+            )}>
+                <div className="flex flex-col items-center justify-center pointer-events-none">
+                    <Upload className="h-12 w-12 text-muted-foreground" />
+                    <h1 className="mt-4 text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+                        Drag & Drop Your Room Photo
+                    </h1>
+                    <p className="mt-2 text-lg text-muted-foreground">
+                        or click to select a file
+                    </p>
+                    <Button
+                        size="lg"
+                        className="mt-6 pointer-events-auto"
+                        onClick={onUploadClick}
+                    >
+                        <Upload className="mr-2 h-5 w-5" /> Upload Your Room
+                    </Button>
+                </div>
+            </div>
+        </motion.section>
+    );
+};
 
 
 const RoomAIGineEditor = ({
@@ -507,37 +549,53 @@ export default function RoomAIGineClient() {
 
   const isLoading = isDetectingRoomType || isGenerating;
 
+  const processFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Invalid File Type", {
+        description: "Please upload an image file (e.g., JPG, PNG).",
+      });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const dataUri = e.target?.result as string;
+      setUploadedImage(dataUri);
+      setGeneratedImages([]);
+      setActiveGeneratedImage(null);
+      setStyleSuggestions([]);
+
+      setIsDetectingRoomType(true);
+      setLoadingMessage("Detecting room type...");
+
+      const detectionResult = await detectRoomTypeAction(dataUri);
+      if ('roomType' in detectionResult) {
+          const isValidRoomType = roomTypes.some(rt => rt.id === detectionResult.roomType);
+          if (isValidRoomType) {
+              setRoomType(detectionResult.roomType);
+          } else {
+              console.warn(`Detected room type "${detectionResult.roomType}" is not a selectable option.`);
+          }
+      } else {
+          toast.error("Room Detection Failed", {
+              description: detectionResult.error,
+          });
+      }
+      setIsDetectingRoomType(false);
+      setLoadingMessage("");
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const dataUri = e.target?.result as string;
-        setUploadedImage(dataUri);
-        setGeneratedImages([]);
-        setActiveGeneratedImage(null);
-        setStyleSuggestions([]);
+      processFile(file);
+    }
+  };
 
-        setIsDetectingRoomType(true);
-        setLoadingMessage("Detecting room type...");
-
-        const detectionResult = await detectRoomTypeAction(dataUri);
-        if ('roomType' in detectionResult) {
-            const isValidRoomType = roomTypes.some(rt => rt.id === detectionResult.roomType);
-            if (isValidRoomType) {
-                setRoomType(detectionResult.roomType);
-            } else {
-                console.warn(`Detected room type "${detectionResult.roomType}" is not a selectable option.`);
-            }
-        } else {
-            toast.error("Room Detection Failed", {
-                description: detectionResult.error,
-            });
-        }
-        setIsDetectingRoomType(false);
-        setLoadingMessage("");
-      };
-      reader.readAsDataURL(file);
+  const handleFileDrop = (file: File) => {
+    if (file) {
+      processFile(file);
     }
   };
 
@@ -699,7 +757,10 @@ export default function RoomAIGineClient() {
       <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={!!uploadedImage} />
       <main className="flex-grow flex items-center justify-center pt-24">
         {!uploadedImage ? (
-          <UploadScreen onUploadClick={() => fileInputRef.current?.click()} />
+          <UploadScreen
+            onUploadClick={() => fileInputRef.current?.click()}
+            onFileDrop={handleFileDrop}
+          />
         ) : (
           <RoomAIGineEditor
             uploadedImage={uploadedImage}
@@ -742,5 +803,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
