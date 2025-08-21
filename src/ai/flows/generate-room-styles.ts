@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -48,56 +49,53 @@ const generateRoomStylesFlow = ai.defineFlow(
     outputSchema: GenerateRoomStylesOutputSchema,
   },
   async (input) => {
-    const styledRoomImagePromises = input.styles.map(async (style) => {
+    const styledRoomImages: { style: string; imageDataUri: string }[] = [];
 
+    for (const style of input.styles) {
       // Base prompt components
       const baseKeywords = "professional interior design photo, photorealistic, cinematic lighting, 8k, ultra-detailed, high-end finishes, stylish decor";
-      const negativeKeywords = "blurry, pixelated, unrealistic, cartoon, amateur, watermark, text, signature, human, people";
-
+      
       // Dynamic components from user input
       const styleKeywords = `${style} style`;
       const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, color palette includes ${input.colorPreferences.join(', ')}` : '';
       const moodKeywords = input.mood ? `, with a ${input.mood} mood` : '';
 
-      // Room-specific keywords (preserve furniture, only restyle)
-      let roomSpecificKeywords = 'retain all existing furniture and layout, restyle with updated colors, materials, and finishes'; // Fallback
+      // Room-specific keywords
+      let roomSpecificKeywords = 'a beautifully designed room'; // Fallback
       switch (input.roomType?.toLowerCase()) {
         case 'bedroom':
-          roomSpecificKeywords = 'keep existing bed and furniture, restyle into a cozy modern bedroom with warm tones, layered textiles, elegant curtains, decorative accents, and soft lighting';
+          roomSpecificKeywords = 'a bedroom with a king-size bed, nightstands, decorative pillows, stylish rug, and elegant curtains';
           break;
         case 'living-room':
-          roomSpecificKeywords = 'preserve current sofa and layout, restyle into a contemporary living room with neutral walls, stylish textures, cozy accents, and modern artwork';
+          roomSpecificKeywords = 'a living room with a comfortable sofa, coffee table, accent chairs, modern artwork, and cozy textiles';
           break;
         case 'kitchen':
-          roomSpecificKeywords = 'keep cabinets and appliances, restyle into a sleek modern kitchen with updated finishes, stylish backsplash, improved lighting, and clutter-free surfaces';
+          roomSpecificKeywords = 'a kitchen with sleek countertops, modern cabinetry, stylish backsplash, high-end appliances, and an island';
           break;
         case 'bathroom':
-          roomSpecificKeywords = 'retain existing layout, restyle into a spa-like bathroom with bright tiles, glass accents, soft lighting, and clean modern finishes';
+          roomSpecificKeywords = 'a bathroom with a walk-in shower, freestanding bathtub, modern vanity, stylish tiles, and spa-like accessories';
           break;
         case 'office':
-          roomSpecificKeywords = 'keep current desk and chair, restyle into a productive modern office with better lighting, minimalistic decor, fresh colors, and stylish accents';
+          roomSpecificKeywords = 'an office with a minimalist desk, ergonomic chair, bookshelves, task lighting, and inspiring decor';
           break;
         case 'dining-room':
-          roomSpecificKeywords = 'retain existing dining set, restyle into an elegant dining space with warm tones, stylish chandelier lighting, decorative accents, and modern wall finishes';
+          roomSpecificKeywords = 'a dining room with an elegant dining table, comfortable chairs, a statement chandelier, and a stylish buffet';
           break;
       }
 
       // Assemble the final positive prompt
-      const positivePrompt = `A ${styleKeywords} ${input.roomType || 'room'} interior. ${roomSpecificKeywords}. ${baseKeywords}${colorKeywords}${moodKeywords}.`;
-
       const instructionPrompt = `
-You are an AI interior designer. Your task is to edit the provided image based on my instructions.
+You are an expert AI interior designer. Your task is to edit the provided image based on my instructions.
 
 **NON-NEGOTIABLE RULES:**
-1. **PRESERVE ARCHITECTURE:** Do NOT alter the room's fundamental structure. Walls, windows, doors, ceiling, and floor must remain the same.
+1. **PRESERVE ARCHITECTURE:** Do NOT alter the room's fundamental structure. Walls, windows, doors, ceiling, and floor MUST remain the same.
 2. **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
-3. **KEEP EXISTING FURNITURE:** Keep all furniture, layout, and major items in place. Do NOT replace them. Only restyle with new colors, textures, finishes, and decor adjustments.
+3. **REPLACE FURNISHINGS:** Replace all existing furniture, decorations, and items with new ones that fit the new design.
 
 **TASK:**
-- **Positive Prompt (Your Goal):** ${positivePrompt}
-- **Negative Prompt (What to Avoid):** ${negativeKeywords}
+Restyle the room's interior to be a photorealistic image of **${roomSpecificKeywords}** in a **${styleKeywords}**. The design should feature ${baseKeywords}${colorKeywords}${moodKeywords}.
+The output must be a single, photorealistic image.`;
 
-Restyle the room's interior strictly according to the positive prompt, while following all rules. The output must be a single, photorealistic image.`;
 
       const promptPayload = [
         { media: { url: input.photoDataUri } },
@@ -116,23 +114,16 @@ Restyle the room's interior strictly according to the positive prompt, while fol
         });
 
         if (media && media.url) {
-          return {
+          styledRoomImages.push({
             style: style,
             imageDataUri: media.url,
-          };
+          });
         }
-        return null;
       } catch (err) {
         console.error(`Image generation failed for style "${style}":`, err);
-        return null;
+        // Continue to the next style instead of throwing an error for the whole batch
       }
-    });
-
-    const results = await Promise.all(styledRoomImagePromises);
-    const styledRoomImages = results.filter((image) => image !== null) as {
-      style: string;
-      imageDataUri: string;
-    }[];
+    }
 
     if (styledRoomImages.length === 0 && input.styles.length > 0) {
       throw new Error(

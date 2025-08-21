@@ -17,7 +17,7 @@ import {
   GalleryThumbnails,
   Expand,
   ArrowRight,
-  Gamepad2
+  UtensilsCrossed
 } from "lucide-react";
 import {
   Card,
@@ -65,7 +65,7 @@ const roomTypes = [
   { id: 'kitchen', label: 'Kitchen', icon: CookingPot },
   { id: 'bathroom', label: 'Bathroom', icon: Bath },
   { id: 'office', label: 'Office', icon: OfficeIcon },
-  { id: 'gaming-room', label: 'Gaming Room', icon: Gamepad2 },
+  { id: 'dining-room', label: 'Dining Room', icon: UtensilsCrossed },
 ];
 
 const colorPreferences = [
