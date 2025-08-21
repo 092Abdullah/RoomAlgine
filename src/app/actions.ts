@@ -3,6 +3,7 @@
 
 import { z } from 'zod';
 import { generateRoomStyles, GenerateRoomStylesInput } from '@/ai/flows/generate-room-styles';
+import { generateExteriorStyles, GenerateExteriorStylesInput } from '@/ai/flows/generate-exterior-styles';
 import { detectRoomType } from '@/ai/flows/detect-room-type';
 import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flows/suggest-styles';
 import { publishToGallery } from '@/ai/flows/publish-to-gallery';
@@ -22,6 +23,26 @@ export async function generateRoomStylesAction(
   
   try {
     const result = await generateRoomStyles({ ...input, photoDataUri });
+    return result;
+  } catch (e: any) {
+    console.error(e);
+    return { error: e.message || 'Error creating image, please try again.' };
+  }
+}
+
+export async function generateExteriorStylesAction(
+  input: Omit<GenerateExteriorStylesInput, 'photoDataUri'>,
+  photoDataUri?: string | null
+): Promise<{ styledExteriorImages: { style: string; imageDataUri: string }[] } | { error: string }> {
+  if (!photoDataUri) {
+    return { error: 'Please upload an image first.' };
+  }
+  if (input.styles.length === 0) {
+    return { error: 'Please select at least one style.' };
+  }
+  
+  try {
+    const result = await generateExteriorStyles({ ...input, photoDataUri });
     return result;
   } catch (e: any) {
     console.error(e);
