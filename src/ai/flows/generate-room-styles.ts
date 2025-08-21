@@ -90,7 +90,6 @@ You are an expert AI interior designer. Your task is to edit the provided image 
 **NON-NEGOTIABLE RULES:**
 1. **PRESERVE ARCHITECTURE:** Do NOT alter the room's fundamental structure. Walls, windows, doors, ceiling, and floor MUST remain the same.
 2. **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
-3. **REPLACE FURNISHINGS:** Replace all existing furniture, decorations, and items with new ones that fit the new design.
 
 **TASK:**
 Restyle the room's interior to be a photorealistic image of **${roomSpecificKeywords}** in a **${styleKeywords}**. The design should feature ${baseKeywords}${colorKeywords}${moodKeywords}.
