@@ -77,11 +77,8 @@ const generateRoomStylesFlow = ai.defineFlow(
         case 'office':
           roomSpecificKeywords = 'a productive modern office with an ergonomic desk, chair, and good lighting';
           break;
-        case 'dining-room':
-          roomSpecificKeywords = 'an elegant dining space with a dining table, chairs, and statement lighting';
-          break;
         case 'gaming-room':
-          roomSpecificKeywords = "Modern gaming room interior, stylish RGB LED lighting, dual-monitor gaming setup, ergonomic gaming chair, sleek gaming desk, wall-mounted shelves with collectibles, minimal yet futuristic design, cozy ambiance for long gaming sessions";
+          roomSpecificKeywords = 'a futuristic gaming room with stylish RGB lighting, a high-end gaming setup, and ergonomic furniture';
           break;
       }
 
