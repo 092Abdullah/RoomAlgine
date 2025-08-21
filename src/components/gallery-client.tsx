@@ -7,6 +7,7 @@ import { GalleryItem } from './gallery-item';
 import type { Creation } from '@/app/gallery/page';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
+import { Home, Building, Folder } from 'lucide-react';
 
 
 export function GalleryClient({ creations }: { creations: Creation[] }) {
@@ -37,9 +38,18 @@ export function GalleryClient({ creations }: { creations: Creation[] }) {
             <div className="flex justify-center mb-8">
                 <Tabs value={currentFilter} onValueChange={handleFilterChange}>
                     <TabsList>
-                        <TabsTrigger value="all">All</TabsTrigger>
-                        <TabsTrigger value="interior">Interior Designs</TabsTrigger>
-                        <TabsTrigger value="exterior">Exterior Designs</TabsTrigger>
+                        <TabsTrigger value="all">
+                            <Folder className="h-4 w-4 mr-2" />
+                            All
+                        </TabsTrigger>
+                        <TabsTrigger value="interior">
+                            <Home className="h-4 w-4 mr-2" />
+                            Interior Designs
+                        </TabsTrigger>
+                        <TabsTrigger value="exterior">
+                            <Building className="h-4 w-4 mr-2" />
+                            Exterior Designs
+                        </TabsTrigger>
                     </TabsList>
                 </Tabs>
             </div>
