@@ -12,7 +12,7 @@ import {
   Sparkles,
   RefreshCw,
   Trees,
-  Brick,
+  Construction,
   PaintRoller,
   Expand,
   GalleryThumbnails,
@@ -327,7 +327,7 @@ const ExteriorAIGineEditor = ({
                     <CardContent className="space-y-6">
                         <div>
                              <Label className="mb-2 block flex items-center gap-2">
-                                <Brick className="h-5 w-5" /> Materials
+                                <Construction className="h-5 w-5" /> Materials
                             </Label>
                             <ToggleGroup type="multiple" value={selectedMaterials} onValueChange={setSelectedMaterials} className="grid grid-cols-2 gap-2">
                                 {materialOptions.map((material) => (
