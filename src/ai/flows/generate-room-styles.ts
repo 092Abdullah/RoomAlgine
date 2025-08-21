@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -53,40 +52,49 @@ const generateRoomStylesFlow = ai.defineFlow(
 
     for (const style of input.styles) {
       // Base prompt components
-      const baseKeywords = "photorealistic, cinematic lighting, 8k, ultra-detailed, high-end finishes, stylish decor";
+      const baseKeywords = "professional interior design photo, photorealistic, cinematic lighting, 8k, ultra-detailed, high-end finishes, stylish decor";
       
       // Dynamic components from user input
       const styleKeywords = `${style} style`;
-      const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, with a color palette including ${input.colorPreferences.join(', ')}` : '';
-      const moodKeywords = input.mood ? `, evoking a ${input.mood} mood` : '';
+      const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, color palette includes ${input.colorPreferences.join(', ')}` : '';
+      const moodKeywords = input.mood ? `, with a ${input.mood} mood` : '';
       const roomTypeKeywords = input.roomType ? ` this ${input.roomType}` : '';
 
-      // Budget-related keywords
+      // Parse budget and determine keywords
+      const budgetStr = input.priceRange ? input.priceRange.replace(/[^0-9]/g, '') : '0';
+      const budgetNum = parseInt(budgetStr, 10) || 0;
       let budgetKeywords = '';
-      if (input.priceRange) {
-        const price = parseInt(input.priceRange.replace(/[^0-9]/g, ''), 10);
-        let budgetTier = '';
-        if (price <= 5000) {
-            budgetTier = 'budget-friendly, focusing on cost-effective materials, simple and functional furniture (e.g., Ikea-style), and minimal decor';
-        } else if (price <= 25000) {
-            budgetTier = 'mid-range, using quality materials, comfortable and stylish furniture, and thoughtful decor accessories';
+      let itemCountDescription = '';
+      if (budgetNum === 0) {
+        budgetKeywords = '. Do not add any new decor elements; focus solely on restyling and repurposing existing items in the room.';
+      } else {
+        let qualityDescription = 'simple and affordable';
+        if (budgetNum <= 10000) {
+          itemCountDescription = 'about 2';
+        } else if (budgetNum <= 20000) {
+          itemCountDescription = 'about 4';
+        } else if (budgetNum <= 30000) {
+          itemCountDescription = '3 to 6';
+          qualityDescription = 'balanced and textured';
         } else {
-            budgetTier = 'high-end, featuring premium materials, designer furniture, luxurious textiles, and unique art and decor pieces';
+          itemCountDescription = `${Math.floor(budgetNum / 5000)} or more`;
+          qualityDescription = 'numerous and luxurious';
         }
-        budgetKeywords = `. The design should reflect a ${budgetTier}`;
+        budgetKeywords = `. Add ${itemCountDescription} decor elements such as pillows, vases, plants, artwork, rugs, and accessories, using ${qualityDescription} items to enhance the space without overcrowding or altering the core layout.`;
       }
-      
+
+      // Assemble the final positive prompt
       const instructionPrompt = `
 You are an expert AI interior designer. Your task is to edit the provided image based on my instructions.
 
 **NON-NEGOTIABLE RULES:**
 1. **PRESERVE ARCHITECTURE STRUCTURE:** Do NOT alter the positions, shapes, or layout of walls, windows, doors, ceiling, and floor. You may change their colors, textures, and materials only.
 2. **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
-3. **REPLACE FURNISHINGS:** Replace all existing furniture, decorations, and items with new ones that fit the new design.
-4. **ADD DECOR:** You may add decor elements such as pillows, vases, plants, artwork, rugs, and accessories to enhance the space, but do not overcrowd or alter the room's core layout.
+3. **PRESERVE FURNITURE AND OBJECTS:** Do NOT add, remove, or move any furniture or core objects in the room. Only restyle their appearance, materials, colors, and designs.
+4. **DECOR ADDITIONS BASED ON BUDGET:** You may add decor elements such as pillows, vases, plants, artwork, rugs, and accessories only if specified in the task, ensuring they enhance without overcrowding.
 
 **TASK:**
-Redesign${roomTypeKeywords} to embody a ${styleKeywords} design${colorKeywords}${moodKeywords}${budgetKeywords}. The result should feature ${baseKeywords}.
+Review the existing elements in the provided room image and restyle them${roomTypeKeywords} to embody a ${styleKeywords} design${colorKeywords}${moodKeywords}${budgetKeywords}. The result should feature ${baseKeywords}.
 The output must be a single, photorealistic image.`;
 
       const promptPayload = [
