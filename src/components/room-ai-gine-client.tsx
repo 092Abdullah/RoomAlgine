@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent, useEffect, type DragEvent } from "react";
+import { useSearchParams, useRouter } from 'next/navigation'
 import Image from "next/image";
 import {
   Upload,
@@ -525,6 +526,8 @@ const RoomAIGineEditor = ({
 }
 
 export default function RoomAIGineClient() {
+  const router = useRouter();
+  const searchParams = useSearchParams()
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>("Minimalist");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -547,7 +550,14 @@ export default function RoomAIGineClient() {
   useEffect(() => {
     // This code runs only on the client
     import('ldrs').then(ldrs => ldrs.helix.register());
-  }, []);
+
+    const image = searchParams.get('image');
+    if (image) {
+      // In a real app, you might fetch the image data from a URL
+      // For simplicity here, we assume it's a data URI passed for demo purposes
+      // setUploadedImage(image);
+    }
+  }, [searchParams]);
 
   const isLoading = isDetectingRoomType || isGenerating;
 
@@ -805,3 +815,5 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
+
+    

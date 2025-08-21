@@ -1,6 +1,6 @@
 
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -36,6 +36,7 @@ import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slide
 import { ThemeSwitcher } from "./theme-switcher";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import AnimatedCounter from "./animated-counter";
+import { DesignTypeSelectionDialog } from "./design-type-selection-dialog";
 
 const FADE_IN_ANIMATION_VARIANTS = {
   hidden: { opacity: 0, y: 10 },
@@ -43,6 +44,8 @@ const FADE_IN_ANIMATION_VARIANTS = {
 };
 
 const LandingPage = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const faqs = [
       {
         question: "What is RoomAIgine?",
@@ -74,6 +77,7 @@ const LandingPage = () => {
   ];
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
+       <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
       {/* Header */}
       <header className="fixed top-4 left-0 right-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,17 +92,13 @@ const LandingPage = () => {
               <Link href="#faq" className="header-link">FAQs</Link>
               <Link href="/gallery" className="header-link">Gallery</Link>
               <ThemeSwitcher />
-              <Button asChild variant="secondary" className="bg-white text-black hover:bg-gray-200">
-                <Link href="/generate">
+              <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="bg-white text-black hover:bg-gray-200">
                   Try for Free <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
               </Button>
             </nav>
             <div className="md:hidden">
-              <Button asChild>
-                <Link href="/generate">
+              <Button onClick={() => setIsDialogOpen(true)}>
                   Start Designing
-                </Link>
               </Button>
             </div>
           </div>
@@ -126,19 +126,17 @@ const LandingPage = () => {
               className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70"
               variants={FADE_IN_ANIMATION_VARIANTS}
             >
-              Visualize Your Dream Room in Seconds
+              Visualize Your Dream Space in Seconds
             </motion.h1>
             <motion.p
               className="mt-6 max-w-2xl mx-auto text-md md:text-lg text-muted-foreground"
               variants={FADE_IN_ANIMATION_VARIANTS}
             >
-             Upload a photo of your room, pick your favorite styles, and let our AI bring your vision to life in seconds. No credit card required.
+             Upload a photo of your room or home exterior, pick your favorite styles, and let our AI bring your vision to life in seconds. No credit card required.
             </motion.p>
             <motion.div variants={FADE_IN_ANIMATION_VARIANTS} className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
-               <Button size="lg" asChild>
-                <Link href="/generate">
-                  <UploadCloud className="mr-2 h-5 w-5" /> Upload Your Room
-                </Link>
+               <Button size="lg" onClick={() => setIsDialogOpen(true)}>
+                <UploadCloud className="mr-2 h-5 w-5" /> Get Started
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link href="/gallery">
@@ -170,13 +168,13 @@ const LandingPage = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight">How It Works</h2>
-              <p className="mt-2 text-lg text-muted-foreground">Four simple steps to your dream room.</p>
+              <p className="mt-2 text-lg text-muted-foreground">Four simple steps to your dream space.</p>
             </div>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
-                { icon: UploadCloud, title: "1. Upload Photo", description: "Snap a picture of your room and upload it instantly." },
-                { icon: Palette, title: "2. Choose Style", description: "Select from a variety of design styles like Minimalist, Luxury, and more." },
-                { icon: Sparkles, title: "3. AI Transformation", description: "Our AI redesigns your room based on your chosen style." },
+                { icon: UploadCloud, title: "1. Upload Photo", description: "Snap a picture of your space and upload it instantly." },
+                { icon: Palette, title: "2. Choose Style", description: "Select from a variety of design styles for interiors or exteriors." },
+                { icon: Sparkles, title: "3. AI Transformation", description: "Our AI redesigns your space based on your chosen style." },
                 { icon: Download, title: "4. Download & Share", description: "Save your favorite designs or share them with friends." },
               ].map((step, index) => (
                 <motion.div
@@ -228,15 +226,15 @@ const LandingPage = () => {
                           show: { transition: { staggerChildren: 0.15 } },
                         }}
                     >
-                        <h2 className="text-3xl font-bold tracking-tight">The Ultimate AI Interior Designer</h2>
+                        <h2 className="text-3xl font-bold tracking-tight">The Ultimate AI Designer</h2>
                         <p className="mt-4 text-lg text-muted-foreground">
                             RoomAIgine empowers you to create stunning, professional-quality designs with ease. Here’s why we’re the best choice for your next project.
                         </p>
                         <ul className="mt-8 space-y-6">
                             {[
-                                { icon: Zap, title: "Blazing Fast Results", description: "Get your redesigned room in seconds, not days. Our AI is optimized for speed and efficiency." },
+                                { icon: Zap, title: "Blazing Fast Results", description: "Get your redesigned space in seconds, not days. Our AI is optimized for speed and efficiency." },
                                 { icon: Paintbrush, title: "Photorealistic Quality", description: "Our models create stunning, high-resolution images that are hard to distinguish from real photos." },
-                                { icon: Sofa, title: "Endless Style Options", description: "Choose from a vast library of styles or mix and match to find the perfect look for your space." },
+                                { icon: Sofa, title: "Endless Style Options", description: "Choose from a vast library of styles for both interiors and exteriors to find the perfect look." },
                             ].map((feature, index) => (
                                 <motion.li key={index} className="flex items-start gap-4" variants={FADE_IN_ANIMATION_VARIANTS}>
                                     <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-primary/10 text-primary mt-1">
@@ -309,10 +307,10 @@ const LandingPage = () => {
                 </div>
                 <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {[
+                    { title: "Interior & Exterior", description: "Redesign both the inside and outside of your home." },
                     { title: "Multiple Styles", description: "From Industrial to Scandinavian, find the perfect look." },
-                    { title: "Instant Preview", description: "See your new room in seconds, not weeks." },
+                    { title: "Instant Preview", description: "See your new design in seconds, not weeks." },
                     { title: "HD Quality", description: "Download high-resolution images for a detailed view." },
-                    { title: "Community Gallery", description: "Get inspired by creations from other users." },
                 ].map((feature, i) => (
                     <motion.div
                     key={i}
@@ -449,10 +447,10 @@ const LandingPage = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Ready to Redesign Your Space?</h2>
             <p className="mt-4 max-w-xl mx-auto text-lg text-muted-foreground">
-              Unlock your home's potential today. Start creating the room of your dreams with the power of AI.
+              Unlock your home's potential today. Start creating the space of your dreams with the power of AI.
             </p>
-            <Button size="lg" className="mt-8" asChild>
-              <Link href="/generate">Transform My Room Now</Link>
+            <Button size="lg" className="mt-8" onClick={() => setIsDialogOpen(true)}>
+              Transform My Space Now
             </Button>
           </div>
         </section>
@@ -480,3 +478,5 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
+    
