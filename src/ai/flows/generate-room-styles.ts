@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -16,7 +15,7 @@ const GenerateRoomStylesInputSchema = z.object({
   photoDataUri: z
     .string()
     .describe(
-      "A photo of a room, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
+      "A photo of a room, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
   styles: z
     .array(z.string())
@@ -59,44 +58,20 @@ const generateRoomStylesFlow = ai.defineFlow(
       const styleKeywords = `${style} style`;
       const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, color palette includes ${input.colorPreferences.join(', ')}` : '';
       const moodKeywords = input.mood ? `, with a ${input.mood} mood` : '';
-      const budgetKeywords = input.priceRange ? `, reflecting a budget of ${input.priceRange}` : '';
-
-      // Room-specific keywords
-      let roomSpecificKeywords = 'a beautifully designed room'; // Fallback
-      switch (input.roomType?.toLowerCase()) {
-        case 'bedroom':
-          roomSpecificKeywords = 'a bedroom with a king-size bed, nightstands, decorative pillows, stylish rug, and elegant curtains';
-          break;
-        case 'living-room':
-          roomSpecificKeywords = 'a living room with a comfortable sofa, coffee table, accent chairs, modern artwork, and cozy textiles';
-          break;
-        case 'kitchen':
-          roomSpecificKeywords = 'a kitchen with sleek countertops, modern cabinetry, stylish backsplash, high-end appliances, and an island';
-          break;
-        case 'bathroom':
-          roomSpecificKeywords = 'a bathroom with a walk-in shower, freestanding bathtub, modern vanity, stylish tiles, and spa-like accessories';
-          break;
-        case 'office':
-          roomSpecificKeywords = 'an office with a minimalist desk, ergonomic chair, bookshelves, task lighting, and inspiring decor';
-          break;
-        case 'dining-room':
-          roomSpecificKeywords = 'a dining room with an elegant dining table, comfortable chairs, a statement chandelier, and a stylish buffet';
-          break;
-      }
+      const roomTypeKeywords = input.roomType ? ` this ${input.roomType}` : '';
 
       // Assemble the final positive prompt
       const instructionPrompt = `
 You are an expert AI interior designer. Your task is to edit the provided image based on my instructions.
 
 **NON-NEGOTIABLE RULES:**
-1. **PRESERVE ARCHITECTURE:** Do NOT alter the room's fundamental structure. Walls, windows, doors, ceiling, and floor MUST remain the same. The layout must be IDENTICAL.
+1. **PRESERVE ARCHITECTURE STRUCTURE:** Do NOT alter the positions, shapes, or layout of walls, windows, doors, ceiling, and floor. You may change their colors, textures, and materials only.
 2. **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
-3. **RESTYLE, DON'T REPLACE FURNITURE:** Keep all existing furniture (beds, sofas, tables, etc.). Change their STYLE (color, material, finish) to match the new design, but DO NOT remove them or add new furniture pieces.
+3. **PRESERVE FURNITURE AND OBJECTS:** Do NOT add, remove, or move any furniture, decor, or objects in the room. Only restyle their appearance, materials, colors, and designs.
 
 **TASK:**
-Restyle the room's interior to be a photorealistic image of **${roomSpecificKeywords}** in a **${styleKeywords}**. The new design must be applied to the EXISTING furniture and layout. The design should feature ${baseKeywords}${colorKeywords}${moodKeywords}${budgetKeywords}.
+Review the existing elements in the provided room image and restyle them${roomTypeKeywords} to embody a ${styleKeywords} design${colorKeywords}${moodKeywords}. The result should feature ${baseKeywords}.
 The output must be a single, photorealistic image.`;
-
 
       const promptPayload = [
         { media: { url: input.photoDataUri } },
