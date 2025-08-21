@@ -38,8 +38,8 @@ export function GalleryClient({ creations }: { creations: Creation[] }) {
                 <Tabs value={currentFilter} onValueChange={handleFilterChange}>
                     <TabsList>
                         <TabsTrigger value="all">All</TabsTrigger>
-                        <TabsTrigger value="interior">Interior</TabsTrigger>
-                        <TabsTrigger value="exterior">Exterior</TabsTrigger>
+                        <TabsTrigger value="interior">Interior Designs</TabsTrigger>
+                        <TabsTrigger value="exterior">Exterior Designs</TabsTrigger>
                     </TabsList>
                 </Tabs>
             </div>
