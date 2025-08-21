@@ -1,7 +1,8 @@
+
 'use server';
 
 /**
- * @fileOverview A room restyling AI agent that generates multiple styled versions of a room based on a user-uploaded photo and personalization options.
+ * @fileOverview A room restyling AI agent that generates a styled version of a room based on a user-uploaded photo.
  *
  * - generateRoomStyles - A function that handles the room restyling process.
  * - GenerateRoomStylesInput - The input type for the generateRoomStyles function.
@@ -48,56 +49,55 @@ const generateRoomStylesFlow = ai.defineFlow(
     outputSchema: GenerateRoomStylesOutputSchema,
   },
   async (input) => {
-    const styledRoomImagePromises = input.styles.map(async (style) => {
+    const styledRoomImages: { style: string; imageDataUri: string }[] = [];
 
+    for (const style of input.styles) {
       // Base prompt components
       const baseKeywords = "professional interior design photo, photorealistic, cinematic lighting, 8k, ultra-detailed, high-end finishes, stylish decor";
-      const negativeKeywords = "blurry, pixelated, unrealistic, cartoon, amateur, watermark, text, signature, human, people";
 
       // Dynamic components from user input
       const styleKeywords = `${style} style`;
       const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, color palette includes ${input.colorPreferences.join(', ')}` : '';
       const moodKeywords = input.mood ? `, with a ${input.mood} mood` : '';
-
-      // Room-specific keywords (preserve furniture, only restyle)
-      let roomSpecificKeywords = 'retain all existing furniture and layout, restyle with updated colors, materials, and finishes'; // Fallback
+      
+      let roomSpecificKeywords = 'a beautifully designed room'; // Fallback
       switch (input.roomType?.toLowerCase()) {
         case 'bedroom':
-          roomSpecificKeywords = 'keep existing bed and furniture, restyle into a cozy modern bedroom with warm tones, layered textiles, elegant curtains, decorative accents, and soft lighting';
+          roomSpecificKeywords = 'a modern bedroom with a comfortable bed, nightstands, and appropriate lighting';
           break;
         case 'living-room':
-          roomSpecificKeywords = 'preserve current sofa and layout, restyle into a contemporary living room with neutral walls, stylish textures, cozy accents, and modern artwork';
+          roomSpecificKeywords = 'a contemporary living room with a sofa, coffee table, and stylish seating';
           break;
         case 'kitchen':
-          roomSpecificKeywords = 'keep cabinets and appliances, restyle into a sleek modern kitchen with updated finishes, stylish backsplash, improved lighting, and clutter-free surfaces';
+          roomSpecificKeywords = 'a sleek modern kitchen with updated cabinets, countertops, and modern appliances';
           break;
         case 'bathroom':
-          roomSpecificKeywords = 'retain existing layout, restyle into a spa-like bathroom with bright tiles, glass accents, soft lighting, and clean modern finishes';
+          roomSpecificKeywords = 'a spa-like bathroom with bright tiles, modern fixtures, and clean finishes';
           break;
         case 'office':
-          roomSpecificKeywords = 'keep current desk and chair, restyle into a productive modern office with better lighting, minimalistic decor, fresh colors, and stylish accents';
+          roomSpecificKeywords = 'a productive modern office with an ergonomic desk, chair, and good lighting';
           break;
         case 'dining-room':
-          roomSpecificKeywords = 'retain existing dining set, restyle into an elegant dining space with warm tones, stylish chandelier lighting, decorative accents, and modern wall finishes';
+          roomSpecificKeywords = 'an elegant dining space with a dining table, chairs, and statement lighting';
+          break;
+        case 'gaming-room':
+          roomSpecificKeywords = "Modern gaming room interior, stylish RGB LED lighting, dual-monitor gaming setup, ergonomic gaming chair, sleek gaming desk, wall-mounted shelves with collectibles, minimal yet futuristic design, cozy ambiance for long gaming sessions";
           break;
       }
 
       // Assemble the final positive prompt
-      const positivePrompt = `A ${styleKeywords} ${input.roomType || 'room'} interior. ${roomSpecificKeywords}. ${baseKeywords}${colorKeywords}${moodKeywords}.`;
+      const positivePrompt = `A ${styleKeywords} version of this space, transformed into ${roomSpecificKeywords}. ${baseKeywords}${colorKeywords}${moodKeywords}.`;
 
       const instructionPrompt = `
 You are an AI interior designer. Your task is to edit the provided image based on my instructions.
 
 **NON-NEGOTIABLE RULES:**
-1. **PRESERVE ARCHITECTURE:** Do NOT alter the room's fundamental structure. Walls, windows, doors, ceiling, and floor must remain the same.
-2. **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
-3. **KEEP EXISTING FURNITURE:** Keep all furniture, layout, and major items in place. Do NOT replace them. Only restyle with new colors, textures, finishes, and decor adjustments.
+1.  **PRESERVE ARCHITECTURE & POSE:** You MUST NOT alter the room's fundamental structure. Walls, windows, doors, ceiling, floor, and the camera's perspective MUST remain IDENTICAL to the original photo.
+2.  **REPLACE FURNISHINGS:** Completely replace all furniture and decor to match the new style. The new items should be appropriate for the specified room type.
 
 **TASK:**
-- **Positive Prompt (Your Goal):** ${positivePrompt}
-- **Negative Prompt (What to Avoid):** ${negativeKeywords}
-
-Restyle the room's interior strictly according to the positive prompt, while following all rules. The output must be a single, photorealistic image.`;
+- **Redesign the room's interior** strictly according to this goal: ${positivePrompt}
+- The output must be a single, photorealistic image that respects all rules.`;
 
       const promptPayload = [
         { media: { url: input.photoDataUri } },
@@ -116,23 +116,16 @@ Restyle the room's interior strictly according to the positive prompt, while fol
         });
 
         if (media && media.url) {
-          return {
+          styledRoomImages.push({
             style: style,
             imageDataUri: media.url,
-          };
+          });
         }
-        return null;
       } catch (err) {
         console.error(`Image generation failed for style "${style}":`, err);
-        return null;
+        // Continue to the next style even if one fails
       }
-    });
-
-    const results = await Promise.all(styledRoomImagePromises);
-    const styledRoomImages = results.filter((image) => image !== null) as {
-      style: string;
-      imageDataUri: string;
-    }[];
+    }
 
     if (styledRoomImages.length === 0 && input.styles.length > 0) {
       throw new Error(

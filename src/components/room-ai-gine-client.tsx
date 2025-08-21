@@ -16,7 +16,8 @@ import {
   X,
   GalleryThumbnails,
   Expand,
-  ArrowRight
+  ArrowRight,
+  Gamepad2
 } from "lucide-react";
 import {
   Card,
@@ -64,6 +65,7 @@ const roomTypes = [
   { id: 'kitchen', label: 'Kitchen', icon: CookingPot },
   { id: 'bathroom', label: 'Bathroom', icon: Bath },
   { id: 'office', label: 'Office', icon: OfficeIcon },
+  { id: 'gaming-room', label: 'Gaming Room', icon: Gamepad2 },
 ];
 
 const colorPreferences = [
