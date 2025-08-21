@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
-import { Heart } from 'lucide-react';
+import { Heart, Home, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { incrementKudosAction } from '@/app/actions';
 import type { Creation } from '@/app/gallery/page';
@@ -45,6 +46,8 @@ export function GalleryItem({ creation }: { creation: Creation }) {
     }
   };
 
+  const isInterior = !!creation.room_type;
+
   return (
     <Dialog>
       <Card className="overflow-hidden group">
@@ -66,8 +69,11 @@ export function GalleryItem({ creation }: { creation: Creation }) {
         <DialogTrigger asChild>
             <div className="p-4 cursor-pointer">
                 <div className="flex items-center justify-between">
-                <Badge variant="secondary">{creation.style}</Badge>
-                {creation.room_type && <Badge variant="outline">{creation.room_type}</Badge>}
+                    <Badge variant="secondary">{creation.style}</Badge>
+                    <Badge variant="outline" className="flex items-center gap-1.5">
+                        {isInterior ? <Home className="h-3 w-3" /> : <Building2 className="h-3 w-3" />}
+                        {isInterior ? creation.room_type : 'Exterior'}
+                    </Badge>
                 </div>
                 {formattedDate && (
                 <p className="text-xs text-muted-foreground mt-2">
@@ -81,7 +87,7 @@ export function GalleryItem({ creation }: { creation: Creation }) {
         <DialogHeader className='sr-only'>
             <DialogTitle>Room Transformation</DialogTitle>
             <DialogDescription>
-                An enlarged view of the before and after room transformation using AI. Style: {creation.style}. Room Type: {creation.room_type || 'N/A'}.
+                An enlarged view of the before and after room transformation using AI. Style: {creation.style}. Type: {isInterior ? creation.room_type : 'Exterior'}.
             </DialogDescription>
         </DialogHeader>
         <div className="w-full aspect-video rounded-lg overflow-hidden">

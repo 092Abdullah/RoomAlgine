@@ -1,15 +1,12 @@
 
 import { supabase } from '@/lib/supabase';
-import Image from 'next/image';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { HeaderLogoIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { GalleryItem } from '@/components/gallery-item';
 import { ThemeSwitcher } from '@/components/theme-switcher';
+import { GalleryClient } from '@/components/gallery-client';
 
 export const revalidate = 60; 
 
@@ -23,11 +20,19 @@ export type Creation = {
   kudos: number;
 };
 
-async function getCreations() {
-  const { data, error } = await supabase
+async function getCreations(filter?: 'interior' | 'exterior') {
+  let query = supabase
     .from('creations')
     .select('*')
     .order('created_at', { ascending: false });
+
+  if (filter === 'interior') {
+    query = query.not('room_type', 'is', null);
+  } else if (filter === 'exterior') {
+    query = query.is('room_type', null);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching creations:', error);
@@ -36,8 +41,16 @@ async function getCreations() {
   return data;
 }
 
-export default async function GalleryPage() {
-  const creations: Creation[] = await getCreations();
+export default async function GalleryPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+  const filter = searchParams?.filter === 'interior' || searchParams?.filter === 'exterior'
+    ? searchParams.filter
+    : undefined;
+  
+  const creations: Creation[] = await getCreations(filter);
 
   return (
     <div className="bg-background min-h-screen">
@@ -71,25 +84,7 @@ export default async function GalleryPage() {
       </header>
       
       <main className="container mx-auto py-24 px-4 sm:px-6 lg:px-8">
-        <div className="text-center py-8 md:py-12">
-            <h1 className="text-4xl font-bold text-foreground">Inspirational Gallery</h1>
-            <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
-                See how our community has reimagined their spaces with AI.
-            </p>
-        </div>
-
-        {creations.length === 0 ? (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-semibold text-foreground">The Gallery is Empty</h2>
-            <p className="mt-2 text-muted-foreground">Be the first to publish a creation!</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {creations.map((creation) => (
-              <GalleryItem key={creation.id} creation={creation} />
-            ))}
-          </div>
-        )}
+        <GalleryClient creations={creations} />
       </main>
     </div>
   );

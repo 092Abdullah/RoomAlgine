@@ -29,14 +29,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { generateExteriorStylesAction } from "@/app/actions";
+import { generateExteriorStylesAction, publishToGalleryAction, deleteCreationAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { GenerateIcon, HeaderLogoIcon } from "./icons";
 import { motion } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Helix } from 'ldrs/react'
-import type { PublishToGalleryInput } from "@/app/types";
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { ThemeSwitcher } from "./theme-switcher";
@@ -170,6 +169,8 @@ const ExteriorAIGineEditor = ({
     setActiveGeneratedImage,
     handleDownload,
     handleShare,
+    handlePublish,
+    isPublishing,
     selectedMaterials,
     setSelectedMaterials,
     selectedLandscaping,
@@ -272,6 +273,16 @@ const ExteriorAIGineEditor = ({
                                                     <p>Share</p>
                                                 </TooltipContent>
                                             </Tooltip>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button size="icon" variant="secondary" onClick={() => handlePublish(activeGeneratedImage)} disabled={isPublishing}>
+                                                        {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Publish to Public Gallery</p>
+                                                </TooltipContent>
+                                            </Tooltip>
                                         </TooltipProvider>
                                     </div>
                                     <div className="absolute top-2 right-2 md:top-4 md:right-4">
@@ -357,6 +368,7 @@ export default function ExteriorAIGineClient() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>("Modern");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [activeGeneratedImage, setActiveGeneratedImage] = useState<GeneratedImage | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
@@ -449,6 +461,44 @@ export default function ExteriorAIGineClient() {
     setLoadingMessage('');
   }
 
+  const handlePublish = async (imageToPublish: GeneratedImage) => {
+    if (!uploadedImage || !imageToPublish) return;
+
+    setIsPublishing(true);
+    const result = await publishToGalleryAction({
+        originalImageDataUri: uploadedImage,
+        generatedImageDataUri: imageToPublish.imageDataUri,
+        style: imageToPublish.style,
+        // roomType is omitted for exterior designs
+    });
+
+    if (result.success && result.creationId) {
+        const creationId = result.creationId;
+        toast("Published to Gallery!", {
+            description: "Your creation is now live for others to see.",
+            action: {
+                label: "Undo",
+                onClick: async () => {
+                    toast.dismiss();
+                    const deleteResult = await deleteCreationAction(creationId);
+                    if (deleteResult.success) {
+                        toast.success("Publication reverted.");
+                    } else {
+                        toast.error("Undo failed.", {
+                            description: deleteResult.error
+                        });
+                    }
+                },
+            },
+        });
+    } else {
+        toast.error("Publishing Failed", {
+            description: result.error,
+        });
+    }
+    setIsPublishing(false);
+  };
+
   const handleDownload = (imageDataUri: string, style: string) => {
     const link = document.createElement("a");
     link.href = imageDataUri;
@@ -505,6 +555,8 @@ export default function ExteriorAIGineClient() {
             setActiveGeneratedImage={setActiveGeneratedImage}
             handleDownload={handleDownload}
             handleShare={handleShare}
+            handlePublish={handlePublish}
+            isPublishing={isPublishing}
             selectedMaterials={selectedMaterials}
             setSelectedMaterials={setSelectedMaterials}
             selectedLandscaping={selectedLandscaping}
