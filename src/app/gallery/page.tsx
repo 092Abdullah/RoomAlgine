@@ -19,7 +19,7 @@ export type Creation = {
   kudos: number;
 };
 
-async function getCreations() {
+async function getCreations(): Promise<Creation[]> {
   const { data, error } = await supabase
     .from('creations')
     .select('*')
@@ -27,9 +27,10 @@ async function getCreations() {
 
   if (error) {
     console.error('Error fetching creations:', error);
-    return [];
+    // Throw a more descriptive error to be caught by an error boundary
+    throw new Error(`Failed to fetch creations from the database. Please check your Supabase connection and configuration. Error: ${error.message}`);
   }
-  return data;
+  return data || [];
 }
 
 type GalleryPageProps = {
@@ -52,7 +53,7 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
             </Link>
             <nav className="hidden md:flex md:gap-2 items-center">
               <Link href="/#features" className="header-link">Features</Link>
-              <Link href="/#see-the-magic" className="header-link">Examples</Link>
+              <Link href="#see-the-magic" className="header-link">Examples</Link>
               <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
               <Link href="/gallery" className="header-link text-foreground">Gallery</Link>
               <ThemeSwitcher />
