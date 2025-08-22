@@ -3,16 +3,25 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { GalleryItem } from './gallery-item';
+import Link from 'next/link';
+import { ArrowRight, Building, Folder, Home } from 'lucide-react';
+
 import type { Creation } from '@/app/gallery/page';
+import { GalleryItem } from './gallery-item';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
-import { Home, Building, Folder } from 'lucide-react';
+import { HeaderLogoIcon } from './icons';
+import { Button } from './ui/button';
+import { ThemeSwitcher } from './theme-switcher';
+import { DesignTypeSelectionDialog } from './design-type-selection-dialog';
+
 
 export function GalleryClient({ allCreations, initialFilter }: { allCreations: Creation[], initialFilter: string }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [filter, setFilter] = useState(initialFilter);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [loading, setLoading] = useState(false); // Initially no loading as data is pre-fetched
 
     useEffect(() => {
         const currentFilter = searchParams.get('filter');
@@ -42,6 +51,34 @@ export function GalleryClient({ allCreations, initialFilter }: { allCreations: C
 
     return (
         <>
+        <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+        <div className="bg-background min-h-screen">
+          <header className="fixed top-4 left-0 right-0 z-50">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="floating-header">
+                <Link href="/">
+                  <HeaderLogoIcon />
+                </Link>
+                <nav className="hidden md:flex md:gap-2 items-center">
+                  <Link href="/#features" className="header-link">Features</Link>
+                  <Link href="#see-the-magic" className="header-link">Examples</Link>
+                  <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
+                  <Link href="/gallery" className="header-link text-foreground">Gallery</Link>
+                  <ThemeSwitcher />
+                  <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="bg-white text-black hover:bg-gray-200">
+                    Try for Free <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </nav>
+                <div className="md:hidden">
+                  <Button onClick={() => setIsDialogOpen(true)}>
+                    Start Designing
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </header>
+  
+          <main className="container mx-auto py-24 px-4 sm:px-6 lg:px-8">
             <div className="text-center py-8 md:py-12">
                 <h1 className="text-4xl font-bold text-foreground">Inspirational Gallery</h1>
                 <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
@@ -68,7 +105,11 @@ export function GalleryClient({ allCreations, initialFilter }: { allCreations: C
                 </Tabs>
             </div>
 
-            {filteredCreations.length === 0 ? (
+            {loading ? (
+                <div className="text-center py-20">
+                    <h2 className="text-2xl font-semibold text-foreground">Loading Creations...</h2>
+                </div>
+            ) : filteredCreations.length === 0 ? (
                 <div className="text-center py-20">
                     <h2 className="text-2xl font-semibold text-foreground">No Creations Found</h2>
                     <p className="mt-2 text-muted-foreground">Try a different filter or be the first to publish!</p>
@@ -80,6 +121,8 @@ export function GalleryClient({ allCreations, initialFilter }: { allCreations: C
                     ))}
                 </div>
             )}
-        </>
+          </main>
+        </div>
+      </>
     )
 }
