@@ -34,7 +34,7 @@ async function getCreations(): Promise<Creation[]> {
 }
 
 type GalleryPageProps = {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams?: { [key: string]: string | string[] | undefined };
 };
 
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
