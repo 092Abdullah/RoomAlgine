@@ -1,30 +1,35 @@
 
 "use client";
 
+import { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Button } from './ui/button';
 import { GalleryItem } from './gallery-item';
 import type { Creation } from '@/app/gallery/page';
-import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
 import { Home, Building, Folder } from 'lucide-react';
 
-
-export function GalleryClient({ creations }: { creations: Creation[] }) {
+export function GalleryClient({ allCreations, initialFilter }: { allCreations: Creation[], initialFilter: string }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const currentFilter = searchParams.get('filter') || 'all';
+    const [filter, setFilter] = useState(initialFilter);
 
     const handleFilterChange = (value: string) => {
+        setFilter(value);
         const params = new URLSearchParams(searchParams.toString());
         if (value === 'all') {
             params.delete('filter');
         } else {
             params.set('filter', value);
         }
-        router.push(`${pathname}?${params.toString()}`);
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
     };
+
+    const filteredCreations = allCreations.filter(creation => {
+        if (filter === 'interior') return !!creation.room_type;
+        if (filter === 'exterior') return !creation.room_type;
+        return true;
+    });
 
     return (
         <>
@@ -36,7 +41,7 @@ export function GalleryClient({ creations }: { creations: Creation[] }) {
             </div>
             
             <div className="flex justify-center mb-8">
-                <Tabs value={currentFilter} onValueChange={handleFilterChange}>
+                <Tabs value={filter} onValueChange={handleFilterChange}>
                     <TabsList>
                         <TabsTrigger value="all">
                             <Folder className="h-4 w-4 mr-2" />
@@ -54,14 +59,14 @@ export function GalleryClient({ creations }: { creations: Creation[] }) {
                 </Tabs>
             </div>
 
-            {creations.length === 0 ? (
+            {filteredCreations.length === 0 ? (
                 <div className="text-center py-20">
-                    <h2 className="text-2xl font-semibold text-foreground">The Gallery is Empty</h2>
-                    <p className="mt-2 text-muted-foreground">Be the first to publish a creation!</p>
+                    <h2 className="text-2xl font-semibold text-foreground">No Creations Found</h2>
+                    <p className="mt-2 text-muted-foreground">Try a different filter or be the first to publish!</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                    {creations.map((creation) => (
+                    {filteredCreations.map((creation) => (
                         <GalleryItem key={creation.id} creation={creation} />
                     ))}
                 </div>

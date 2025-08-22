@@ -4,9 +4,8 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { HeaderLogoIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { GalleryItem } from '@/components/gallery-item';
-import { ThemeSwitcher } from '@/components/theme-switcher';
 import { GalleryClient } from '@/components/gallery-client';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 
 export const revalidate = 60; 
 
@@ -20,19 +19,11 @@ export type Creation = {
   kudos: number;
 };
 
-async function getCreations(filter?: 'interior' | 'exterior') {
-  let query = supabase
+async function getCreations() {
+  const { data, error } = await supabase
     .from('creations')
     .select('*')
     .order('created_at', { ascending: false });
-
-  if (filter === 'interior') {
-    query = query.not('room_type', 'is', null);
-  } else if (filter === 'exterior') {
-    query = query.is('room_type', null);
-  }
-
-  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching creations:', error);
@@ -41,16 +32,15 @@ async function getCreations(filter?: 'interior' | 'exterior') {
   return data;
 }
 
-export default async function GalleryPage({
-  searchParams,
-}: {
+type GalleryPageProps = {
   searchParams?: { [key: string]: string | string[] | undefined };
-}) {
+};
+
+export default async function GalleryPage({ searchParams }: GalleryPageProps) {
+  const creations: Creation[] = await getCreations();
   const filter = searchParams?.filter === 'interior' || searchParams?.filter === 'exterior'
     ? searchParams.filter
-    : undefined;
-  
-  const creations: Creation[] = await getCreations(filter);
+    : 'all';
 
   return (
     <div className="bg-background min-h-screen">
@@ -63,7 +53,7 @@ export default async function GalleryPage({
             <nav className="hidden md:flex md:gap-2 items-center">
               <Link href="/#features" className="header-link">Features</Link>
               <Link href="/#see-the-magic" className="header-link">Examples</Link>
-              <Link href="/#loved-by-creatives" className="header-link">Reviews</Link>
+              <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
               <Link href="/gallery" className="header-link text-foreground">Gallery</Link>
               <ThemeSwitcher />
               <Button asChild variant="secondary" className="bg-white text-black hover:bg-gray-200">
@@ -84,7 +74,7 @@ export default async function GalleryPage({
       </header>
       
       <main className="container mx-auto py-24 px-4 sm:px-6 lg:px-8">
-        <GalleryClient creations={creations} />
+        <GalleryClient allCreations={creations} initialFilter={filter} />
       </main>
     </div>
   );
