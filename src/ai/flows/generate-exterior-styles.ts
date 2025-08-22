@@ -53,22 +53,37 @@ const generateExteriorStylesFlow = ai.defineFlow(
     for (const style of input.styles) {
       const baseKeywords = "professional architectural photo, photorealistic, cinematic lighting, 8k, ultra-detailed, high-end materials";
       
-      const styleKeywords = `${style} style`;
+      const styleKeywords = `${style} architectural style`;
       const exteriorTypeKeywords = input.exteriorType ? ` for a ${input.exteriorType}`: '';
-      const materialKeywords = input.materials && input.materials.length > 0 ? `, main materials include ${input.materials.join(' and ')}` : '';
-      const landscapingKeywords = input.landscaping ? `, with ${input.landscaping} landscaping` : '';
+      const materialKeywords = input.materials && input.materials.length > 0 ? ` featuring materials like ${input.materials.join(' and ')}` : '';
+      const landscapingKeywords = input.landscaping ? `, with a ${input.landscaping} landscaping theme` : '';
 
       const instructionPrompt = `
-You are an expert AI architect and landscape designer. Your task is to edit the provided image of an exterior space.
+You are an expert AI architect and landscape designer. Your task is to edit and realistically restyle the provided image.
 
 **NON-NEGOTIABLE RULES:**
-1. **PRESERVE CORE STRUCTURE:** Do NOT alter the fundamental shape, size, or structure of the building or key landscape elements (like pools or large trees) if they exist. The core form MUST remain IDENTICAL to the original photo.
-2. **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
-3. **PRESERVE MAJOR ELEMENT PLACEMENT:** Do NOT move, add, or remove major elements like windows, doors, or structural posts. You may only change their style, color, and materials.
+1.  **PRESERVE CORE STRUCTURE:** Do NOT alter the fundamental shape, size, or structure of the building (walls, roofline) or key landscape elements (like pools, large trees, or driveways). The core layout MUST remain IDENTICAL to the original photo.
+2.  **MAINTAIN CAMERA ANGLE:** The camera perspective, angle, and field of view MUST remain IDENTICAL to the original photo. Do not zoom in, zoom out, or change the viewpoint.
+3.  **PRESERVE MAJOR ELEMENT PLACEMENT:** Do NOT add, remove, or relocate major architectural features like windows, doors, chimneys, or structural posts. You may only change their *style*, color, and materials.
 
 **TASK:**
-Review the existing structure in the provided photo. Redesign the facade and immediate surroundings${exteriorTypeKeywords} to embody a ${styleKeywords} design${materialKeywords}${landscapingKeywords}. Restyle elements like siding, roofing, trim, doors, windows, furniture, plants, and landscaping features. The result should feature ${baseKeywords}.
-The output must be a single, photorealistic image.`;
+Redesign the provided exterior space${exteriorTypeKeywords} to embody a ${styleKeywords}. The final image must be photorealistic and seamlessly edited.
+
+**DESIGN FOCUS - ${input.exteriorType || 'General Exterior'}:**
+-   **For "House Exterior (Facade)":** Focus on siding, roofing, trim, windows, the front door, and entry lighting.
+-   **For "Garden / Backyard":** Focus on plant arrangements, lawn care, patio furniture, pathways, and adding harmonious decor.
+-   **For "Balcony / Terrace":** Focus on flooring, railings, container plants, compact furniture, and outdoor textiles.
+-   **For "Driveway & Garage":** Focus on the driveway surface, garage door style, and surrounding landscape integration.
+-   **For "Poolside / Outdoor Lounge":** Focus on deck materials, lounge furniture, umbrellas, and water features.
+-   **For "Fence & Gate Design":** Focus on the fence/gate style, material, color, and integration with the surrounding landscape.
+
+**USER PREFERENCES:**
+Apply the following user-defined preferences to the redesign:
+-   **Materials:**${materialKeywords || ' Use materials appropriate for the style.'}
+-   **Landscaping:**${landscapingKeywords || ' Use landscaping that complements the style.'}
+
+The final result should be a single, stunningly realistic image that looks like a ${baseKeywords}.`;
+
 
       const promptPayload = [
         { media: { url: input.photoDataUri } },
