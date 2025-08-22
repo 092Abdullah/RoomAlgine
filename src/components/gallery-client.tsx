@@ -60,8 +60,8 @@ export function GalleryClient({ allCreations, initialFilter }: { allCreations: C
                 </Link>
                 <nav className="hidden md:flex md:gap-2 items-center">
                   <Link href="/#features" className="header-link">Features</Link>
-                  <Link href="/#see-the-magic" className="header-link">Examples</Link>
-                  <Link href="/#loved-by-creatives" className="header-link">Reviews</Link>
+                  <Link href="#see-the-magic" className="header-link">Examples</Link>
+                  <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
                   <Link href="/gallery" className="header-link text-foreground">Gallery</Link>
                   <ThemeSwitcher />
                   <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="bg-white text-black hover:bg-gray-200">
