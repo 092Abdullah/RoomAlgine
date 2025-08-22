@@ -21,7 +21,6 @@ export function GalleryClient({ allCreations, initialFilter }: { allCreations: C
     const searchParams = useSearchParams();
     const [filter, setFilter] = useState(initialFilter);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [loading, setLoading] = useState(false); // Initially no loading as data is pre-fetched
 
     useEffect(() => {
         const currentFilter = searchParams.get('filter');
@@ -61,8 +60,8 @@ export function GalleryClient({ allCreations, initialFilter }: { allCreations: C
                 </Link>
                 <nav className="hidden md:flex md:gap-2 items-center">
                   <Link href="/#features" className="header-link">Features</Link>
-                  <Link href="#see-the-magic" className="header-link">Examples</Link>
-                  <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
+                  <Link href="/#see-the-magic" className="header-link">Examples</Link>
+                  <Link href="/#loved-by-creatives" className="header-link">Reviews</Link>
                   <Link href="/gallery" className="header-link text-foreground">Gallery</Link>
                   <ThemeSwitcher />
                   <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="bg-white text-black hover:bg-gray-200">
@@ -105,11 +104,7 @@ export function GalleryClient({ allCreations, initialFilter }: { allCreations: C
                 </Tabs>
             </div>
 
-            {loading ? (
-                <div className="text-center py-20">
-                    <h2 className="text-2xl font-semibold text-foreground">Loading Creations...</h2>
-                </div>
-            ) : filteredCreations.length === 0 ? (
+            {filteredCreations.length === 0 ? (
                 <div className="text-center py-20">
                     <h2 className="text-2xl font-semibold text-foreground">No Creations Found</h2>
                     <p className="mt-2 text-muted-foreground">Try a different filter or be the first to publish!</p>

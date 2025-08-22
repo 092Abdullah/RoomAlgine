@@ -1,12 +1,6 @@
 
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { HeaderLogoIcon } from '@/components/icons';
-import { Button } from '@/components/ui/button';
 import { GalleryClient } from '@/components/gallery-client';
-import { ThemeSwitcher } from '@/components/theme-switcher';
-import { DesignTypeSelectionDialog } from '@/components/design-type-selection-dialog';
+import { supabase } from '@/lib/supabase';
 
 export type Creation = {
   id: string;

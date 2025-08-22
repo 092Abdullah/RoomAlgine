@@ -21,6 +21,7 @@ const GenerateExteriorStylesInputSchema = z.object({
   styles: z
     .array(z.string())
     .describe("An array of architectural styles to apply to the exterior (e.g., Modern, Farmhouse, Coastal)."),
+  exteriorType: z.string().optional().describe("The specific type of exterior space (e.g., Garden, Balcony, Poolside)."),
   materials: z.array(z.string()).optional().describe("An array of preferred exterior materials (e.g., Siding, Brick, Stone)."),
   landscaping: z.string().optional().describe("The desired landscaping style (e.g. Minimal, Lush, Modern)."),
 });
@@ -53,19 +54,20 @@ const generateExteriorStylesFlow = ai.defineFlow(
       const baseKeywords = "professional architectural photo, photorealistic, cinematic lighting, 8k, ultra-detailed, high-end materials";
       
       const styleKeywords = `${style} style`;
+      const exteriorTypeKeywords = input.exteriorType ? ` for a ${input.exteriorType}`: '';
       const materialKeywords = input.materials && input.materials.length > 0 ? `, main materials include ${input.materials.join(' and ')}` : '';
       const landscapingKeywords = input.landscaping ? `, with ${input.landscaping} landscaping` : '';
 
       const instructionPrompt = `
-You are an expert AI architect and landscape designer. Your task is to edit the provided image of a building's exterior.
+You are an expert AI architect and landscape designer. Your task is to edit the provided image of an exterior space.
 
 **NON-NEGOTIABLE RULES:**
-1. **PRESERVE BUILDING SHAPE:** Do NOT alter the fundamental shape, size, or structure of the building. The core architectural form, including roofline, building footprint, and massing, MUST remain IDENTICAL to the original photo.
+1. **PRESERVE CORE STRUCTURE:** Do NOT alter the fundamental shape, size, or structure of the building or key landscape elements (like pools or large trees) if they exist. The core form MUST remain IDENTICAL to the original photo.
 2. **MAINTAIN CAMERA ANGLE:** The camera perspective and angle MUST remain IDENTICAL to the original photo.
-3. **PRESERVE WINDOW/DOOR PLACEMENT:** Do NOT move, add, or remove windows and doors. You may only change their style, color, and materials.
+3. **PRESERVE MAJOR ELEMENT PLACEMENT:** Do NOT move, add, or remove major elements like windows, doors, or structural posts. You may only change their style, color, and materials.
 
 **TASK:**
-Review the existing structure in the provided photo and redesign its facade and immediate surroundings to embody a ${styleKeywords} design${materialKeywords}${landscapingKeywords}. Restyle elements like siding, roofing, trim, doors, windows, and landscaping. The result should feature ${baseKeywords}.
+Review the existing structure in the provided photo. Redesign the facade and immediate surroundings${exteriorTypeKeywords} to embody a ${styleKeywords} design${materialKeywords}${landscapingKeywords}. Restyle elements like siding, roofing, trim, doors, windows, furniture, plants, and landscaping features. The result should feature ${baseKeywords}.
 The output must be a single, photorealistic image.`;
 
       const promptPayload = [

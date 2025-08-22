@@ -16,6 +16,7 @@ import {
   PaintRoller,
   Expand,
   GalleryThumbnails,
+  ChevronDown,
 } from "lucide-react";
 import {
   Card,
@@ -38,6 +39,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Helix } from 'ldrs/react'
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { ThemeSwitcher } from "./theme-switcher";
 import { useScrollDirection } from "@/hooks/use-scroll-direction";
 import { cn } from "@/lib/utils";
@@ -48,6 +50,14 @@ type GeneratedImage = {
 };
 
 const designStyles = ["Modern", "Traditional", "Farmhouse", "Coastal", "Contemporary", "Craftsman"];
+const exteriorTypes = [
+    "House Exterior (Facade)",
+    "Garden / Backyard",
+    "Balcony / Terrace",
+    "Driveway & Garage",
+    "Poolside / Outdoor Lounge",
+    "Fence & Gate Design",
+];
 const materialOptions = ["Siding", "Brick", "Stone", "Stucco"];
 const landscapingOptions = ["Minimal", "Lush", "Modern", "Natural"];
 
@@ -171,6 +181,8 @@ const ExteriorAIGineEditor = ({
     handleShare,
     handlePublish,
     isPublishing,
+    selectedExteriorType,
+    setSelectedExteriorType,
     selectedMaterials,
     setSelectedMaterials,
     selectedLandscaping,
@@ -183,7 +195,7 @@ const ExteriorAIGineEditor = ({
             <div className="col-span-1 xl:col-span-3 space-y-4 md:space-y-6">
                 <Card className="bg-card">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg"><Camera className="h-5 w-5" /> Your Home</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-lg"><Camera className="h-5 w-5" /> Your Space</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="aspect-video rounded-lg overflow-hidden relative">
@@ -194,7 +206,7 @@ const ExteriorAIGineEditor = ({
                 <Card className="bg-card">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">Choose a Style</CardTitle>
-                        <CardDescription>Select a style for your home's exterior.</CardDescription>
+                        <CardDescription>Select a style for your exterior space.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <ToggleGroup
@@ -338,6 +350,25 @@ const ExteriorAIGineEditor = ({
                     <CardContent className="space-y-6">
                         <div>
                              <Label className="mb-2 block flex items-center gap-2">
+                                <PaintRoller className="h-5 w-5" /> Exterior Type
+                            </Label>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-between">
+                                        {selectedExteriorType} <ChevronDown className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-64">
+                                    {exteriorTypes.map((type) => (
+                                        <DropdownMenuItem key={type} onSelect={() => setSelectedExteriorType(type)}>
+                                            {type}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                        <div>
+                             <Label className="mb-2 block flex items-center gap-2">
                                 <Construction className="h-5 w-5" /> Materials
                             </Label>
                             <ToggleGroup type="multiple" value={selectedMaterials} onValueChange={setSelectedMaterials} className="grid grid-cols-2 gap-2">
@@ -373,6 +404,7 @@ export default function ExteriorAIGineClient() {
   const [activeGeneratedImage, setActiveGeneratedImage] = useState<GeneratedImage | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   
+  const [selectedExteriorType, setSelectedExteriorType] = useState<string>(exteriorTypes[0]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [selectedLandscaping, setSelectedLandscaping] = useState<string>("Minimal");
 
@@ -436,6 +468,7 @@ export default function ExteriorAIGineClient() {
 
     const result = await generateExteriorStylesAction({ 
       styles: [selectedStyle],
+      exteriorType: selectedExteriorType,
       materials: selectedMaterials,
       landscaping: selectedLandscaping,
     }, uploadedImage);
@@ -557,6 +590,8 @@ export default function ExteriorAIGineClient() {
             handleShare={handleShare}
             handlePublish={handlePublish}
             isPublishing={isPublishing}
+            selectedExteriorType={selectedExteriorType}
+            setSelectedExteriorType={setSelectedExteriorType}
             selectedMaterials={selectedMaterials}
             setSelectedMaterials={setSelectedMaterials}
             selectedLandscaping={selectedLandscaping}
