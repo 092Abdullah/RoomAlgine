@@ -14,6 +14,15 @@ export function GalleryClient({ allCreations, initialFilter }: { allCreations: C
     const searchParams = useSearchParams();
     const [filter, setFilter] = useState(initialFilter);
 
+    useEffect(() => {
+        const currentFilter = searchParams.get('filter');
+        if (currentFilter && currentFilter !== filter) {
+            setFilter(currentFilter);
+        } else if (!currentFilter && filter !== 'all') {
+            setFilter('all');
+        }
+    }, [searchParams, filter]);
+
     const handleFilterChange = (value: string) => {
         setFilter(value);
         const params = new URLSearchParams(searchParams.toString());

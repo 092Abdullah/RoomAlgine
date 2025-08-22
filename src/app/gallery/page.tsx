@@ -33,13 +33,13 @@ async function getCreations() {
 }
 
 type GalleryPageProps = {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
   const creations: Creation[] = await getCreations();
   const filter = searchParams?.filter === 'interior' || searchParams?.filter === 'exterior'
-    ? searchParams.filter
+    ? searchParams.filter as string
     : 'all';
 
   return (
