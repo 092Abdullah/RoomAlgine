@@ -49,7 +49,7 @@ const LandingPage = () => {
   const faqs = [
       {
         question: "What is RoomAIgine?",
-        answer: "RoomAIgine is an AI-powered interior design tool that allows you to upload a photo of your room and instantly visualize it in various design styles. It's a fast, easy, and fun way to get design inspiration and see your room's potential."
+        answer: "RoomAIgine is an AI-powered design tool that allows you to upload a photo of your space, whether it's an interior room or an exterior area, and instantly visualize it in various design styles. It's a fast, easy, and fun way to get design inspiration and see your space's potential."
       },
       {
         question: "How accurate are the AI redesigns?",
