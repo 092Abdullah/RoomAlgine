@@ -270,8 +270,8 @@ const RoomAIGineEditor = ({
                         <CardTitle className="flex items-center gap-2 text-lg"><Camera className="h-5 w-5" /> Your Room</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="aspect-video rounded-lg overflow-hidden relative">
-                            <Image src={uploadedImage} alt="Uploaded room" fill className="object-cover" />
+                        <div className="aspect-video rounded-lg overflow-hidden relative bg-muted">
+                            <Image src={uploadedImage} alt="Uploaded room" fill className="object-contain" />
                         </div>
                     </CardContent>
                 </Card>
@@ -372,8 +372,8 @@ const RoomAIGineEditor = ({
                                 <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
                                     <ReactCompareSlider
                                         className="w-full h-full"
-                                        itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-cover w-full h-full"/>}
-                                        itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-cover w-full h-full"/>}
+                                        itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-contain w-full h-full"/>}
+                                        itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-contain w-full h-full"/>}
                                     />
                                     <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex gap-2">
                                     <TooltipProvider>
@@ -450,8 +450,8 @@ const RoomAIGineEditor = ({
                             <div className="w-full aspect-video rounded-lg overflow-hidden">
                                 <ReactCompareSlider
                                     className="w-full h-full"
-                                    itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-cover w-full h-full"/>}
-                                    itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-cover w-full h-full"/>}
+                                    itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-contain w-full h-full"/>}
+                                    itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-contain w-full h-full"/>}
                                 />
                             </div>
                         </DialogContent>
