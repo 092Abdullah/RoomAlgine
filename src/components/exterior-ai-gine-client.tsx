@@ -198,8 +198,8 @@ const ExteriorAIGineEditor = ({
                         <CardTitle className="flex items-center gap-2 text-lg"><Camera className="h-5 w-5" /> Your Space</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="aspect-video rounded-lg overflow-hidden relative bg-muted">
-                            <Image src={uploadedImage} alt="Uploaded exterior" fill className="object-contain" />
+                         <div className="rounded-lg overflow-hidden relative bg-muted flex justify-center items-center">
+                            <Image src={uploadedImage} alt="Uploaded exterior" width={400} height={400} className="object-contain max-h-[25vh] w-auto" />
                         </div>
                     </CardContent>
                 </Card>
@@ -246,14 +246,14 @@ const ExteriorAIGineEditor = ({
                         </CardHeader>
                         <CardContent className="flex-grow flex items-center justify-center p-2 sm:p-4">
                             {isLoading ? (
-                                <div className="w-full aspect-video flex flex-col items-center justify-center text-center">
+                                <div className="w-full h-full flex flex-col items-center justify-center text-center">
                                      <Helix size="45" color="hsl(var(--primary))" />
                                      <p className="mt-4 text-muted-foreground">{loadingMessage}</p>
                                 </div>
                             ) : activeGeneratedImage ? (
-                                <div className="w-full aspect-video rounded-lg overflow-hidden relative group">
+                                <div className="w-full h-full rounded-lg overflow-hidden relative group flex justify-center items-center">
                                     <ReactCompareSlider
-                                        className="w-full h-full"
+                                        className="w-full h-full aspect-video"
                                         itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-contain w-full h-full"/>}
                                         itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-contain w-full h-full"/>}
                                     />
@@ -329,9 +329,9 @@ const ExteriorAIGineEditor = ({
                                     An enlarged view of the before and after exterior transformation using AI. Style: {activeGeneratedImage.style}.
                                 </DialogDescription>
                             </DialogHeader>
-                            <div className="w-full aspect-video rounded-lg overflow-hidden">
+                            <div className="w-full h-full flex justify-center items-center">
                                 <ReactCompareSlider
-                                    className="w-full h-full"
+                                    className="w-full h-full aspect-video"
                                     itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-contain w-full h-full"/>}
                                     itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-contain w-full h-full"/>}
                                 />
