@@ -371,9 +371,9 @@ const RoomAIGineEditor = ({
                             ) : activeGeneratedImage ? (
                                 <div className="w-full h-full rounded-lg overflow-hidden relative group flex justify-center items-center">
                                     <ReactCompareSlider
-                                        className="w-full h-full aspect-video"
-                                        itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-contain w-full h-full"/>}
-                                        itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-contain w-full h-full"/>}
+                                        className="w-full h-full"
+                                        itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-contain w-full h-full aspect-video"/>}
+                                        itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-contain w-full h-full aspect-video"/>}
                                     />
                                     <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex gap-2">
                                     <TooltipProvider>
@@ -449,7 +449,7 @@ const RoomAIGineEditor = ({
                             </DialogHeader>
                             <div className="w-full h-full flex justify-center items-center">
                                 <ReactCompareSlider
-                                    className="w-full h-full aspect-video"
+                                    className="w-full h-full"
                                     itemOne={<ReactCompareSliderImage src={uploadedImage} alt="Before image" className="object-contain w-full h-full"/>}
                                     itemTwo={<ReactCompareSliderImage src={activeGeneratedImage.imageDataUri} alt="After image" className="object-contain w-full h-full"/>}
                                 />
