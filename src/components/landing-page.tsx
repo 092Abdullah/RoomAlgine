@@ -358,8 +358,8 @@ const LandingPage = () => {
 
                 </CarouselItem>
               </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
+              <CarouselPrevious className="hidden md:flex" />
+              <CarouselNext className="hidden md:flex" />
             </Carousel>
           </div>
         </section>
@@ -478,3 +478,5 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
+    
