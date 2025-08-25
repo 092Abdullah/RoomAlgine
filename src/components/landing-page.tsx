@@ -478,6 +478,7 @@ const LandingPage = () => {
                     <ul className="mt-4 space-y-2">
                         <li><Link href="#loved-by-creatives" className="text-sm text-muted-foreground hover:text-foreground">Reviews</Link></li>
                         <li><Link href="#faq" className="text-sm text-muted-foreground hover:text-foreground">FAQs</Link></li>
+                        <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">Terms of Use</Link></li>
                     </ul>
                 </div>
                  <div>
@@ -499,3 +500,5 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
+    
