@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   UploadCloud,
@@ -21,6 +21,7 @@ import {
   Zap,
   Sofa,
   CheckCircle,
+  ArrowUp,
 } from "lucide-react";
 import { HeaderLogoIcon } from "./icons";
 import { Button } from "./ui/button";
@@ -37,11 +38,49 @@ import { ThemeSwitcher } from "./theme-switcher";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import AnimatedCounter from "./animated-counter";
 import { DesignTypeSelectionDialog } from "./design-type-selection-dialog";
+import { useScrollPosition } from "@/hooks/use-scroll-position";
+import { cn } from "@/lib/utils";
 
 const FADE_IN_ANIMATION_VARIANTS = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0, transition: { type: "spring" } },
 };
+
+const BackToTopButton = () => {
+    const scrollY = useScrollPosition();
+    const [isVisible, setIsVisible] = useState(false);
+
+    React.useEffect(() => {
+        setIsVisible(scrollY > 200);
+    }, [scrollY]);
+
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
+    return (
+        <AnimatePresence>
+            {isVisible && (
+                <motion.button
+                    onClick={scrollToTop}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ duration: 0.2 }}
+                    className="fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground rounded-full p-3 shadow-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    aria-label="Go to top"
+                >
+                    <ArrowUp className="h-6 w-6" />
+                </motion.button>
+            )}
+        </AnimatePresence>
+    );
+};
+
 
 const LandingPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -495,10 +534,15 @@ const LandingPage = () => {
             </div>
         </div>
       </footer>
+      <BackToTopButton />
     </div>
   );
 };
 
 export default LandingPage;
+
+    
+
+    
 
     
