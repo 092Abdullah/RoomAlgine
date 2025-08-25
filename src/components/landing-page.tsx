@@ -37,8 +37,6 @@ import { ThemeSwitcher } from "./theme-switcher";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import AnimatedCounter from "./animated-counter";
 import { DesignTypeSelectionDialog } from "./design-type-selection-dialog";
-import { useScrollPosition } from "@/hooks/use-scroll-position";
-import { cn } from "@/lib/utils";
 
 const FADE_IN_ANIMATION_VARIANTS = {
   hidden: { opacity: 0, y: 10 },
@@ -47,7 +45,6 @@ const FADE_IN_ANIMATION_VARIANTS = {
 
 const LandingPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const scrollPosition = useScrollPosition();
 
   const faqs = [
       {
@@ -82,14 +79,8 @@ const LandingPage = () => {
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
        <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
       {/* Header */}
-       <header className={cn(
-            "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
-            scrollPosition > 0 ? "py-2" : "py-4"
-        )}>
-            <div className={cn(
-                "mx-auto transition-all duration-500",
-                scrollPosition > 0 ? "max-w-5xl" : "max-w-none px-8"
-            )}>
+       <header className="fixed top-4 left-0 right-0 z-50">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <div className="floating-header">
                 <Link href="/">
                   <HeaderLogoIcon />
