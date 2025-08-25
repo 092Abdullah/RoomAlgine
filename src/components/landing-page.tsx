@@ -272,7 +272,7 @@ const LandingPage = () => {
                         <ul className="mt-8 space-y-6">
                             {[
                                 { icon: Zap, title: "Blazing Fast Results", description: "Get your redesigned space in seconds, not days. Our AI is optimized for speed and efficiency." },
-                                { icon: Paintbrush, title: "Photorealistic Quality", description: "Our models create stunning, high-resolution images that are hard to distinguish from real photos." },
+                                { icon: Paintbrush, title: "Truly Realistic Renders", description: "Our AI generates stunning, high-resolution images that are indistinguishable from real photos, unlike other apps." },
                                 { icon: Sofa, title: "Endless Style Options", description: "Choose from a vast library of styles for both interiors and exteriors to find the perfect look." },
                             ].map((feature, index) => (
                                 <motion.li key={index} className="flex items-start gap-4" variants={FADE_IN_ANIMATION_VARIANTS}>
