@@ -37,6 +37,8 @@ import { ThemeSwitcher } from "./theme-switcher";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import AnimatedCounter from "./animated-counter";
 import { DesignTypeSelectionDialog } from "./design-type-selection-dialog";
+import { useScrollPosition } from "@/hooks/use-scroll-position";
+import { cn } from "@/lib/utils";
 
 const FADE_IN_ANIMATION_VARIANTS = {
   hidden: { opacity: 0, y: 10 },
@@ -45,6 +47,7 @@ const FADE_IN_ANIMATION_VARIANTS = {
 
 const LandingPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const scrollPosition = useScrollPosition();
 
   const faqs = [
       {
@@ -79,30 +82,36 @@ const LandingPage = () => {
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
        <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
       {/* Header */}
-      <header className="fixed top-4 left-0 right-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="floating-header">
-            <Link href="/">
-              <HeaderLogoIcon />
-            </Link>
-            <nav className="hidden md:flex md:gap-2 items-center">
-              <Link href="#features" className="header-link">Features</Link>
-              <Link href="#see-the-magic" className="header-link">Examples</Link>
-              <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
-              <Link href="#faq" className="header-link">FAQs</Link>
-              <Link href="/gallery" className="header-link">Gallery</Link>
-              <ThemeSwitcher />
-              <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="bg-white text-black hover:bg-gray-200">
-                  Try for Free <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </nav>
-            <div className="md:hidden">
-              <Button onClick={() => setIsDialogOpen(true)}>
-                  Start Designing
-              </Button>
+       <header className={cn(
+            "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+            scrollPosition > 0 ? "py-2" : "py-4"
+        )}>
+            <div className={cn(
+                "mx-auto transition-all duration-500",
+                scrollPosition > 0 ? "max-w-5xl" : "max-w-none px-8"
+            )}>
+              <div className="floating-header">
+                <Link href="/">
+                  <HeaderLogoIcon />
+                </Link>
+                <nav className="hidden md:flex md:gap-2 items-center">
+                  <Link href="#features" className="header-link">Features</Link>
+                  <Link href="#see-the-magic" className="header-link">Examples</Link>
+                  <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
+                  <Link href="#faq" className="header-link">FAQs</Link>
+                  <Link href="/gallery" className="header-link">Gallery</Link>
+                  <ThemeSwitcher />
+                  <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="bg-white text-black hover:bg-gray-200">
+                      Try for Free <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </nav>
+                <div className="md:hidden">
+                  <Button onClick={() => setIsDialogOpen(true)}>
+                      Start Designing
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
       </header>
 
       <main className="flex-grow">
@@ -457,20 +466,41 @@ const LandingPage = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-secondary/30">
-        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-          <div className="md:flex md:items-center md:justify-between">
-            <div className="flex justify-center space-x-6 md:order-2">
-              <Link href="https://github.com/Abdullah-Maqbool1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
-              <Link href="https://www.instagram.com/abdullah__maqbool" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Instagram /></Link>
-              <Link href="https://www.linkedin.com/in/abdullah-maqbool-se" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
+      <footer className="bg-secondary/30 border-t border-border/20">
+        <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div className="col-span-2 md:col-span-1">
+                    <HeaderLogoIcon />
+                    <p className="mt-4 text-sm text-muted-foreground">Redefine your space with the power of AI.</p>
+                </div>
+                <div>
+                    <h3 className="font-semibold text-foreground">Product</h3>
+                    <ul className="mt-4 space-y-2">
+                        <li><Link href="#features" className="text-sm text-muted-foreground hover:text-foreground">Features</Link></li>
+                        <li><Link href="#see-the-magic" className="text-sm text-muted-foreground hover:text-foreground">Examples</Link></li>
+                        <li><Link href="/gallery" className="text-sm text-muted-foreground hover:text-foreground">Gallery</Link></li>
+                        <li><button onClick={() => setIsDialogOpen(true)} className="text-sm text-muted-foreground hover:text-foreground">Start Designing</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 className="font-semibold text-foreground">Company</h3>
+                    <ul className="mt-4 space-y-2">
+                        <li><Link href="#loved-by-creatives" className="text-sm text-muted-foreground hover:text-foreground">Reviews</Link></li>
+                        <li><Link href="#faq" className="text-sm text-muted-foreground hover:text-foreground">FAQs</Link></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h3 className="font-semibold text-foreground">Connect</h3>
+                    <div className="flex space-x-4 mt-4">
+                        <Link href="https://github.com/Abdullah-Maqbool1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
+                        <Link href="https://www.instagram.com/abdullah__maqbool" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Instagram /></Link>
+                        <Link href="https://www.linkedin.com/in/abdullah-maqbool-se" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
+                    </div>
+                </div>
             </div>
-            <div className="mt-8 md:mt-0 md:order-1">
-              <p className="text-center text-sm text-muted-foreground">
-                &copy; {new Date().getFullYear()} RoomAIgine. All rights reserved.
-              </p>
+            <div className="mt-8 border-t border-border/20 pt-8 text-center text-sm text-muted-foreground">
+                <p>&copy; {new Date().getFullYear()} RoomAIgine. All rights reserved.</p>
             </div>
-          </div>
         </div>
       </footer>
     </div>
@@ -478,5 +508,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
-    
