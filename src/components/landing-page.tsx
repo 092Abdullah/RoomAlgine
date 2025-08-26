@@ -358,13 +358,15 @@ const LandingPage = () => {
                     viewport={{ once: true, amount: 0.5 }}
                     variants={FADE_IN_ANIMATION_VARIANTS}
                     >
-                    <Card className="glassmorphic-card p-6 h-full">
-                        <CardContent className="p-0">
-                          <CheckCircle className="h-8 w-8 text-primary mb-4" />
-                          <h3 className="text-lg font-semibold text-card-foreground">{feature.title}</h3>
-                          <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
-                        </CardContent>
-                    </Card>
+                    <div className="glare-effect rounded-lg h-full">
+                      <Card className="glassmorphic-card p-6 h-full">
+                          <CardContent className="p-0">
+                            <CheckCircle className="h-8 w-8 text-primary mb-4" />
+                            <h3 className="text-lg font-semibold text-card-foreground">{feature.title}</h3>
+                            <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
+                          </CardContent>
+                      </Card>
+                    </div>
                     </motion.div>
                 ))}
                 </div>
@@ -423,20 +425,22 @@ const LandingPage = () => {
                   viewport={{ once: true, amount: 0.5 }}
                   variants={FADE_IN_ANIMATION_VARIANTS}
                 >
-                  <Card className="glassmorphic-card p-6 h-full">
-                    <CardContent className="p-0">
-                      <div className="flex items-center mb-4">
-                        <div>
-                          <p className="font-semibold text-card-foreground">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  <div className="glare-effect rounded-lg h-full">
+                    <Card className="glassmorphic-card p-6 h-full">
+                      <CardContent className="p-0">
+                        <div className="flex items-center mb-4">
+                          <div>
+                            <p className="font-semibold text-card-foreground">{testimonial.name}</p>
+                            <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex mb-2">
-                        {[...Array(testimonial.rating)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
-                      </div>
-                      <p className="text-muted-foreground">{`"${testimonial.review}"`}</p>
-                    </CardContent>
-                  </Card>
+                        <div className="flex mb-2">
+                          {[...Array(testimonial.rating)].map((_, i) => <Star key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />)}
+                        </div>
+                        <p className="text-muted-foreground">{`"${testimonial.review}"`}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -546,4 +550,3 @@ export default LandingPage;
     
 
     
-
