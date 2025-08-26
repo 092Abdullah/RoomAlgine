@@ -25,6 +25,7 @@ const GenerateRoomStylesInputSchema = z.object({
   colorPreferences: z.array(z.string()).optional().describe("An array of preferred colors."),
   mood: z.string().optional().describe("The desired mood for the room (e.g. Relaxed, Energetic)."),
   priceRange: z.string().optional().describe("The desired price range for the furniture and decor (e.g. $10,000, $50,000)."),
+  userPrompt: z.string().optional().describe("Additional text prompt from the user for specific requests."),
 });
 export type GenerateRoomStylesInput = z.infer<typeof GenerateRoomStylesInputSchema>;
 
@@ -60,6 +61,7 @@ const generateRoomStylesFlow = ai.defineFlow(
       const colorKeywords = input.colorPreferences && input.colorPreferences.length > 0 ? `, color palette includes ${input.colorPreferences.join(', ')}` : '';
       const moodKeywords = input.mood ? `, with a ${input.mood} mood` : '';
       const roomTypeKeywords = input.roomType ? ` this ${input.roomType}` : '';
+      const userPromptKeywords = input.userPrompt ? ` Also, follow these instructions: ${input.userPrompt}.` : '';
 
       // Parse budget and determine keywords
       const budgetStr = input.priceRange ? input.priceRange.replace(/[^0-9]/g, '') : '0';
@@ -95,7 +97,7 @@ You are an expert AI interior designer. Your task is to edit the provided image 
 4. **DECOR ADDITIONS BASED ON BUDGET:** You may add decor elements such as pillows, vases, artwork, rugs, and accessories only if specified in the task, ensuring they enhance without overcrowding.
 
 **TASK:**
-Review the existing elements in the provided room image and restyle them${roomTypeKeywords} to embody a ${styleKeywords} design${colorKeywords}${moodKeywords}${budgetKeywords}. The result should feature ${baseKeywords}.
+Review the existing elements in the provided room image and restyle them${roomTypeKeywords} to embody a ${styleKeywords} design${colorKeywords}${moodKeywords}${budgetKeywords}${userPromptKeywords}. The result should feature ${baseKeywords}.
 The output must be a single, photorealistic image.`;
 
       const promptPayload = [

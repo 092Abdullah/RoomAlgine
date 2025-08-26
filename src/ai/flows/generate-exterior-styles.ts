@@ -24,6 +24,7 @@ const GenerateExteriorStylesInputSchema = z.object({
   exteriorType: z.string().optional().describe("The specific type of exterior space (e.g., Garden, Balcony, Poolside)."),
   materials: z.array(z.string()).optional().describe("An array of preferred exterior materials (e.g., Siding, Brick, Stone)."),
   landscaping: z.string().optional().describe("The desired landscaping style (e.g. Minimal, Lush, Modern)."),
+  userPrompt: z.string().optional().describe("Additional text prompt from the user for specific requests."),
 });
 export type GenerateExteriorStylesInput = z.infer<typeof GenerateExteriorStylesInputSchema>;
 
@@ -57,6 +58,8 @@ const generateExteriorStylesFlow = ai.defineFlow(
       const exteriorTypeKeywords = input.exteriorType ? ` for a ${input.exteriorType}`: '';
       const materialKeywords = input.materials && input.materials.length > 0 ? ` featuring materials like ${input.materials.join(' and ')}` : '';
       const landscapingKeywords = input.landscaping ? `, with a ${input.landscaping} landscaping theme` : '';
+      const userPromptKeywords = input.userPrompt ? `\n-   **Special Instructions:** ${input.userPrompt}` : '';
+
 
       const instructionPrompt = `
 You are an expert AI architect and landscape designer. Your task is to edit and realistically restyle the provided image.
@@ -80,7 +83,7 @@ Redesign the provided exterior space${exteriorTypeKeywords} to embody a ${styleK
 **USER PREFERENCES:**
 Apply the following user-defined preferences to the redesign:
 -   **Materials:**${materialKeywords || ' Use materials appropriate for the style.'}
--   **Landscaping:**${landscapingKeywords || ' Use landscaping that complements the style.'}
+-   **Landscaping:**${landscapingKeywords || ' Use landscaping that complements the style.'}${userPromptKeywords}
 
 The final result should be a single, stunningly realistic image that looks like a ${baseKeywords}.`;
 

@@ -17,6 +17,7 @@ import {
   Expand,
   GalleryThumbnails,
   ChevronDown,
+  MessageSquare,
 } from "lucide-react";
 import {
   Card,
@@ -43,6 +44,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ThemeSwitcher } from "./theme-switcher";
 import { useScrollDirection } from "@/hooks/use-scroll-direction";
 import { cn } from "@/lib/utils";
+import { Textarea } from "./ui/textarea";
 
 type GeneratedImage = {
   style: string;
@@ -187,6 +189,8 @@ const ExteriorAIGineEditor = ({
     setSelectedMaterials,
     selectedLandscaping,
     setSelectedLandscaping,
+    userPrompt,
+    setUserPrompt,
 }: any) => {
 
     return (
@@ -388,6 +392,18 @@ const ExteriorAIGineEditor = ({
                                 ))}
                             </ToggleGroup>
                         </div>
+                        <div>
+                            <Label htmlFor="user-prompt" className="mb-2 block flex items-center gap-2">
+                                <MessageSquare className="h-5 w-5" /> Any specific requests?
+                            </Label>
+                            <Textarea
+                                id="user-prompt"
+                                placeholder="e.g., add a fence, change the roof to terracotta tiles..."
+                                value={userPrompt}
+                                onChange={(e) => setUserPrompt(e.target.value)}
+                                className="h-24"
+                            />
+                        </div>
                     </CardContent>
                 </Card>
             </div>
@@ -407,6 +423,7 @@ export default function ExteriorAIGineClient() {
   const [selectedExteriorType, setSelectedExteriorType] = useState<string>(exteriorTypes[0]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [selectedLandscaping, setSelectedLandscaping] = useState<string>("Minimal");
+  const [userPrompt, setUserPrompt] = useState<string>("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -471,6 +488,7 @@ export default function ExteriorAIGineClient() {
       exteriorType: selectedExteriorType,
       materials: selectedMaterials,
       landscaping: selectedLandscaping,
+      userPrompt: userPrompt,
     }, uploadedImage);
 
 
@@ -596,6 +614,8 @@ export default function ExteriorAIGineClient() {
             setSelectedMaterials={setSelectedMaterials}
             selectedLandscaping={selectedLandscaping}
             setSelectedLandscaping={setSelectedLandscaping}
+            userPrompt={userPrompt}
+            setUserPrompt={setUserPrompt}
           />
         )}
          <Input
@@ -609,5 +629,3 @@ export default function ExteriorAIGineClient() {
     </div>
   );
 }
-
-    

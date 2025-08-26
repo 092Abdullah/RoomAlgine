@@ -18,7 +18,8 @@ import {
   GalleryThumbnails,
   Expand,
   ArrowRight,
-  UtensilsCrossed
+  UtensilsCrossed,
+  MessageSquare,
 } from "lucide-react";
 import {
   Card,
@@ -48,6 +49,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ThemeSwitcher } from "./theme-switcher";
 import { useScrollDirection } from "@/hooks/use-scroll-direction";
 import { cn } from "@/lib/utils";
+import { Textarea } from "./ui/textarea";
 
 type GeneratedImage = {
   style: string;
@@ -224,6 +226,8 @@ const RoomAIGineEditor = ({
     isSuggesting,
     styleSuggestions,
     setStyleSuggestions,
+    userPrompt,
+    setUserPrompt,
 }: any) => {
 
     const handleSuggestionClick = (suggestion: StyleSuggestion) => {
@@ -518,6 +522,18 @@ const RoomAIGineEditor = ({
                                 <span>{formatCurrency(50000)}</span>
                             </div>
                         </div>
+                        <div>
+                            <Label htmlFor="user-prompt" className="mb-2 block flex items-center gap-2">
+                                <MessageSquare className="h-5 w-5" /> Any specific requests?
+                            </Label>
+                            <Textarea
+                                id="user-prompt"
+                                placeholder="e.g., add a cat on the sofa, make the window bigger..."
+                                value={userPrompt}
+                                onChange={(e) => setUserPrompt(e.target.value)}
+                                className="h-24"
+                            />
+                        </div>
                     </CardContent>
                 </Card>
             </div>
@@ -541,6 +557,7 @@ export default function RoomAIGineClient() {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<string[]>(["Relaxed"]);
   const [priceRange, setPriceRange] = useState<number>(10000);
+  const [userPrompt, setUserPrompt] = useState<string>("");
 
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [styleSuggestions, setStyleSuggestions] = useState<StyleSuggestion[]>([]);
@@ -646,6 +663,7 @@ export default function RoomAIGineClient() {
       colorPreferences: selectedColors.map(hex => colorPreferences.find(c => c.value === hex)?.name).filter(Boolean) as string[],
       mood: selectedMoods[0],
       priceRange: `$${priceRange.toLocaleString()}`,
+      userPrompt: userPrompt,
     }, uploadedImage);
 
 
@@ -802,6 +820,8 @@ export default function RoomAIGineClient() {
             isSuggesting={isSuggesting}
             styleSuggestions={styleSuggestions}
             setStyleSuggestions={setStyleSuggestions}
+            userPrompt={userPrompt}
+            setUserPrompt={setUserPrompt}
           />
         )}
          <Input
@@ -815,7 +835,3 @@ export default function RoomAIGineClient() {
     </div>
   );
 }
-
-    
-
-    
