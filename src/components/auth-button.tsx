@@ -20,11 +20,18 @@ export function AuthButton({ session }: { session: any }) {
     const supabase = createClientComponentClient();
     const router = useRouter();
 
+    const getRedirectUrl = () => {
+        if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production') {
+            return 'https://roomalgine.vercel.app/auth/callback';
+        }
+        return `${window.location.origin}/auth/callback`;
+    }
+
     const handleGoogleSignIn = async () => {
         await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${location.origin}/auth/callback`,
+                redirectTo: getRedirectUrl(),
             },
         });
     };
