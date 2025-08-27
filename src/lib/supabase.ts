@@ -1,3 +1,4 @@
+
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
@@ -10,7 +11,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 
 export async function createSupabaseServerClient() {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -34,7 +35,7 @@ export async function createSupabaseServerClient() {
           } catch (error) {
             // The `delete` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
-
+            // user sessions.
           }
         },
       },

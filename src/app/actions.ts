@@ -9,11 +9,70 @@ import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flo
 import { publishToGallery } from '@/ai/flows/publish-to-gallery';
 import type { PublishToGalleryInput } from '@/app/types';
 import { createSupabaseServerClient } from '@/lib/supabase';
+import { isToday, startOfToday } from 'date-fns';
+
+const DAILY_DESIGN_LIMIT = 20;
+
+async function checkAndIncrementDesignCount(supabase: any, userId: string): Promise<{ allowed: boolean; error?: string }> {
+    // Fetch the user's profile
+    const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('designs_created_today, last_design_created_at')
+        .eq('id', userId)
+        .single();
+
+    if (profileError || !profile) {
+        // This case might happen if the trigger hasn't run yet for a new user.
+        // We can allow the first creation and assume the profile will be created.
+        return { allowed: true };
+    }
+
+    let designsToday = profile.designs_created_today || 0;
+    const lastDesignDate = profile.last_design_created_at ? new Date(profile.last_design_created_at) : null;
+
+    // Reset count if the last design was not created today
+    if (lastDesignDate && !isToday(lastDesignDate)) {
+        designsToday = 0;
+    }
+    
+    if (designsToday >= DAILY_DESIGN_LIMIT) {
+        return { allowed: false, error: `You have reached your daily limit of ${DAILY_DESIGN_LIMIT} designs.` };
+    }
+
+    // Increment the count
+    const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+            designs_created_today: designsToday + 1,
+            last_design_created_at: new Date().toISOString(),
+        })
+        .eq('id', userId);
+
+    if (updateError) {
+        console.error("Error updating design count:", updateError);
+        return { allowed: false, error: 'Could not update your design usage. Please try again.' };
+    }
+
+    return { allowed: true };
+}
+
 
 export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,
   photoDataUri?: string | null
 ): Promise<{ styledRoomImages: { style: string; imageDataUri: string }[] } | { error: string }> {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: 'You must be logged in to generate designs.' };
+  }
+
+  const usageCheck = await checkAndIncrementDesignCount(supabase, user.id);
+  if (!usageCheck.allowed) {
+    return { error: usageCheck.error };
+  }
+  
   if (!photoDataUri) {
     return { error: 'Please upload an image first.' };
   }
@@ -34,6 +93,18 @@ export async function generateExteriorStylesAction(
   input: Omit<GenerateExteriorStylesInput, 'photoDataUri'>,
   photoDataUri?: string | null
 ): Promise<{ styledExteriorImages: { style: string; imageDataUri: string }[] } | { error: string }> {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+      return { error: 'You must be logged in to generate designs.' };
+  }
+
+  const usageCheck = await checkAndIncrementDesignCount(supabase, user.id);
+  if (!usageCheck.allowed) {
+      return { error: usageCheck.error };
+  }
+
   if (!photoDataUri) {
     return { error: 'Please upload an image first.' };
   }
