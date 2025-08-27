@@ -29,11 +29,7 @@ export function UserNav({ user }: { user: User | null }) {
   };
   
   if (!user) {
-    return (
-      <Link href="/auth">
-        <Button variant="secondary" className="bg-white text-black hover:bg-gray-200">Login</Button>
-      </Link>
-    )
+    return null;
   }
 
   return (

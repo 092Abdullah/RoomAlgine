@@ -22,6 +22,7 @@ import {
   Sofa,
   CheckCircle,
   ArrowUp,
+  LayoutDashboard,
 } from "lucide-react";
 import { HeaderLogoIcon } from "./icons";
 import { Button } from "./ui/button";
@@ -128,18 +129,30 @@ const LandingPage = ({ user }: { user: User | null }) => {
                   <HeaderLogoIcon />
                 </Link>
                 <nav className="hidden md:flex md:gap-2 items-center">
-                  <Link href="#features" className="header-link">Features</Link>
-                  <Link href="#see-the-magic" className="header-link">Examples</Link>
-                  <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
-                  <Link href="#faq" className="header-link">FAQs</Link>
-                  <Link href="/gallery" className="header-link">Gallery</Link>
-                  <ThemeSwitcher />
-                   <UserNav user={user} />
-
+                  {user ? (
+                      <>
+                        <Link href="/dashboard" className="header-link">Dashboard</Link>
+                        <Link href="/gallery" className="header-link">Gallery</Link>
+                        <ThemeSwitcher />
+                        <UserNav user={user} />
+                        <Button onClick={() => setIsDialogOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Start Designing</Button>
+                      </>
+                  ) : (
+                      <>
+                        <Link href="#features" className="header-link">Features</Link>
+                        <Link href="#see-the-magic" className="header-link">Examples</Link>
+                        <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
+                        <Link href="/gallery" className="header-link">Gallery</Link>
+                        <ThemeSwitcher />
+                        <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>
+                        <Button onClick={() => setIsDialogOpen(true)}>Get Started</Button>
+                      </>
+                  )}
                 </nav>
                 <div className="md:hidden flex items-center gap-2">
                   <ThemeSwitcher />
-                   <UserNav user={user} />
+                  {user ? <UserNav user={user} /> : <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>}
+                   <Button size="icon" onClick={() => setIsDialogOpen(true)}><Sparkles className="h-4 w-4" /></Button>
                 </div>
               </div>
             </div>
