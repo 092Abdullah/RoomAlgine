@@ -17,16 +17,18 @@ export default async function LoginPage() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
-            <Card className="w-full max-w-sm">
-                 <CardHeader className="text-center">
-                    <Link href="/" className="inline-block mx-auto mb-4">
+        <div className="flex items-center justify-center min-h-screen bg-secondary/30">
+            <Card className="w-full max-w-sm shadow-xl">
+                 <CardHeader className="text-center space-y-4">
+                    <Link href="/" className="inline-block mx-auto">
                         <HeaderLogoIcon />
                     </Link>
-                    <CardTitle>Welcome to RoomAIgine</CardTitle>
-                    <CardDescription>Sign in to continue to your dashboard</CardDescription>
+                    <div>
+                        <CardTitle>Welcome to RoomAIgine</CardTitle>
+                        <CardDescription>Sign in to unlock your creative potential</CardDescription>
+                    </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex justify-center p-6">
                     <AuthButton session={session} />
                 </CardContent>
             </Card>
