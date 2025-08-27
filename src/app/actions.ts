@@ -71,7 +71,7 @@ export async function generateRoomStylesAction(
 
   const usageCheck = await checkAndIncrementDesignCount(supabase, user.id);
   if (!usageCheck.allowed) {
-    return { error: usageCheck.error };
+    return { error: usageCheck.error ?? 'You have reached your daily design limit.' };
   }
   
   if (!photoDataUri) {
@@ -103,7 +103,7 @@ export async function generateExteriorStylesAction(
 
   const usageCheck = await checkAndIncrementDesignCount(supabase, user.id);
   if (!usageCheck.allowed) {
-      return { error: usageCheck.error };
+      return { error: usageCheck.error ?? 'You have reached your daily design limit.' };
   }
 
   if (!photoDataUri) {
