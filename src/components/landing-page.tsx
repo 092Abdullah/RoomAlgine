@@ -556,5 +556,3 @@ const LandingPage = ({ user }: { user: User | null }) => {
 };
 
 export default LandingPage;
-
-    
