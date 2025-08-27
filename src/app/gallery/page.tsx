@@ -1,6 +1,7 @@
 
 import { GalleryClient } from '@/components/gallery-client';
 import { createSupabaseServerClient } from '@/lib/supabase';
+import type { PageProps } from 'next';
 
 export type Creation = {
   id: string;
@@ -28,11 +29,8 @@ async function getCreations(): Promise<Creation[]> {
   return data || [];
 }
 
-type GalleryPageProps = {
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
 
-export default async function GalleryPage({ searchParams }: GalleryPageProps) {
+export default async function GalleryPage({ searchParams }: PageProps) {
   const creations = await getCreations();
 
   const supabase = createSupabaseServerClient();
@@ -41,8 +39,8 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
   const resolvedParams = searchParams || {};
 
   const filter =
-    resolvedParams.filter === 'interior' || resolvedParams.filter === 'exterior'
-      ? (resolvedParams.filter as string)
+    typeof resolvedParams.filter === 'string' && ['interior', 'exterior'].includes(resolvedParams.filter)
+      ? resolvedParams.filter
       : 'all';
 
   return <GalleryClient allCreations={creations} initialFilter={filter} user={user}/>;
