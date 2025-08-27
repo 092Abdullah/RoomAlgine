@@ -8,8 +8,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createSupabaseServerClient } from '@/lib/supabase';
 import { v2 as cloudinary } from 'cloudinary';
 import { PublishToGalleryInputSchema, PublishToGalleryOutputSchema, type PublishToGalleryInput, type PublishToGalleryOutput } from '@/app/types';
 
@@ -44,18 +43,7 @@ const publishToGalleryFlow = ai.defineFlow(
         outputSchema: PublishToGalleryOutputSchema,
     },
     async (input) => {
-        const cookieStore = await cookies();
-        const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-                cookies: {
-                    get: (name: string) => {
-                        return cookieStore.get(name)?.value
-                    },
-                },
-            }
-        );
+        const supabase = createSupabaseServerClient();
 
         const [original_image_url, generated_image_url] = await Promise.all([
             uploadImage(input.originalImageDataUri),

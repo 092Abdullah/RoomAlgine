@@ -1,6 +1,5 @@
 
 import { createSupabaseServerClient } from '@/lib/supabase';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AuthButton } from '@/components/auth-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,8 +7,7 @@ import { HeaderLogoIcon } from '@/components/icons';
 import Link from 'next/link';
 
 export default async function LoginPage() {
-    const cookieStore = cookies();
-    const supabase = createSupabaseServerClient(cookieStore);
+    const supabase = createSupabaseServerClient();
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {

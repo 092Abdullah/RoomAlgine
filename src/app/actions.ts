@@ -9,7 +9,6 @@ import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flo
 import { publishToGallery } from '@/ai/flows/publish-to-gallery';
 import type { PublishToGalleryInput } from '@/app/types';
 import { createSupabaseServerClient } from '@/lib/supabase';
-import { cookies } from 'next/headers';
 
 export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,
@@ -97,8 +96,7 @@ export async function publishToGalleryAction(
 }
 
 export async function deleteCreationAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-    const cookieStore = cookies();
-    const supabase = createSupabaseServerClient(cookieStore);
+    const supabase = createSupabaseServerClient();
     try {
         const { error } = await supabase.from('creations').delete().eq('id', creationId);
         if (error) throw error;
@@ -110,8 +108,7 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
 }
 
 export async function incrementKudosAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = cookies();
-  const supabase = createSupabaseServerClient(cookieStore);
+  const supabase = createSupabaseServerClient();
   try {
     const { error } = await supabase.rpc('increment_kudos', { creation_id: creationId });
     if (error) throw error;

@@ -1,6 +1,5 @@
 
 import { createSupabaseServerClient } from '@/lib/supabase';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { GalleryItem } from '@/components/gallery-item';
 import type { Creation } from '@/app/gallery/page';
@@ -9,8 +8,7 @@ import { HeaderLogoIcon } from '@/components/icons';
 import Link from 'next/link';
 
 async function getCreationsForUser(userId: string): Promise<Creation[]> {
-    const cookieStore = cookies();
-    const supabase = createSupabaseServerClient(cookieStore);
+    const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
         .from('creations')
         .select('*')
@@ -26,8 +24,7 @@ async function getCreationsForUser(userId: string): Promise<Creation[]> {
 
 
 export default async function DashboardPage() {
-    const cookieStore = cookies();
-    const supabase = createSupabaseServerClient(cookieStore);
+    const supabase = createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
