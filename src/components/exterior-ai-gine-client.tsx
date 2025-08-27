@@ -45,6 +45,8 @@ import { ThemeSwitcher } from "./theme-switcher";
 import { useScrollDirection } from "@/hooks/use-scroll-direction";
 import { cn } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
+import type { User } from "@supabase/supabase-js";
+import { UserNav } from "./user-nav";
 
 type GeneratedImage = {
   style: string;
@@ -63,7 +65,7 @@ const exteriorTypes = [
 const materialOptions = ["Siding", "Brick", "Stone", "Stucco"];
 const landscapingOptions = ["Minimal", "Lush", "Modern", "Natural"];
 
-const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () => void, showGenerateButton: boolean }) => {
+const AppHeader = ({ onGenerateNew, showGenerateButton, user }: { onGenerateNew: () => void, showGenerateButton: boolean, user: User | null }) => {
     const scrollDirection = useScrollDirection();
     return (
         <header className={cn(
@@ -76,18 +78,13 @@ const AppHeader = ({ onGenerateNew, showGenerateButton }: { onGenerateNew: () =>
                         <HeaderLogoIcon />
                     </Link>
                     <div className="flex items-center gap-2">
-                         <Button variant="outline" asChild className="p-2 sm:px-4">
-                            <Link href="/gallery">
-                                <GalleryThumbnails className="h-4 w-4 md:mr-2" />
-                                <span className="hidden md:inline">Gallery</span>
-                            </Link>
-                        </Button>
                         {showGenerateButton && (
                         <Button variant="ghost" onClick={onGenerateNew} className="hidden md:inline-flex">
                             <RefreshCw className="mr-2 h-4 w-4" /> Generate New
                         </Button>
                         )}
                         <ThemeSwitcher />
+                         <UserNav user={user} />
                          {showGenerateButton && (
                              <div className="md:hidden">
                                 <Button onClick={onGenerateNew} size="icon">
@@ -411,7 +408,7 @@ const ExteriorAIGineEditor = ({
     );
 }
 
-export default function ExteriorAIGineClient() {
+export default function ExteriorAIGineClient({ user }: { user: User | null }) {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>("Modern");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -586,7 +583,7 @@ export default function ExteriorAIGineClient() {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-      <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={!!uploadedImage} />
+      <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={!!uploadedImage} user={user} />
       <main className="flex-grow flex items-center justify-center pt-24">
         {!uploadedImage ? (
           <UploadScreen

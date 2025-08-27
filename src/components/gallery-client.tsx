@@ -13,9 +13,11 @@ import { HeaderLogoIcon } from './icons';
 import { Button } from './ui/button';
 import { ThemeSwitcher } from './theme-switcher';
 import { DesignTypeSelectionDialog } from './design-type-selection-dialog';
+import type { User } from '@supabase/supabase-js';
+import { UserNav } from './user-nav';
 
 
-export function GalleryClient({ allCreations, initialFilter }: { allCreations: Creation[], initialFilter: string }) {
+export function GalleryClient({ allCreations, initialFilter, user }: { allCreations: Creation[], initialFilter: string, user: User | null }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -60,18 +62,15 @@ export function GalleryClient({ allCreations, initialFilter }: { allCreations: C
                 </Link>
                 <nav className="hidden md:flex md:gap-2 items-center">
                   <Link href="/#features" className="header-link">Features</Link>
-                  <Link href="#see-the-magic" className="header-link">Examples</Link>
-                  <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
+                  <Link href="/#see-the-magic" className="header-link">Examples</Link>
+                  <Link href="/#loved-by-creatives" className="header-link">Reviews</Link>
                   <Link href="/gallery" className="header-link text-foreground">Gallery</Link>
                   <ThemeSwitcher />
-                  <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="bg-white text-black hover:bg-gray-200">
-                    Try for Free <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                   <UserNav user={user} />
                 </nav>
-                <div className="md:hidden">
-                  <Button onClick={() => setIsDialogOpen(true)}>
-                    Start Designing
-                  </Button>
+                <div className="md:hidden flex items-center gap-2">
+                  <ThemeSwitcher />
+                   <UserNav user={user} />
                 </div>
               </div>
             </div>

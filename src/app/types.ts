@@ -5,6 +5,7 @@ export const PublishToGalleryInputSchema = z.object({
     generatedImageDataUri: z.string().describe("The AI-generated room photo as a data URI."),
     style: z.string(),
     roomType: z.string().optional(),
+    userId: z.string().optional(),
 });
 export type PublishToGalleryInput = z.infer<typeof PublishToGalleryInputSchema>;
 

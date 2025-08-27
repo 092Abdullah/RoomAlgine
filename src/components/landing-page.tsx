@@ -1,6 +1,6 @@
 
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,6 +40,9 @@ import AnimatedCounter from "./animated-counter";
 import { DesignTypeSelectionDialog } from "./design-type-selection-dialog";
 import { useScrollPosition } from "@/hooks/use-scroll-position";
 import { cn } from "@/lib/utils";
+import type { User } from "@supabase/supabase-js";
+import { UserNav } from "./user-nav";
+
 
 const FADE_IN_ANIMATION_VARIANTS = {
   hidden: { opacity: 0, y: 10 },
@@ -82,7 +85,7 @@ const BackToTopButton = () => {
 };
 
 
-const LandingPage = () => {
+const LandingPage = ({ user }: { user: User | null }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const faqs = [
@@ -131,14 +134,12 @@ const LandingPage = () => {
                   <Link href="#faq" className="header-link">FAQs</Link>
                   <Link href="/gallery" className="header-link">Gallery</Link>
                   <ThemeSwitcher />
-                  <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="bg-white text-black hover:bg-gray-200">
-                      Try for Free <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                   <UserNav user={user} />
+
                 </nav>
-                <div className="md:hidden">
-                  <Button onClick={() => setIsDialogOpen(true)}>
-                      Start Designing
-                  </Button>
+                <div className="md:hidden flex items-center gap-2">
+                  <ThemeSwitcher />
+                   <UserNav user={user} />
                 </div>
               </div>
             </div>
@@ -544,9 +545,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
-    
-
-    
-
-    

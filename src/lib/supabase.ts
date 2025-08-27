@@ -1,13 +1,42 @@
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
 
-// The `process.env.NEXT_PUBLIC_` variables are available on the client-side,
-// but we also need to check for the non-prefixed versions for server-side code.
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase URL and anonymous key are required.');
-}
-
+// This is the client-side client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+
+export function createSupabaseServerClient(cookieStore: ReturnType<typeof cookies>) {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value, ...options })
+          } catch (error) {
+            // The `set` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
+        },
+        remove(name: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value: '', ...options })
+          } catch (error)_ {
+            // The `delete` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+
+          }
+        },
+      },
+    }
+  )
+}
