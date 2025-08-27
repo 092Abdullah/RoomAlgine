@@ -8,7 +8,7 @@ import { HeaderLogoIcon } from '@/components/icons';
 import Link from 'next/link';
 
 async function getCreationsForUser(userId: string): Promise<Creation[]> {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase
         .from('creations')
         .select('*')
@@ -24,7 +24,7 @@ async function getCreationsForUser(userId: string): Promise<Creation[]> {
 
 
 export default async function DashboardPage() {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

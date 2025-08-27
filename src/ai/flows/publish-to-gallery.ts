@@ -43,7 +43,7 @@ const publishToGalleryFlow = ai.defineFlow(
         outputSchema: PublishToGalleryOutputSchema,
     },
     async (input) => {
-        const supabase = createSupabaseServerClient();
+        const supabase = await createSupabaseServerClient();
 
         const [original_image_url, generated_image_url] = await Promise.all([
             uploadImage(input.originalImageDataUri),
