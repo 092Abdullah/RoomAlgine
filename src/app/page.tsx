@@ -8,3 +8,4 @@ export default async function Home() {
 
   return <LandingPage user={user} />;
 }
+
