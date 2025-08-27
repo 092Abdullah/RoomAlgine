@@ -1,6 +1,6 @@
+
 import { GalleryClient } from '@/components/gallery-client';
 import { createSupabaseServerClient } from '@/lib/supabase';
-import { redirect } from 'next/navigation';
 
 export type Creation = {
   id: string;
@@ -29,7 +29,7 @@ async function getCreations(): Promise<Creation[]> {
 }
 
 type GalleryPageProps = {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: any;
 };
 
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
