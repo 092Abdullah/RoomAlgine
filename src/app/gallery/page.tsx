@@ -1,6 +1,6 @@
-
 import { GalleryClient } from '@/components/gallery-client';
 import { createSupabaseServerClient } from '@/lib/supabase';
+import { redirect } from 'next/navigation';
 
 export type Creation = {
   id: string;
@@ -33,17 +33,22 @@ type GalleryPageProps = {
 };
 
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
-  const creations = await getCreations();
-
   const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const resolvedParams = searchParams || {};
+  // 🔥 Redirect if logged in
+  if (user) {
+    redirect('/dashboard');
+  }
 
+  // Only fetch creations if guest
+  const creations = await getCreations();
+
+  const resolvedParams = searchParams || {};
   const filter =
     typeof resolvedParams.filter === 'string' && ['interior', 'exterior'].includes(resolvedParams.filter)
       ? resolvedParams.filter
       : 'all';
 
-  return <GalleryClient allCreations={creations} initialFilter={filter} user={user}/>;
+  return <GalleryClient allCreations={creations} initialFilter={filter} user={user} />;
 }
