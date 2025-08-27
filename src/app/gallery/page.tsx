@@ -36,12 +36,6 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
   const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // 🔥 Redirect if logged in
-  if (user) {
-    redirect('/dashboard');
-  }
-
-  // Only fetch creations if guest
   const creations = await getCreations();
 
   const resolvedParams = searchParams || {};
