@@ -9,7 +9,7 @@ import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flo
 import { publishToGallery } from '@/ai/flows/publish-to-gallery';
 import type { PublishToGalleryInput } from '@/app/types';
 import { createSupabaseServerClient } from '@/lib/supabase';
-import { cookies }e from 'next/headers';
+import { cookies } from 'next/headers';
 
 export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,
