@@ -10,10 +10,11 @@ import { publishToGallery } from '@/ai/flows/publish-to-gallery';
 import type { PublishToGalleryInput } from '@/app/types';
 import { createSupabaseServerClient } from '@/lib/supabase';
 import { isToday, startOfToday } from 'date-fns';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const DAILY_DESIGN_LIMIT = 20;
 
-async function checkAndIncrementDesignCount(supabase: any, userId: string): Promise<{ allowed: boolean; error?: string }> {
+async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: string): Promise<{ allowed: boolean; error?: string }> {
     // Fetch the user's profile
     const { data: profile, error: profileError } = await supabase
         .from('profiles')
@@ -61,10 +62,10 @@ export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,
   photoDataUri?: string | null
 ): Promise<{ styledRoomImages: { style: string; imageDataUri: string }[] } | { error: string }> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user || !user.id) {
     return { error: 'You must be logged in to generate designs.' };
   }
 
@@ -93,10 +94,10 @@ export async function generateExteriorStylesAction(
   input: Omit<GenerateExteriorStylesInput, 'photoDataUri'>,
   photoDataUri?: string | null
 ): Promise<{ styledExteriorImages: { style: string; imageDataUri: string }[] } | { error: string }> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user || !user.id) {
       return { error: 'You must be logged in to generate designs.' };
   }
 
@@ -158,7 +159,7 @@ export async function publishToGalleryAction(
   input: PublishToGalleryInput
 ): Promise<{ success: boolean; galleryUrl?: string; creationId?: string; error?: string }> {
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
