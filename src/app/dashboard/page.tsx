@@ -50,7 +50,7 @@ export default async function DashboardPage() {
                 <div className="pb-8 md:pb-12">
                     <h1 className="text-4xl font-bold text-foreground">Dashboard</h1>
                     <p className="mt-2 max-w-2xl text-muted-foreground">
-                        Welcome back, {user.email}! Here are your beautiful creations.
+                        Welcome back, {user.user_metadata.name || user.email}! Here are your creations.
                     </p>
                 </div>
 

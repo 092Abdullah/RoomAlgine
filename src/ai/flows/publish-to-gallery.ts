@@ -45,12 +45,16 @@ const publishToGalleryFlow = ai.defineFlow(
     async (input) => {
         const supabase = await createSupabaseServerClient();
 
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            throw new Error('User must be logged in to publish to the gallery.');
+        }
+
         const [original_image_url, generated_image_url] = await Promise.all([
             uploadImage(input.originalImageDataUri),
             uploadImage(input.generatedImageDataUri)
         ]);
-
-        const { data: { user } } = await supabase.auth.getUser();
 
         const { data, error: dbError } = await supabase
             .from('creations')
@@ -59,7 +63,7 @@ const publishToGalleryFlow = ai.defineFlow(
                 generated_image_url,
                 style: input.style,
                 room_type: input.roomType,
-                user_id: user?.id
+                user_id: user.id, // Ensure user_id is passed here
             })
             .select('id')
             .single();
