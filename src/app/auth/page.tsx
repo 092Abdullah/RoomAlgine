@@ -7,11 +7,11 @@ import { HeaderLogoIcon } from '@/components/icons';
 import Link from 'next/link';
 
 export default async function LoginPage() {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabaseServerClient();
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {
-        redirect('/');
+        redirect('/dashboard');
     }
 
     return (
