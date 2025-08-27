@@ -131,8 +131,8 @@ const LandingPage = ({ user }: { user: User | null }) => {
                 <nav className="hidden md:flex md:gap-2 items-center">
                   {user ? (
                       <>
-                        <Link href="/dashboard" className="header-link">Dashboard</Link>
-                        <Link href="/gallery" className="header-link">Gallery</Link>
+                        <Link href="/dashboard" className="header-link"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link>
+                        <Link href="/gallery" className="header-link"><GalleryThumbnails className="mr-2 h-4 w-4" />Gallery</Link>
                         <ThemeSwitcher />
                         <UserNav user={user} />
                         <Button onClick={() => setIsDialogOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Start Designing</Button>
@@ -141,7 +141,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
                       <>
                         <Link href="#features" className="header-link">Features</Link>
                         <Link href="#see-the-magic" className="header-link">Examples</Link>
-                        <Link href="#loved-by-creatives" className="header-link">Reviews</Link>
                         <Link href="/gallery" className="header-link">Gallery</Link>
                         <ThemeSwitcher />
                         <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>
@@ -370,7 +369,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true, amount: 0.5 }}
-                    variants={FADE_IN_ANIMATION_VARIANTS}
                     >
                     <div className="glare-effect rounded-lg h-full">
                       <Card className="glassmorphic-card p-6 h-full">
@@ -558,3 +556,5 @@ const LandingPage = ({ user }: { user: User | null }) => {
 };
 
 export default LandingPage;
+
+    

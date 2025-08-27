@@ -20,6 +20,7 @@ import {
   ArrowRight,
   UtensilsCrossed,
   MessageSquare,
+  LayoutDashboard,
 } from "lucide-react";
 import {
   Card,
@@ -108,9 +109,14 @@ const AppHeader = ({ onGenerateNew, showGenerateButton, user }: { onGenerateNew:
                     </Link>
                     <div className="flex items-center gap-2">
                         {showGenerateButton && (
-                        <Button variant="ghost" onClick={onGenerateNew} className="hidden md:inline-flex">
-                            <RefreshCw className="mr-2 h-4 w-4" /> Generate New
-                        </Button>
+                            <>
+                                <Button variant="ghost" onClick={onGenerateNew} className="hidden md:inline-flex">
+                                    <RefreshCw className="mr-2 h-4 w-4" /> Generate New
+                                </Button>
+                                <Link href="/dashboard" className="header-link hidden md:inline-flex">
+                                    <LayoutDashboard className="mr-2 h-4 w-4"/>Dashboard
+                                </Link>
+                            </>
                         )}
                         <ThemeSwitcher />
                          <UserNav user={user} />
@@ -832,3 +838,5 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
     </div>
   );
 }
+
+    

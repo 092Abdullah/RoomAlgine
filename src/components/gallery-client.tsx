@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight, Building, Folder, Home, Sparkles } from 'lucide-react';
+import { ArrowRight, Building, Folder, Home, LayoutDashboard, Sparkles } from 'lucide-react';
 
 import type { Creation } from '@/app/gallery/page';
 import { GalleryItem } from './gallery-item';
@@ -63,7 +63,7 @@ export function GalleryClient({ allCreations, initialFilter, user }: { allCreati
                  <nav className="hidden md:flex md:gap-2 items-center">
                   {user ? (
                       <>
-                        <Link href="/dashboard" className="header-link">Dashboard</Link>
+                        <Link href="/dashboard" className="header-link"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link>
                         <Link href="/gallery" className="header-link text-foreground">Gallery</Link>
                         <ThemeSwitcher />
                         <UserNav user={user} />
@@ -71,7 +71,7 @@ export function GalleryClient({ allCreations, initialFilter, user }: { allCreati
                       </>
                   ) : (
                       <>
-                        <Link href="/#features" className="header-link">Features</Link>
+                        <Link href="#features" className="header-link">Features</Link>
                         <Link href="/gallery" className="header-link text-foreground">Gallery</Link>
                         <ThemeSwitcher />
                         <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>
@@ -132,3 +132,5 @@ export function GalleryClient({ allCreations, initialFilter, user }: { allCreati
       </>
     )
 }
+
+    
