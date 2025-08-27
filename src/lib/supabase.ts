@@ -9,9 +9,9 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 // This is the client-side client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-
-export async function createSupabaseServerClient() {
+export function createSupabaseServerClient() {
   const cookieStore = cookies();
+  
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -40,5 +40,5 @@ export async function createSupabaseServerClient() {
         },
       },
     }
-  )
+  );
 }

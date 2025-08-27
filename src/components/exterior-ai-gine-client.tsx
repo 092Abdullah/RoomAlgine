@@ -84,20 +84,15 @@ const AppHeader = ({ onGenerateNew, showGenerateButton, user }: { onGenerateNew:
                                 <Button variant="ghost" onClick={onGenerateNew} className="hidden md:inline-flex">
                                     <RefreshCw className="mr-2 h-4 w-4" /> Generate New
                                 </Button>
-                                <Link href="/dashboard" className="header-link hidden md:inline-flex">
-                                    <LayoutDashboard className="mr-2 h-4 w-4"/>Dashboard
-                                </Link>
+                                <div className="md:hidden">
+                                    <Button onClick={onGenerateNew} size="icon">
+                                        <RefreshCw className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </>
                         )}
-                        <ThemeSwitcher />
                          <UserNav user={user} />
-                         {showGenerateButton && (
-                             <div className="md:hidden">
-                                <Button onClick={onGenerateNew} size="icon">
-                                    <RefreshCw className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        )}
+                        <ThemeSwitcher />
                     </div>
                 </div>
             </div>
@@ -632,5 +627,3 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
     </div>
   );
 }
-
-    
