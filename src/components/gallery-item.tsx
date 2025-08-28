@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from './ui/button';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
-import { helix } from 'ldrs';
+import { Helix } from 'ldrs';
 
 export function GalleryItem({ creation, isDashboardItem = false }: { creation: Creation, isDashboardItem?: boolean }) {
   const [kudos, setKudos] = useState(creation.kudos || 0);
@@ -24,7 +24,7 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
   useEffect(() => {
     // Format date only on the client to avoid hydration mismatch
     setFormattedDate(new Date(creation.created_at).toLocaleDateString());
-    helix.register();
+    Helix.register();
   }, [creation.created_at]);
 
   const handleKudosClick = async (e: React.MouseEvent) => {

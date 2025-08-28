@@ -38,7 +38,7 @@ import { GenerateIcon, HeaderLogoIcon } from "./icons";
 import { motion } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { helix } from 'ldrs/react'
+import { Helix } from 'ldrs/react'
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
@@ -427,7 +427,7 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
-    helix.register();
+    Helix.register();
   }, []);
 
   const processFile = (file: File) => {

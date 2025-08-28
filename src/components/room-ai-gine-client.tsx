@@ -42,7 +42,7 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Link from "next/link";
-import { helix } from 'ldrs/react'
+import { Helix } from 'ldrs/react'
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
@@ -563,7 +563,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
-    helix.register();
+    Helix.register();
     const image = searchParams.get('image');
     if (image) {
       // In a real app, you might fetch the image data from a URL
