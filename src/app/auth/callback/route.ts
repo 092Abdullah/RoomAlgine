@@ -1,4 +1,3 @@
-
 import { createServerClient, type CookieOptions } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
@@ -39,5 +38,7 @@ export async function GET(req: NextRequest) {
 
   // If there's an error or no code, redirect to an error page
   console.error("Auth callback error or no code found");
-  return NextResponse.redirect(new URL("/auth/error", req.url));
+  const errorUrl = new URL("/auth/error", req.url)
+  errorUrl.searchParams.set("message", "Authentication failed. Please try again.")
+  return NextResponse.redirect(errorUrl);
 }
