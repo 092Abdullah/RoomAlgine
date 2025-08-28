@@ -27,6 +27,8 @@ const publishToGalleryFlow = ai.defineFlow(
     async ({ designId }) => {
         const supabase = await createSupabaseServerClient();
 
+        // RLS policy on `creations` table now ensures only authenticated users can insert.
+        // We still need the user to fetch from their private `designs` table.
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
@@ -46,7 +48,7 @@ const publishToGalleryFlow = ai.defineFlow(
             throw new Error('Could not find the specified design to publish.');
         }
 
-        // 2. Insert the data into the public 'creations' table
+        // 2. Insert the data into the public 'creations' table, without user_id
         const { data, error: dbError } = await supabase
             .from('creations')
             .insert({
@@ -54,7 +56,7 @@ const publishToGalleryFlow = ai.defineFlow(
                 generated_image_url: design.generated_image_url,
                 style: design.style,
                 room_type: design.room_type,
-                user_id: user.id,
+                // user_id is no longer inserted
             })
             .select('id')
             .single();

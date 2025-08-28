@@ -216,13 +216,8 @@ export async function publishToGalleryAction(
   input: PublishToGalleryInput
 ): Promise<{ success: boolean; galleryUrl?: string; creationId?: string; error?: string }> {
   try {
-    const supabase = createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return { success: false, error: 'You must be logged in to publish.' };
-    }
-    
+    // The user check is implicitly handled by RLS policies on the 'designs' (for select)
+    // and 'creations' (for insert) tables. We no longer need to explicitly check for the user here.
     const result = await publishToGallery(input);
     return { success: true, galleryUrl: result.galleryUrl, creationId: result.creationId };
   } catch (e: any) {
