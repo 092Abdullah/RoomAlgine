@@ -44,7 +44,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Link from "next/link";
 import { Helix } from 'ldrs/react'
 import { Separator } from "./ui/separator";
-import type { PublishToGalleryInput } from "@/app/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { ThemeSwitcher } from "./theme-switcher";
@@ -55,6 +54,7 @@ import { UserNav } from "./user-nav";
 import type { User } from "@supabase/supabase-js";
 
 type GeneratedImage = {
+  designId: string;
   style: string;
   imageDataUri: string;
 };
@@ -563,9 +563,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
-    // This code runs only on the client
     import('ldrs').then(ldrs => ldrs.helix.register());
-
     const image = searchParams.get('image');
     if (image) {
       // In a real app, you might fetch the image data from a URL
@@ -709,15 +707,10 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
   };
 
   const handlePublish = async (imageToPublish: GeneratedImage) => {
-    if (!uploadedImage || !imageToPublish) return;
+    if (!imageToPublish) return;
 
     setIsPublishing(true);
-    const result = await publishToGalleryAction({
-        originalImageDataUri: uploadedImage,
-        generatedImageDataUri: imageToPublish.imageDataUri,
-        style: imageToPublish.style,
-        roomType: roomType,
-    });
+    const result = await publishToGalleryAction({ designId: imageToPublish.designId });
 
     if (result.success && result.creationId) {
         const creationId = result.creationId;

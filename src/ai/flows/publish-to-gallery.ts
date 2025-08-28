@@ -2,35 +2,17 @@
 'use server';
 
 /**
- * @fileOverview A flow to publish a generated room design to a Cloudinary and a Supabase gallery.
+ * @fileOverview A flow to publish a design from a user's history to the public gallery.
  *
- * - publishToGallery - Uploads original and generated images to Cloudinary Storage and saves metadata to a Supabase table.
+ * - publishToGallery - Copies a design from the 'designs' table to the 'creations' table.
  */
 
 import { ai } from '@/ai/genkit';
 import { createSupabaseServerClient } from '@/lib/supabase';
-import { v2 as cloudinary } from 'cloudinary';
 import { PublishToGalleryInputSchema, PublishToGalleryOutputSchema, type PublishToGalleryInput, type PublishToGalleryOutput } from '@/app/types';
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-async function uploadImage(dataUri: string): Promise<string> {
-    try {
-        const result = await cloudinary.uploader.upload(dataUri, {
-            folder: 'room-ai-gine',
-            resource_type: 'image'
-        });
-        return result.secure_url;
-    } catch (error) {
-        console.error('Cloudinary upload error:', error);
-        throw new Error('Failed to upload image to Cloudinary.');
-    }
-}
-
+// Note: The Cloudinary upload logic is removed from here as we assume URLs are already stored.
+// If direct data URI upload is still needed, it should be added back.
 
 export async function publishToGallery(input: PublishToGalleryInput): Promise<PublishToGalleryOutput> {
     return publishToGalleryFlow(input);
@@ -42,7 +24,7 @@ const publishToGalleryFlow = ai.defineFlow(
         inputSchema: PublishToGalleryInputSchema,
         outputSchema: PublishToGalleryOutputSchema,
     },
-    async (input) => {
+    async ({ designId }) => {
         const supabase = await createSupabaseServerClient();
 
         const { data: { user } } = await supabase.auth.getUser();
@@ -51,25 +33,38 @@ const publishToGalleryFlow = ai.defineFlow(
             throw new Error('User must be logged in to publish to the gallery.');
         }
 
-        const [original_image_url, generated_image_url] = await Promise.all([
-            uploadImage(input.originalImageDataUri),
-            uploadImage(input.generatedImageDataUri)
-        ]);
+        // 1. Fetch the design from the private 'designs' table
+        const { data: design, error: fetchError } = await supabase
+            .from('designs')
+            .select('*')
+            .eq('id', designId)
+            .eq('user_id', user.id) // Ensure user owns the design
+            .single();
+        
+        if (fetchError || !design) {
+            console.error('Error fetching design or design not found:', fetchError);
+            throw new Error('Could not find the specified design to publish.');
+        }
 
+        // 2. Insert the data into the public 'creations' table
         const { data, error: dbError } = await supabase
             .from('creations')
             .insert({
-                original_image_url,
-                generated_image_url,
-                style: input.style,
-                room_type: input.roomType,
-                user_id: user.id, // Ensure user_id is passed here
+                original_image_url: design.original_image_url,
+                generated_image_url: design.generated_image_url,
+                style: design.style,
+                room_type: design.room_type,
+                user_id: user.id,
             })
             .select('id')
             .single();
         
         if (dbError) {
             console.error('Supabase DB insert error:', dbError);
+            // Handle potential unique constraint violation if already published
+            if (dbError.code === '23505') { // unique_violation
+                 throw new Error(`This design may have already been published.`);
+            }
             throw new Error(`Failed to save creation to database: ${dbError.message}`);
         }
         

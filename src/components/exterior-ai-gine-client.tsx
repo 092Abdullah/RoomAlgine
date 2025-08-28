@@ -50,6 +50,7 @@ import type { User } from "@supabase/supabase-js";
 import { UserNav } from "./user-nav";
 
 type GeneratedImage = {
+  designId: string;
   style: string;
   imageDataUri: string;
 };
@@ -511,15 +512,10 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
   }
 
   const handlePublish = async (imageToPublish: GeneratedImage) => {
-    if (!uploadedImage || !imageToPublish) return;
+    if (!imageToPublish) return;
 
     setIsPublishing(true);
-    const result = await publishToGalleryAction({
-        originalImageDataUri: uploadedImage,
-        generatedImageDataUri: imageToPublish.imageDataUri,
-        style: imageToPublish.style,
-        // roomType is omitted for exterior designs
-    });
+    const result = await publishToGalleryAction({ designId: imageToPublish.designId });
 
     if (result.success && result.creationId) {
         const creationId = result.creationId;

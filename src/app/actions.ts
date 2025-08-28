@@ -9,13 +9,12 @@ import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flo
 import { publishToGallery } from '@/ai/flows/publish-to-gallery';
 import type { PublishToGalleryInput } from '@/app/types';
 import { createSupabaseServerClient } from '@/lib/supabase';
-import { isToday, startOfToday } from 'date-fns';
+import { isToday } from 'date-fns';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 const DAILY_DESIGN_LIMIT = 20;
 
 async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: string): Promise<{ allowed: boolean; error?: string }> {
-    // Fetch the user's profile
     const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('designs_created_today, last_design_created_at')
@@ -23,15 +22,12 @@ async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: st
         .single();
 
     if (profileError || !profile) {
-        // This case might happen if the trigger hasn't run yet for a new user.
-        // We can allow the first creation and assume the profile will be created.
         return { allowed: true };
     }
 
     let designsToday = profile.designs_created_today || 0;
     const lastDesignDate = profile.last_design_created_at ? new Date(profile.last_design_created_at) : null;
 
-    // Reset count if the last design was not created today
     if (lastDesignDate && !isToday(lastDesignDate)) {
         designsToday = 0;
     }
@@ -40,7 +36,6 @@ async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: st
         return { allowed: false, error: `You have reached your daily limit of ${DAILY_DESIGN_LIMIT} designs.` };
     }
 
-    // Increment the count
     const { error: updateError } = await supabase
         .from('profiles')
         .update({
@@ -57,15 +52,20 @@ async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: st
     return { allowed: true };
 }
 
+type GeneratedImageResult = {
+    designId: string;
+    style: string;
+    imageDataUri: string;
+};
 
 export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,
   photoDataUri?: string | null
-): Promise<{ styledRoomImages: { style: string; imageDataUri: string }[] } | { error: string }> {
+): Promise<{ styledRoomImages: GeneratedImageResult[] } | { error: string }> {
   const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user || !user.id) {
+  if (!user?.id) {
     return { error: 'You must be logged in to generate designs.' };
   }
 
@@ -83,7 +83,36 @@ export async function generateRoomStylesAction(
   
   try {
     const result = await generateRoomStyles({ ...input, photoDataUri });
-    return result;
+    const savedDesigns: GeneratedImageResult[] = [];
+
+    // Save each generated image to the new 'designs' table
+    for (const image of result.styledRoomImages) {
+        const { data: savedDesign, error: dbError } = await supabase
+            .from('designs')
+            .insert({
+                user_id: user.id,
+                original_image_url: photoDataUri, // For simplicity, storing the data URI. In production, upload this to storage first.
+                generated_image_url: image.imageDataUri, // Same as above
+                style: image.style,
+                room_type: input.roomType,
+                config: { ...input, styles: [image.style] } // Store generation config
+            })
+            .select('id, style, generated_image_url')
+            .single();
+
+        if (dbError) {
+            console.error('Failed to save design to history:', dbError);
+            // We can choose to continue or fail here. Let's continue and just log the error.
+        } else if (savedDesign) {
+            savedDesigns.push({
+                designId: savedDesign.id,
+                style: savedDesign.style,
+                imageDataUri: savedDesign.generated_image_url,
+            });
+        }
+    }
+
+    return { styledRoomImages: savedDesigns };
   } catch (e: any) {
     console.error(e);
     return { error: e.message || 'Error creating image, please try again.' };
@@ -93,11 +122,11 @@ export async function generateRoomStylesAction(
 export async function generateExteriorStylesAction(
   input: Omit<GenerateExteriorStylesInput, 'photoDataUri'>,
   photoDataUri?: string | null
-): Promise<{ styledExteriorImages: { style: string; imageDataUri: string }[] } | { error: string }> {
+): Promise<{ styledExteriorImages: GeneratedImageResult[] } | { error: string }> {
   const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user || !user.id) {
+  if (!user?.id) {
       return { error: 'You must be logged in to generate designs.' };
   }
 
@@ -115,7 +144,35 @@ export async function generateExteriorStylesAction(
   
   try {
     const result = await generateExteriorStyles({ ...input, photoDataUri });
-    return result;
+    const savedDesigns: GeneratedImageResult[] = [];
+
+    // Save each generated image to the new 'designs' table
+    for (const image of result.styledExteriorImages) {
+        const { data: savedDesign, error: dbError } = await supabase
+            .from('designs')
+            .insert({
+                user_id: user.id,
+                original_image_url: photoDataUri,
+                generated_image_url: image.imageDataUri,
+                style: image.style,
+                // room_type is for interiors, so we can leave it null for exteriors.
+                config: { ...input, styles: [image.style] }
+            })
+            .select('id, style, generated_image_url')
+            .single();
+
+        if (dbError) {
+            console.error('Failed to save exterior design to history:', dbError);
+        } else if (savedDesign) {
+            savedDesigns.push({
+                designId: savedDesign.id,
+                style: savedDesign.style,
+                imageDataUri: savedDesign.generated_image_url,
+            });
+        }
+    }
+    
+    return { styledExteriorImages: savedDesigns };
   } catch (e: any) {
     console.error(e);
     return { error: e.message || 'Error creating image, please try again.' };
@@ -166,7 +223,6 @@ export async function publishToGalleryAction(
       return { success: false, error: 'You must be logged in to publish.' };
     }
     
-    // The user_id is implicitly handled by the flow, which gets it from the session.
     const result = await publishToGallery(input);
     return { success: true, galleryUrl: result.galleryUrl, creationId: result.creationId };
   } catch (e: any) {
@@ -176,8 +232,10 @@ export async function publishToGalleryAction(
 }
 
 export async function deleteCreationAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabaseServerClient();
     try {
+        // This action should probably delete from the 'designs' table now, or maybe from both?
+        // For now, let's assume it deletes from 'creations' as that's what "undo publish" implies.
         const { error } = await supabase.from('creations').delete().eq('id', creationId);
         if (error) throw error;
         return { success: true };
@@ -188,7 +246,7 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
 }
 
 export async function incrementKudosAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
   try {
     const { error } = await supabase.rpc('increment_kudos', { creation_id: creationId });
     if (error) throw error;

@@ -2,7 +2,7 @@
 import { createSupabaseServerClient } from '@/lib/supabase';
 import { redirect } from 'next/navigation';
 import { GalleryItem } from '@/components/gallery-item';
-import type { Creation } from '@/app/gallery/page';
+import type { Creation as GalleryCreation } from '@/app/gallery/page'; // Renaming to avoid conflict
 import { UserNav } from '@/components/user-nav';
 import { HeaderLogoIcon } from '@/components/icons';
 import Link from 'next/link';
@@ -11,16 +11,27 @@ import { GalleryThumbnails, LayoutDashboard, Sparkles } from 'lucide-react';
 import { DesignTypeSelectionDialog } from '@/components/design-type-selection-dialog';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 
-async function getCreationsForUser(userId: string): Promise<Creation[]> {
+// This type represents the user's private design history
+export type Design = {
+  id: string;
+  created_at: string;
+  original_image_url: string;
+  generated_image_url: string;
+  style: string;
+  room_type: string | null;
+  // Note: we don't need kudos here as it's for public creations
+};
+
+async function getDesignsForUser(userId: string): Promise<Design[]> {
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
-        .from('creations')
+        .from('designs') // Fetching from the new 'designs' table
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
     if (error) {
-        console.error('Error fetching user creations:', error);
+        console.error('Error fetching user designs:', error);
         return [];
     }
     return data || [];
@@ -34,7 +45,7 @@ export default async function DashboardPage() {
         redirect('/auth');
     }
 
-    const creations = await getCreationsForUser(user.id);
+    const designs = await getDesignsForUser(user.id);
 
     return (
         <div className="bg-background min-h-screen">
@@ -49,7 +60,6 @@ export default async function DashboardPage() {
                         <Link href="/gallery" className="header-link"><GalleryThumbnails className="mr-2 h-4 w-4" />Gallery</Link>
                         <ThemeSwitcher />
                         <UserNav user={user} />
-                        {/* The DesignTypeSelectionDialog logic is handled on the client-side inside the component it's called from, so we just need a trigger. Let's use a standard button that would open a client-side dialog */}
                         <Button asChild><Link href="/generate"><Sparkles className="mr-2 h-4 w-4" /> Start Designing</Link></Button>
                     </nav>
                     <div className="md:hidden flex items-center gap-2">
@@ -65,14 +75,14 @@ export default async function DashboardPage() {
                 <div className="pb-8 md:pb-12">
                     <h1 className="text-4xl font-bold text-foreground">Dashboard</h1>
                     <p className="mt-2 max-w-2xl text-muted-foreground">
-                        Welcome back, {user.user_metadata.name || user.email}! Here are your creations.
+                        Welcome back, {user.user_metadata.name || user.email}! This is your private design history.
                     </p>
                 </div>
 
-                {creations.length === 0 ? (
+                {designs.length === 0 ? (
                     <div className="text-center py-20 border-2 border-dashed rounded-xl">
-                        <h2 className="text-2xl font-semibold text-foreground">No Creations Yet</h2>
-                        <p className="mt-2 text-muted-foreground">You haven't published any designs. Start creating!</p>
+                        <h2 className="text-2xl font-semibold text-foreground">No Designs Yet</h2>
+                        <p className="mt-2 text-muted-foreground">You haven't generated any designs. Start creating!</p>
                         <div className="mt-6">
                             <Link href="/generate" className="text-primary hover:underline">
                                 Design an Interior
@@ -85,8 +95,8 @@ export default async function DashboardPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                        {creations.map((creation) => (
-                            <GalleryItem key={creation.id} creation={creation} />
+                        {designs.map((design) => (
+                            <GalleryItem key={design.id} creation={design as GalleryCreation} isDashboardItem={true} />
                         ))}
                     </div>
                 )}

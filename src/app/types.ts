@@ -1,11 +1,8 @@
 import { z } from 'zod';
 
+// This input now only requires the ID of the design to be published.
 export const PublishToGalleryInputSchema = z.object({
-    originalImageDataUri: z.string().describe("The original room photo as a data URI."),
-    generatedImageDataUri: z.string().describe("The AI-generated room photo as a data URI."),
-    style: z.string(),
-    roomType: z.string().optional(),
-    // user_id is handled server-side from the session, so it's not needed in the client-facing input schema.
+    designId: z.string().describe("The ID of the design from the user's history to publish."),
 });
 export type PublishToGalleryInput = z.infer<typeof PublishToGalleryInputSchema>;
 
