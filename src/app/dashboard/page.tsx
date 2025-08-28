@@ -23,7 +23,7 @@ export type Design = {
 };
 
 async function getDesignsForUser(userId: string): Promise<Design[]> {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase
         .from('designs') // Fetching from the new 'designs' table
         .select('*')
@@ -38,7 +38,7 @@ async function getDesignsForUser(userId: string): Promise<Design[]> {
 }
 
 export default async function DashboardPage() {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

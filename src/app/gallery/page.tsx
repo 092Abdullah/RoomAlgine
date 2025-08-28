@@ -13,7 +13,7 @@ export type Creation = {
 };
 
 async function getCreations(): Promise<Creation[]> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from('creations')
     .select('*')
@@ -33,7 +33,7 @@ type GalleryPageProps = {
 };
 
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const creations = await getCreations();
