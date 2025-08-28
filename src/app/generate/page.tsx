@@ -1,6 +1,6 @@
 
 import RoomAIGineClient from '@/components/room-ai-gine-client';
-import { createSupabaseServerClient } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { Suspense } from 'react';
 
 async function GeneratePageContent() {

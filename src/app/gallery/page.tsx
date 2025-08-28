@@ -1,6 +1,6 @@
 
 import { GalleryClient } from '@/components/gallery-client';
-import { createSupabaseServerClient } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export type Creation = {
   id: string;

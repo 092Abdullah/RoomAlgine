@@ -8,7 +8,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { createSupabaseServerClient } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { PublishToGalleryInputSchema, PublishToGalleryOutputSchema, type PublishToGalleryInput, type PublishToGalleryOutput } from '@/app/types';
 
 // Note: The Cloudinary upload logic is removed from here as we assume URLs are already stored.

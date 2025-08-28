@@ -1,5 +1,5 @@
 
-import { createSupabaseServerClient } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { GalleryItem } from '@/components/gallery-item';
 import type { Creation as GalleryCreation } from '@/app/gallery/page'; // Renaming to avoid conflict

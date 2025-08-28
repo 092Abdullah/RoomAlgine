@@ -1,6 +1,6 @@
 
 import ExteriorAIGineClient from '@/components/exterior-ai-gine-client';
-import { createSupabaseServerClient } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export default async function ExteriorPage() {
   const supabase = createSupabaseServerClient();

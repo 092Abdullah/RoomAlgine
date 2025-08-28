@@ -8,7 +8,7 @@ import { detectRoomType } from '@/ai/flows/detect-room-type';
 import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flows/suggest-styles';
 import { publishToGallery } from '@/ai/flows/publish-to-gallery';
 import type { PublishToGalleryInput } from '@/app/types';
-import { createSupabaseServerClient } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isToday } from 'date-fns';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
