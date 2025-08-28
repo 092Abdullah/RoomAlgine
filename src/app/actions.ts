@@ -270,27 +270,15 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
     }
 
     const fullName = formData.get('fullName') as string;
-    const avatarFile = formData.get('avatar') as File | null;
+    const avatarDataUri = formData.get('avatarDataUri') as string | null;
     let avatarUrl = user.user_metadata.avatar_url;
 
-    if (avatarFile && avatarFile.size > 0) {
-        // Convert file to data URI for upload
-        const reader = new FileReader();
-        const buffer = await avatarFile.arrayBuffer();
-        const blob = new Blob([buffer]);
-        
-        // This part is tricky in a server action as FileReader is a browser API.
-        // A better approach would be to handle file upload on the client and pass the URL,
-        // but for a simple case, we'll assume the client can send a data URI.
-        // Let's adjust to expect a data URI instead of a File object.
-        const avatarDataUri = formData.get('avatarDataUri') as string;
-        if(avatarDataUri) {
-           try {
-                avatarUrl = await uploadToCloudinary(avatarDataUri, 'roomaigine_avatars');
-           } catch (e: any) {
-                return { success: false, error: 'Avatar upload failed: ' + e.message };
-           }
-        }
+    if (avatarDataUri) {
+       try {
+            avatarUrl = await uploadToCloudinary(avatarDataUri, 'roomaigine_avatars');
+       } catch (e: any) {
+            return { success: false, error: 'Avatar upload failed: ' + e.message };
+       }
     } else if (formData.has('removeAvatar')) {
         avatarUrl = null;
     }
