@@ -32,10 +32,12 @@ export async function GET(req: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      return NextResponse.redirect(`${requestUrl.origin}${next}`)
+        // On successful code exchange, redirect to the dashboard
+        return NextResponse.redirect(new URL(next, req.url));
     }
   }
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(`${requestUrl.origin}/auth/error`)
+  // If there's an error or no code, redirect to an error page
+  console.error("Auth callback error or no code found");
+  return NextResponse.redirect(new URL("/auth/error", req.url));
 }
