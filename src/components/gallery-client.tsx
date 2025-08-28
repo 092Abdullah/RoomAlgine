@@ -52,7 +52,7 @@ export function GalleryClient({ allCreations, initialFilter, user }: { allCreati
 
     return (
         <>
-        <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+        <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} user={user} />
         <div className="bg-background min-h-screen">
           <header className="fixed top-4 left-0 right-0 z-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -132,5 +132,3 @@ export function GalleryClient({ allCreations, initialFilter, user }: { allCreati
       </>
     )
 }
-
-    

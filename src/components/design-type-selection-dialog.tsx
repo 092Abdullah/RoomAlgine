@@ -5,13 +5,18 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Home, Building2, ArrowRight } from "lucide-react";
+import type { User } from "@supabase/supabase-js";
 
-export function DesignTypeSelectionDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
+export function DesignTypeSelectionDialog({ open, onOpenChange, user }: { open: boolean, onOpenChange: (open: boolean) => void, user: User | null }) {
   const router = useRouter();
 
   const handleSelection = (path: string) => {
-    router.push(path);
     onOpenChange(false);
+    if (user) {
+        router.push(path);
+    } else {
+        router.push(`/auth?next=${path}`);
+    }
   };
 
   return (
@@ -19,6 +24,9 @@ export function DesignTypeSelectionDialog({ open, onOpenChange }: { open: boolea
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Choose Your Design Type</DialogTitle>
+          <DialogDescription>
+            Select an option below to get started.
+          </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
           <button onClick={() => handleSelection("/generate")} className="text-left w-full">
@@ -50,5 +58,3 @@ export function DesignTypeSelectionDialog({ open, onOpenChange }: { open: boolea
     </Dialog>
   );
 }
-
-    

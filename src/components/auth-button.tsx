@@ -2,7 +2,7 @@
 "use client";
 
 import { createSupabaseClient } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import type { Session } from "@supabase/supabase-js";
 
@@ -20,21 +20,24 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export function AuthButton({ session }: { session: Session | null }) {
     const supabase = createSupabaseClient();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const nextUrl = searchParams.get('next');
 
     const getRedirectUrl = () => {
-        if (typeof window !== 'undefined') {
-            return window.location.origin + '/auth/callback';
-        }
-
         let url =
-        process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
-        process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-        'http://localhost:3000/';
-      // Make sure to include `https` in production URLs.
-      url = url.includes('http') ? url : `https://${url}`;
-      // Make sure to include a trailing `/`.
-      url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
-      return `${url}auth/callback`;
+            process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
+            process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
+            'http://localhost:3000/';
+        // Make sure to include `https` in production URLs.
+        url = url.includes('http') ? url : `https://${url}`;
+        // Make sure to include a trailing `/`.
+        url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
+        url += 'auth/callback';
+
+        if (nextUrl) {
+            url += `?next=${encodeURIComponent(nextUrl)}`;
+        }
+        return url;
     }
 
     const handleGoogleSignIn = async () => {
