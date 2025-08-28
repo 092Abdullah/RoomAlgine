@@ -38,7 +38,7 @@ import { GenerateIcon, HeaderLogoIcon } from "./icons";
 import { motion } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Helix } from 'ldrs/react'
+import { helix } from 'ldrs/react'
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
@@ -233,7 +233,7 @@ const ExteriorAIGineEditor = ({
                     </CardContent>
                     <CardFooter>
                         <Button onClick={startGeneration} disabled={isLoading} className="w-full">
-                            {isLoading ? <Helix size="24" color="#FFFFFF" /> : <GenerateIcon className="h-4 w-4" />}
+                            {isLoading ? <l-helix size="24" color="#FFFFFF" /> : <GenerateIcon className="h-4 w-4" />}
                             {isLoading ? 'Generating...' : 'Generate Style'}
                         </Button>
                     </CardFooter>
@@ -250,7 +250,7 @@ const ExteriorAIGineEditor = ({
                         <CardContent className="flex-grow flex items-center justify-center p-2 sm:p-4">
                             {isLoading ? (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-center">
-                                     <Helix size="45" color="hsl(var(--primary))" />
+                                     <l-helix size="45" color="hsl(var(--primary))" />
                                      <p className="mt-4 text-muted-foreground">{loadingMessage}</p>
                                 </div>
                             ) : activeGeneratedImage ? (
@@ -291,7 +291,7 @@ const ExteriorAIGineEditor = ({
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <Button size="icon" variant="secondary" onClick={() => handlePublish(activeGeneratedImage)} disabled={isPublishing}>
-                                                        {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
+                                                        {isPublishing ? <l-helix size="18" /> : <GalleryThumbnails className="h-4 w-4" />}
                                                     </Button>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
@@ -427,7 +427,7 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
-    import('ldrs').then(ldrs => ldrs.helix.register());
+    helix.register();
   }, []);
 
   const processFile = (file: File) => {

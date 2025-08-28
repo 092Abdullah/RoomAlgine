@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from './ui/button';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
-import { Helix } from 'ldrs';
+import { helix } from 'ldrs';
 
 export function GalleryItem({ creation, isDashboardItem = false }: { creation: Creation, isDashboardItem?: boolean }) {
   const [kudos, setKudos] = useState(creation.kudos || 0);
@@ -24,7 +24,7 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
   useEffect(() => {
     // Format date only on the client to avoid hydration mismatch
     setFormattedDate(new Date(creation.created_at).toLocaleDateString());
-    import('ldrs').then(ldrs => ldrs.helix.register());
+    helix.register();
   }, [creation.created_at]);
 
   const handleKudosClick = async (e: React.MouseEvent) => {
@@ -105,7 +105,7 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
                             onClick={handlePublish}
                             disabled={isPublishing}
                         >
-                            {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
+                            {isPublishing ? <l-helix size="18" /> : <GalleryThumbnails className="h-4 w-4" />}
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
