@@ -11,6 +11,7 @@ import type { PublishToGalleryInput } from '@/app/types';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isToday } from 'date-fns';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 const DAILY_DESIGN_LIMIT = 20;
 
@@ -55,7 +56,7 @@ async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: st
 type GeneratedImageResult = {
     designId: string;
     style: string;
-    imageDataUri: string;
+    imageDataUri: string; // We still pass the full data URI back to the client for immediate display
 };
 
 export async function generateRoomStylesAction(
@@ -82,32 +83,36 @@ export async function generateRoomStylesAction(
   }
   
   try {
-    const result = await generateRoomStyles({ ...input, photoDataUri });
+    const [originalImageUrl, result] = await Promise.all([
+        uploadToCloudinary(photoDataUri, 'roomaigine_originals'),
+        generateRoomStyles({ ...input, photoDataUri })
+    ]);
+
     const savedDesigns: GeneratedImageResult[] = [];
 
-    // Save each generated image to the new 'designs' table
     for (const image of result.styledRoomImages) {
+        const generatedImageUrl = await uploadToCloudinary(image.imageDataUri, 'roomaigine_generated');
+
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
             .insert({
                 user_id: user.id,
-                original_image_url: photoDataUri, // For simplicity, storing the data URI. In production, upload this to storage first.
-                generated_image_url: image.imageDataUri, // Same as above
+                original_image_url: originalImageUrl,
+                generated_image_url: generatedImageUrl,
                 style: image.style,
                 room_type: input.roomType,
-                config: { ...input, styles: [image.style] } // Store generation config
+                config: { ...input, styles: [image.style] }
             })
             .select('id, style, generated_image_url')
             .single();
 
         if (dbError) {
             console.error('Failed to save design to history:', dbError);
-            // We can choose to continue or fail here. Let's continue and just log the error.
         } else if (savedDesign) {
             savedDesigns.push({
                 designId: savedDesign.id,
                 style: savedDesign.style,
-                imageDataUri: savedDesign.generated_image_url,
+                imageDataUri: image.imageDataUri, // Send original data URI to client for fast display
             });
         }
     }
@@ -143,19 +148,23 @@ export async function generateExteriorStylesAction(
   }
   
   try {
-    const result = await generateExteriorStyles({ ...input, photoDataUri });
+     const [originalImageUrl, result] = await Promise.all([
+        uploadToCloudinary(photoDataUri, 'roomaigine_originals'),
+        generateExteriorStyles({ ...input, photoDataUri })
+    ]);
+    
     const savedDesigns: GeneratedImageResult[] = [];
 
-    // Save each generated image to the new 'designs' table
     for (const image of result.styledExteriorImages) {
+        const generatedImageUrl = await uploadToCloudinary(image.imageDataUri, 'roomaigine_generated');
+        
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
             .insert({
                 user_id: user.id,
-                original_image_url: photoDataUri,
-                generated_image_url: image.imageDataUri,
+                original_image_url: originalImageUrl,
+                generated_image_url: generatedImageUrl,
                 style: image.style,
-                // room_type is for interiors, so we can leave it null for exteriors.
                 config: { ...input, styles: [image.style] }
             })
             .select('id, style, generated_image_url')
@@ -167,7 +176,7 @@ export async function generateExteriorStylesAction(
             savedDesigns.push({
                 designId: savedDesign.id,
                 style: savedDesign.style,
-                imageDataUri: savedDesign.generated_image_url,
+                imageDataUri: image.imageDataUri, // Send original data URI to client
             });
         }
     }
@@ -246,8 +255,8 @@ export async function incrementKudosAction(creationId: string): Promise<{ succes
     const { error } = await supabase.rpc('increment_kudos', { creation_id: creationId });
     if (error) throw error;
     return { success: true };
-  } catch (e: any) {
-    console.error('Failed to increment kudos:', e);
+  } catch (e: any)
+      console.error('Failed to increment kudos:', e);
     return { success: false, error: e.message || 'Could not update kudos count.' };
   }
 }
