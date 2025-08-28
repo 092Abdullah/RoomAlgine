@@ -42,7 +42,7 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Link from "next/link";
-import { Helix } from 'ldrs/react'
+import { Helix } from 'ldrs/react';
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
@@ -292,7 +292,7 @@ const RoomAIGineEditor = ({
                                     exit={{ opacity: 0, height: 0 }}
                                     className="flex items-center justify-center p-4"
                                 >
-                                    <l-helix size="24" color="hsl(var(--primary))" />
+                                    <Helix size={24} color="hsl(var(--primary))" />
                                     <p className="ml-2 text-sm text-muted-foreground">Getting ideas...</p>
                                 </motion.div>
                             )}
@@ -347,7 +347,7 @@ const RoomAIGineEditor = ({
                     </CardContent>
                     <CardFooter className="flex-col gap-3">
                         <Button onClick={startGeneration} disabled={isLoading || isSuggesting} className="w-full">
-                            {isLoading ? <l-helix size="24" color="#FFFFFF" /> : <GenerateIcon className="h-4 w-4" />}
+                            {isLoading ? <Helix size={24} color="#FFFFFF" /> : <GenerateIcon className="h-4 w-4" />}
                             {isLoading ? 'Generating...' : 'Generate Style'}
                         </Button>
                         <Button onClick={getAIStyleIdeas} variant="outline" className="w-full" disabled={isSuggesting || isLoading}>
@@ -367,7 +367,7 @@ const RoomAIGineEditor = ({
                         <CardContent className="flex-grow flex items-center justify-center p-2 sm:p-4">
                             {isLoading ? (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-center">
-                                     <l-helix size="45" color="hsl(var(--primary))" />
+                                     <Helix size={45} color="hsl(var(--primary))" />
                                      <p className="mt-4 text-muted-foreground">{loadingMessage}</p>
                                 </div>
                             ) : activeGeneratedImage ? (
@@ -408,7 +408,7 @@ const RoomAIGineEditor = ({
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <Button size="icon" variant="secondary" onClick={() => handlePublish(activeGeneratedImage)} disabled={isPublishing}>
-                                                    {isPublishing ? <l-helix size="18" /> : <GalleryThumbnails className="h-4 w-4" />}
+                                                    {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
                                                 </Button>
                                             </TooltipTrigger>
                                             <TooltipContent>
@@ -471,7 +471,7 @@ const RoomAIGineEditor = ({
                          <div>
                              <Label className="mb-2 block flex items-center gap-2">
                                 Room Type
-                                {isDetectingRoomType && <l-helix size="16" color="hsl(var(--primary))" />}
+                                {isDetectingRoomType && <Helix size={16} color="hsl(var(--primary))" />}
                             </Label>
                             <ToggleGroup type="single" value={roomType} onValueChange={(value) => { if (value) setRoomType(value) }} className="grid grid-cols-3 gap-2">
                                 {roomTypes.map(({ id, label, icon: Icon }) => (
@@ -563,7 +563,6 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
-    Helix.register();
     const image = searchParams.get('image');
     if (image) {
       // In a real app, you might fetch the image data from a URL
