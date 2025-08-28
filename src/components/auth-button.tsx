@@ -16,7 +16,7 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-
+ 
 export function AuthButton({ session }: { session: Session | null }) {
     const supabase = createSupabaseClient();
     const router = useRouter();
