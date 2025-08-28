@@ -255,8 +255,8 @@ export async function incrementKudosAction(creationId: string): Promise<{ succes
     const { error } = await supabase.rpc('increment_kudos', { creation_id: creationId });
     if (error) throw error;
     return { success: true };
-  } catch (e: any)
-      console.error('Failed to increment kudos:', e);
+  } catch (e: any) {
+    console.error('Failed to increment kudos:', e);
     return { success: false, error: e.message || 'Could not update kudos count.' };
   }
 }
