@@ -41,6 +41,15 @@ export function SettingsForm({ user }: { user: User }) {
             fileInputRef.current.value = "";
         }
     }
+    
+    const fileToDataUri = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -48,35 +57,30 @@ export function SettingsForm({ user }: { user: User }) {
         
         const formData = new FormData(event.currentTarget);
 
-        // This is a bit of a workaround to handle file uploads in Server Actions.
-        // We read the file as a data URI on the client and pass it in the form data.
-        if (avatarFile) {
-            const reader = new FileReader();
-            reader.readAsDataURL(avatarFile);
-            reader.onloadend = async () => {
-                const base64data = reader.result as string;
-                formData.append('avatarDataUri', base64data);
-                await submitForm(formData);
-            };
-        } else {
-             if (shouldRemoveAvatar) {
+        try {
+            if (avatarFile) {
+                const avatarDataUri = await fileToDataUri(avatarFile);
+                formData.append('avatarDataUri', avatarDataUri);
+            } else if (shouldRemoveAvatar) {
                 formData.append('removeAvatar', 'true');
-             }
-             await submitForm(formData);
+            }
+
+            const result = await updateUserAction(formData);
+
+            if (result.success) {
+                toast.success('Profile updated successfully!');
+                // We need to refresh the router to make sure the new avatar in the header is loaded
+                router.refresh(); 
+            } else {
+                toast.error('Update failed', { description: result.error });
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('An unexpected error occurred.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
-
-    const submitForm = async (formData: FormData) => {
-        const result = await updateUserAction(formData);
-
-        if (result.success) {
-            toast.success('Profile updated successfully!');
-            router.refresh();
-        } else {
-            toast.error('Update failed', { description: result.error });
-        }
-        setIsSubmitting(false);
-    }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
