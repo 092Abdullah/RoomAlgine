@@ -62,7 +62,7 @@ export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,
   photoDataUri?: string | null
 ): Promise<{ styledRoomImages: GeneratedImageResult[] } | { error: string }> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user?.id) {
@@ -123,7 +123,7 @@ export async function generateExteriorStylesAction(
   input: Omit<GenerateExteriorStylesInput, 'photoDataUri'>,
   photoDataUri?: string | null
 ): Promise<{ styledExteriorImages: GeneratedImageResult[] } | { error: string }> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user?.id) {
@@ -227,7 +227,7 @@ export async function publishToGalleryAction(
 }
 
 export async function deleteCreationAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     try {
         // This action should probably delete from the 'designs' table now, or maybe from both?
         // For now, let's assume it deletes from 'creations' as that's what "undo publish" implies.
@@ -241,7 +241,7 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
 }
 
 export async function incrementKudosAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   try {
     const { error } = await supabase.rpc('increment_kudos', { creation_id: creationId });
     if (error) throw error;
