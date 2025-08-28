@@ -19,9 +19,6 @@ export function DesignTypeSelectionDialog({ open, onOpenChange }: { open: boolea
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Choose Your Design Type</DialogTitle>
-          <DialogDescription>
-            What would you like to redesign today? Select an option below to get started.
-          </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
           <button onClick={() => handleSelection("/generate")} className="text-left w-full">
