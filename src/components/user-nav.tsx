@@ -16,7 +16,7 @@ import { createSupabaseClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LayoutDashboard, LogOut, GalleryThumbnails } from "lucide-react";
+import { LayoutDashboard, LogOut, GalleryThumbnails, Settings } from "lucide-react";
 
 export function UserNav({ user }: { user: User | null }) {
   const router = useRouter();
@@ -63,6 +63,12 @@ export function UserNav({ user }: { user: User | null }) {
             <DropdownMenuItem>
               <GalleryThumbnails className="mr-2 h-4 w-4" />
               <span>Public Gallery</span>
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/settings">
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
