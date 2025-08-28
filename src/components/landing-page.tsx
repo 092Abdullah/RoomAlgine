@@ -23,6 +23,7 @@ import {
   CheckCircle,
   ArrowUp,
   LayoutDashboard,
+  Mail,
 } from "lucide-react";
 import { HeaderLogoIcon } from "./icons";
 import { Button } from "./ui/button";
@@ -534,6 +535,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
                         <li><Link href="#loved-by-creatives" className="text-sm text-muted-foreground hover:text-foreground">Reviews</Link></li>
                         <li><Link href="#faq" className="text-sm text-muted-foreground hover:text-foreground">FAQs</Link></li>
                         <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">Terms of Use</Link></li>
+                        <li><a href="mailto:roomaigine@gmail.com" className="text-sm text-muted-foreground hover:text-foreground">Contact</a></li>
                     </ul>
                 </div>
                  <div>
@@ -556,3 +558,5 @@ const LandingPage = ({ user }: { user: User | null }) => {
 };
 
 export default LandingPage;
+
+    
