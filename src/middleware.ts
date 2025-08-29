@@ -1,4 +1,3 @@
-
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -55,9 +54,12 @@ export async function middleware(request: NextRequest) {
     }
   )
 
+  // This will exchange the code for a session and persist it.
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  const user = session?.user
 
   // Define protected routes that require a user to be logged in.
   const protectedRoutes = ['/generate', '/exterior', '/settings', '/my-designs'];
