@@ -36,22 +36,20 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction, deleteCreationAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
-import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon, HeaderLogoIcon } from "./icons";
+import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon } from "./icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import Link from "next/link";
 import { Helix } from 'ldrs/react';
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { ThemeSwitcher } from "./theme-switcher";
 import { useScrollDirection } from "@/hooks/use-scroll-direction";
 import { cn } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
-import { UserNav } from "./user-nav";
 import type { User } from "@supabase/supabase-js";
+import { Header } from "./header";
 
 type GeneratedImage = {
   designId: string;
@@ -98,34 +96,7 @@ const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 const AppHeader = ({ onGenerateNew, showGenerateButton, user }: { onGenerateNew: () => void, showGenerateButton: boolean, user: User | null }) => {
     const scrollDirection = useScrollDirection();
     return (
-        <header className={cn(
-            "fixed top-4 left-0 right-0 z-50 transition-transform duration-300",
-            scrollDirection === "down" ? "-translate-y-24" : "translate-y-0"
-        )}>
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="floating-header">
-                    <Link href="/">
-                        <HeaderLogoIcon />
-                    </Link>
-                    <div className="flex items-center gap-2">
-                        {showGenerateButton && (
-                            <>
-                                <Button variant="ghost" onClick={onGenerateNew} className="hidden md:inline-flex">
-                                    <RefreshCw className="mr-2 h-4 w-4" /> Generate New
-                                </Button>
-                                <div className="md:hidden">
-                                    <Button onClick={onGenerateNew} size="icon">
-                                        <RefreshCw className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </>
-                        )}
-                        <UserNav user={user} />
-                        <ThemeSwitcher />
-                    </div>
-                </div>
-            </div>
-        </header>
+        <Header user={user} />
     );
 }
 

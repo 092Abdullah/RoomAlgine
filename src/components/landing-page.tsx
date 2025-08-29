@@ -36,14 +36,12 @@ import {
   CarouselPrevious,
 } from "./ui/carousel";
 import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider";
-import { ThemeSwitcher } from "./theme-switcher";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 import AnimatedCounter from "./animated-counter";
 import { DesignTypeSelectionDialog } from "./design-type-selection-dialog";
 import { useScrollPosition } from "@/hooks/use-scroll-position";
-import { cn } from "@/lib/utils";
 import type { User } from "@supabase/supabase-js";
-import { UserNav } from "./user-nav";
+import { Header } from "./header";
 
 
 const FADE_IN_ANIMATION_VARIANTS = {
@@ -123,40 +121,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
        <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} user={user} />
       {/* Header */}
-       <header className="fixed top-4 left-0 right-0 z-50">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="floating-header">
-                <Link href="/">
-                  <HeaderLogoIcon />
-                </Link>
-                <nav className="hidden md:flex md:gap-2 items-center">
-                  {user ? (
-                      <>
-                        <Link href="/dashboard" className="header-link"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link>
-                        <Link href="/gallery" className="header-link"><GalleryThumbnails className="mr-2 h-4 w-4" />Gallery</Link>
-                        <ThemeSwitcher />
-                        <UserNav user={user} />
-                        <Button onClick={() => setIsDialogOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Start Designing</Button>
-                      </>
-                  ) : (
-                      <>
-                        <Link href="#features" className="header-link">Features</Link>
-                        <Link href="#see-the-magic" className="header-link">Examples</Link>
-                        <Link href="/gallery" className="header-link">Gallery</Link>
-                        <ThemeSwitcher />
-                        <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>
-                        <Button onClick={() => setIsDialogOpen(true)}>Get Started</Button>
-                      </>
-                  )}
-                </nav>
-                <div className="md:hidden flex items-center gap-2">
-                  <ThemeSwitcher />
-                  {user ? <UserNav user={user} /> : <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>}
-                   <Button size="icon" onClick={() => setIsDialogOpen(true)}><Sparkles className="h-4 w-4" /></Button>
-                </div>
-              </div>
-            </div>
-      </header>
+       <Header user={user} />
 
       <main className="flex-grow">
         {/* Hero Section */}

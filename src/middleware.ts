@@ -1,3 +1,4 @@
+
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -58,18 +59,22 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const protectedRoutes = ['/generate', '/exterior', '/dashboard'];
+  // Define protected routes that require a user to be logged in.
+  const protectedRoutes = ['/generate', '/exterior', '/settings', '/my-designs'];
   const authRoute = '/auth';
   const currentPath = request.nextUrl.pathname;
 
-  // if user is signed in and the current path is /auth, redirect the user to /dashboard
+  // if user is signed in and tries to access the auth page, redirect them to the home page.
   if (user && currentPath.startsWith(authRoute)) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
-  // if user is not signed in and the current path is a protected route, redirect the user to /auth
+  // if user is not signed in and tries to access a protected route, redirect them to the auth page.
   if (!user && protectedRoutes.some(path => currentPath.startsWith(path))) {
-    return NextResponse.redirect(new URL(authRoute, request.url))
+    const redirectUrl = new URL(authRoute, request.url);
+    // Pass the original destination as the `next` query param
+    redirectUrl.searchParams.set('next', currentPath);
+    return NextResponse.redirect(redirectUrl);
   }
 
   return response

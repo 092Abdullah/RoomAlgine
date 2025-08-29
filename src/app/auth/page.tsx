@@ -5,13 +5,21 @@ import { AuthButton } from '@/components/auth-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { HeaderLogoIcon } from '@/components/icons';
 import Link from 'next/link';
+import { Suspense } from 'react';
+
+// Wrap the page in a Suspense boundary to allow useSearchParams in AuthButton
+function AuthContent() {
+    return <AuthButton />;
+}
 
 export default async function LoginPage() {
     const supabase = await createSupabaseServerClient();
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {
-        redirect('/dashboard');
+        // Instead of redirecting to dashboard, redirect to the main page.
+        // The main page will decide what to show.
+        redirect('/');
     }
 
     return (
@@ -27,7 +35,9 @@ export default async function LoginPage() {
                     </div>
                 </CardHeader>
                 <CardContent className="flex justify-center p-6">
-                    <AuthButton session={session} />
+                    <Suspense>
+                       <AuthContent />
+                    </Suspense>
                 </CardContent>
             </Card>
         </div>
