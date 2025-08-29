@@ -5,12 +5,6 @@ import { AuthButton } from '@/components/auth-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { HeaderLogoIcon } from '@/components/icons';
 import Link from 'next/link';
-import { Suspense } from 'react';
-
-// Wrap the page in a Suspense boundary to allow useSearchParams in AuthButton
-function AuthContent() {
-    return <AuthButton />;
-}
 
 export default async function LoginPage() {
     const supabase = await createSupabaseServerClient();
@@ -33,9 +27,7 @@ export default async function LoginPage() {
                     </div>
                 </CardHeader>
                 <CardContent className="flex justify-center p-6">
-                    <Suspense>
-                       <AuthContent />
-                    </Suspense>
+                    <AuthButton />
                 </CardContent>
             </Card>
         </div>
