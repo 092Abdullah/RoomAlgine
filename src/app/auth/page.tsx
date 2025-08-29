@@ -1,7 +1,7 @@
 
 'use client';
-import { useState, useTransition } from 'react';
-import { redirect, useSearchParams } from 'next/navigation';
+import { useState, useTransition, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AuthButton } from '@/components/auth-button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { HeaderLogoIcon } from '@/components/icons';
@@ -15,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 
 type AuthView = 'login' | 'signup';
 
-export default function LoginPage() {
+function AuthForm() {
     const searchParams = useSearchParams();
     const initialView = (searchParams.get('view') as AuthView) || 'login';
     const [view, setView] = useState<AuthView>(initialView);
@@ -39,84 +39,92 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-secondary/30">
-            <Card className="w-full max-w-sm shadow-xl">
-                 <CardHeader className="text-center space-y-4">
-                    <Link href="/" className="inline-block mx-auto">
-                        <HeaderLogoIcon />
-                    </Link>
-                    <div>
-                        <CardTitle>Welcome to RoomAIgine</CardTitle>
-                        <CardDescription>
-                            {view === 'login' ? 'Sign in to unlock your creative potential' : 'Create an account to get started'}
-                        </CardDescription>
-                    </div>
-                </CardHeader>
-                <CardContent className="px-6 pb-6 space-y-4">
-                    <AuthButton />
-                    <div className="flex items-center gap-4">
-                        <Separator className="flex-1" />
-                        <span className="text-xs text-muted-foreground">OR</span>
-                        <Separator className="flex-1" />
-                    </div>
+        <Card className="w-full max-w-sm shadow-xl">
+             <CardHeader className="text-center space-y-4">
+                <Link href="/" className="inline-block mx-auto">
+                    <HeaderLogoIcon />
+                </Link>
+                <div>
+                    <CardTitle>Welcome to RoomAIgine</CardTitle>
+                    <CardDescription>
+                        {view === 'login' ? 'Sign in to unlock your creative potential' : 'Create an account to get started'}
+                    </CardDescription>
+                </div>
+            </CardHeader>
+            <CardContent className="px-6 pb-6 space-y-4">
+                <AuthButton />
+                <div className="flex items-center gap-4">
+                    <Separator className="flex-1" />
+                    <span className="text-xs text-muted-foreground">OR</span>
+                    <Separator className="flex-1" />
+                </div>
 
-                    {view === 'login' ? (
-                        <form action={handleFormAction(signInWithEmail)} className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" name="email" type="email" placeholder="m@example.com" required />
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    <Link href="#" className="text-sm text-primary hover:underline">
-                                        Forgot password?
-                                    </Link>
-                                </div>
-                                <Input id="password" name="password" type="password" required />
-                            </div>
-                             <Button type="submit" className="w-full" disabled={isPending}>
-                                {isPending ? 'Signing In...' : 'Sign In'}
-                            </Button>
-                        </form>
-                    ) : (
-                        <form action={handleFormAction(signUpWithEmail)} className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="fullName">Full Name</Label>
-                                <Input id="fullName" name="fullName" type="text" placeholder="John Doe" required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" name="email" type="email" placeholder="m@example.com" required />
-                            </div>
-                            <div className="space-y-2">
+                {view === 'login' ? (
+                    <form action={handleFormAction(signInWithEmail)} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+                        </div>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center">
                                 <Label htmlFor="password">Password</Label>
-                                <Input id="password" name="password" type="password" required minLength={6}/>
+                                <Link href="#" className="text-sm text-primary hover:underline">
+                                    Forgot password?
+                                </Link>
                             </div>
-                             <Button type="submit" className="w-full" disabled={isPending}>
-                                {isPending ? 'Creating Account...' : 'Sign Up'}
-                            </Button>
-                        </form>
-                    )}
-                </CardContent>
-                <CardFooter className="px-6 pb-6">
-                    {view === 'login' ? (
-                        <p className="text-sm text-center w-full text-muted-foreground">
-                            Don&apos;t have an account?{' '}
-                            <button onClick={() => setView('signup')} className="text-primary font-semibold hover:underline">
-                                Sign Up
-                            </button>
-                        </p>
-                    ) : (
-                        <p className="text-sm text-center w-full text-muted-foreground">
-                            Already have an account?{' '}
-                            <button onClick={() => setView('login')} className="text-primary font-semibold hover:underline">
-                                Sign In
-                            </button>
-                        </p>
-                    )}
-                </CardFooter>
-            </Card>
+                            <Input id="password" name="password" type="password" required />
+                        </div>
+                         <Button type="submit" className="w-full" disabled={isPending}>
+                            {isPending ? 'Signing In...' : 'Sign In'}
+                        </Button>
+                    </form>
+                ) : (
+                    <form action={handleFormAction(signUpWithEmail)} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="fullName">Full Name</Label>
+                            <Input id="fullName" name="fullName" type="text" placeholder="John Doe" required />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input id="password" name="password" type="password" required minLength={6}/>
+                        </div>
+                         <Button type="submit" className="w-full" disabled={isPending}>
+                            {isPending ? 'Creating Account...' : 'Sign Up'}
+                        </Button>
+                    </form>
+                )}
+            </CardContent>
+            <CardFooter className="px-6 pb-6">
+                {view === 'login' ? (
+                    <p className="text-sm text-center w-full text-muted-foreground">
+                        Don&apos;t have an account?{' '}
+                        <button onClick={() => setView('signup')} className="text-primary font-semibold hover:underline">
+                            Sign Up
+                        </button>
+                    </p>
+                ) : (
+                    <p className="text-sm text-center w-full text-muted-foreground">
+                        Already have an account?{' '}
+                        <button onClick={() => setView('login')} className="text-primary font-semibold hover:underline">
+                            Sign In
+                        </button>
+                    </p>
+                )}
+            </CardFooter>
+        </Card>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-secondary/30">
+            <Suspense fallback={<div>Loading...</div>}>
+                <AuthForm />
+            </Suspense>
         </div>
     );
 }
