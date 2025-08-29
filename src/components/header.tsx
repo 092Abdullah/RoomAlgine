@@ -28,15 +28,15 @@ export function Header({ user }: { user: User | null }) {
                         <>
                             <Link href="/gallery" className="header-link"><GalleryThumbnails className="mr-2 h-4 w-4" />Gallery</Link>
                             <Link href="/my-designs" className="header-link"><Image className="mr-2 h-4 w-4" />My Designs</Link>
-                            <Link href="#faq" className="header-link">FAQ</Link>
+                            <Link href="/#faq" className="header-link">FAQ</Link>
                             <ThemeSwitcher />
                             <UserNav user={user} />
                             <Button onClick={() => setIsDialogOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Create Design</Button>
                         </>
                     ) : (
                         <>
-                            <Link href="#features" className="header-link">Features</Link>
-                            <Link href="#see-the-magic" className="header-link">Examples</Link>
+                            <Link href="/#features" className="header-link">Features</Link>
+                            <Link href="/#see-the-magic" className="header-link">Examples</Link>
                             <Link href="/gallery" className="header-link">Gallery</Link>
                             <ThemeSwitcher />
                             <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>
