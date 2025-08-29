@@ -18,6 +18,9 @@ export default function AuthWatcher() {
       // Redirecting here could cause a redirect loop or overwrite the intended destination.
       if (event === "SIGNED_OUT") {
         router.push("/auth");
+      } else {
+        // For SIGNED_IN or TOKEN_REFRESHED, just refresh to sync server components
+        router.refresh();
       }
     });
 
