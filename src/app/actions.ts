@@ -12,8 +12,55 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isToday } from 'date-fns';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { uploadToCloudinary } from '@/lib/cloudinary';
+import { redirect } from 'next/navigation';
 
 const DAILY_DESIGN_LIMIT = 20;
+
+export async function signInWithEmail(data: FormData) {
+    const email = data.get('email') as string;
+    const password = data.get('password') as string;
+    const supabase = await createSupabaseServerClient();
+
+    const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (error) {
+        return { error: error.message };
+    }
+    
+    // Redirect logic will be handled by AuthWatcher
+    return { success: true };
+}
+
+export async function signUpWithEmail(data: FormData) {
+    const email = data.get('email') as string;
+    const password = data.get('password') as string;
+    const fullName = data.get('fullName') as string;
+    const supabase = await createSupabaseServerClient();
+
+    const { data: result, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                name: fullName,
+                // The default avatar can be set here if needed
+                // avatar_url: '...', 
+            },
+        },
+    });
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    // Supabase sends a confirmation email. The user needs to verify.
+    // We can return a success message to show on the UI.
+    return { success: true, message: 'Please check your email to verify your account.' };
+}
+
 
 async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: string): Promise<{ allowed: boolean; error?: string }> {
     const { data: profile, error: profileError } = await supabase

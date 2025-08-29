@@ -2,10 +2,9 @@
 "use client";
 
 import { createSupabaseClient } from "@/lib/supabase";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-// A simple SVG for the Google icon
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48" {...props}>
         <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
@@ -17,14 +16,12 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
  
 export function AuthButton() {
     const supabase = createSupabaseClient();
-    const router = useRouter();
     const searchParams = useSearchParams();
     const nextUrl = searchParams.get('next');
 
     const getRedirectUrl = () => {
         let url = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000/';
         
-        // Ensure it has a trailing slash
         url = url.endsWith('/') ? url : `${url}/`;
         url += 'auth/callback';
 
@@ -44,9 +41,9 @@ export function AuthButton() {
     };
 
     return (
-        <Button onClick={handleGoogleSignIn} size="lg" className="w-full">
+        <Button onClick={handleGoogleSignIn} variant="outline" className="w-full">
             <GoogleIcon className="mr-2 h-5 w-5" />
-            Sign In with Google
+            Continue with Google
         </Button>
     );
 }
