@@ -4,7 +4,6 @@
 import { createSupabaseClient } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import type { Session } from "@supabase/supabase-js";
 
 // A simple SVG for the Google icon
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -15,23 +14,18 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
         <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.012 35.853 44 30.138 44 24c0-1.341-.138-2.65-.389-3.917z" />
     </svg>
 );
-
  
-export function AuthButton({ session }: { session: Session | null }) {
+export function AuthButton() {
     const supabase = createSupabaseClient();
     const router = useRouter();
     const searchParams = useSearchParams();
     const nextUrl = searchParams.get('next');
 
     const getRedirectUrl = () => {
-        let url =
-            process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
-            process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-            'http://localhost:3000/';
-        // Make sure to include `https` in production URLs.
-        url = url.includes('http') ? url : `https://${url}`;
-        // Make sure to include a trailing `/`.
-        url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
+        let url = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000/';
+        
+        // Ensure it has a trailing slash
+        url = url.endsWith('/') ? url : `${url}/`;
         url += 'auth/callback';
 
         if (nextUrl) {
@@ -49,14 +43,7 @@ export function AuthButton({ session }: { session: Session | null }) {
         });
     };
 
-    const handleSignOut = async () => {
-        await supabase.auth.signOut();
-        router.refresh();
-    };
-
-    return session ? (
-        <Button onClick={handleSignOut} variant="outline">Logout</Button>
-    ) : (
+    return (
         <Button onClick={handleGoogleSignIn} size="lg" className="w-full">
             <GoogleIcon className="mr-2 h-5 w-5" />
             Sign In with Google

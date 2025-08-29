@@ -17,8 +17,6 @@ export default async function LoginPage() {
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {
-        // Instead of redirecting to dashboard, redirect to the main page.
-        // The main page will decide what to show.
         redirect('/');
     }
 
