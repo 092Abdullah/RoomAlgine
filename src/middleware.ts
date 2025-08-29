@@ -59,6 +59,8 @@ export async function middleware(request: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
+  console.log("MIDDLEWARE SESSION:", session?.user?.email);
+
   const user = session?.user
 
   // Define protected routes that require a user to be logged in.
