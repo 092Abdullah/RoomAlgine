@@ -163,21 +163,42 @@ const LandingPage = ({ user }: { user: User | null }) => {
               </Button>
             </motion.div>
           </motion.div>
-          <motion.div
-            className="relative container mx-auto mt-12 px-4"
+           <motion.div
+            className="relative container mx-auto mt-12 px-0 sm:px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Image
-              src="https://i.ibb.co/1Y512tmL/hero1.jpg"
-              alt="AI generated room"
-              width={1200}
-              height={600}
-              className="w-full max-w-4xl mx-auto h-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
-              data-ai-hint="minimalist bedroom"
-              priority
-            />
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full max-w-4xl mx-auto"
+            >
+              <CarouselContent>
+                {[
+                    { src: "https://i.ibb.co/1Y512tmL/hero1.jpg", alt: "AI generated minimalist bedroom", hint: "minimalist bedroom" },
+                    { src: "https://i.ibb.co/G4KRf34j/after1.png", alt: "AI generated luxury kitchen", hint: "luxury kitchen" },
+                    { src: "https://i.ibb.co/NgKGqxJ0/after.png", alt: "AI generated modern bedroom", hint: "modern bedroom" },
+                ].map((image, index) => (
+                    <CarouselItem key={index} className="md:basis-1/1">
+                         <div className="p-1">
+                            <Image
+                                src={image.src}
+                                alt={image.alt}
+                                width={1200}
+                                height={600}
+                                className="w-full h-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
+                                data-ai-hint={image.hint}
+                                priority={index === 0}
+                                loading={index === 0 ? undefined : "lazy"}
+                            />
+                        </div>
+                    </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
           </motion.div>
         </section>
 
@@ -371,7 +392,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
                 <CarouselItem>
                   <ReactCompareSlider
                     itemOne={<ReactCompareSliderImage src="https://i.ibb.co/spCKd6WL/before.webp" alt="Before image" data-ai-hint="messy bedroom" className="object-cover w-full h-full" />}
-                    itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/NgKGqxJ0/after.png" alt="After image" data-ai-hint="minimalist bedroom" className="object-cover w-full h-full" />}
+                    itemTwo={<ReactCompareSliderImage src="https://i.ibb.co/NgKGqxJ0/after.png" alt="After image" data-ai-hint="minimalist bedroom" className="object-cover w-full h--full" />}
                     className="w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden"
                   />
 
@@ -523,3 +544,5 @@ const LandingPage = ({ user }: { user: User | null }) => {
 };
 
 export default LandingPage;
+
+    
