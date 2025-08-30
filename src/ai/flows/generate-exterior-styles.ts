@@ -99,7 +99,7 @@ The final result should be a single, stunningly realistic image that looks like 
 
       try {
         const { media } = await ai.generate({
-          model: 'googleai/gemini-2.5-flash-image-preview',
+          model: 'googleai/gemini-2.0-flash-preview-image-generation',
           prompt: promptPayload,
           config: generateConfig,
         });
