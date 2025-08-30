@@ -20,12 +20,14 @@ export function Header({ user }: { user: User | null }) {
             <header className="fixed top-4 left-0 right-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="floating-header">
-                    <div className="flex-shrink-0">
-                        <Link href="/">
+                    {/* Left Section */}
+                    <div className="flex items-center">
+                        <Link href="/" className="flex-shrink-0">
                             <HeaderLogoIcon />
                         </Link>
                     </div>
                     
+                    {/* Center Section (Navigation) */}
                     <nav className="hidden md:flex items-center gap-2 mx-auto">
                     {user ? (
                         <>
@@ -42,12 +44,13 @@ export function Header({ user }: { user: User | null }) {
                     )}
                     </nav>
 
+                    {/* Right Section (Actions) */}
                     <div className="hidden md:flex items-center gap-2">
                     {user ? (
                         <>
+                            <Button onClick={() => setIsDialogOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Create Design</Button>
                             <ThemeSwitcher />
                             <UserNav user={user} />
-                            <Button onClick={() => setIsDialogOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Create Design</Button>
                         </>
                     ) : (
                         <>
@@ -57,7 +60,8 @@ export function Header({ user }: { user: User | null }) {
                         </>
                     )}
                     </div>
-
+                    
+                    {/* Mobile Menu (Drawer could be added here later) */}
                     <div className="md:hidden flex items-center gap-2">
                         <ThemeSwitcher />
                         {user ? <UserNav user={user} /> : <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>}
