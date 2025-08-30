@@ -138,7 +138,7 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
                 An enlarged view of the before and after room transformation using AI. Style: {creation.style}. Type: {isInterior ? creation.room_type : 'Exterior'}.
             </DialogDescription>
         </DialogHeader>
-        <div className="w-full aspect-video rounded-lg overflow-hidden">
+        <div className="w-full h-full flex justify-center items-center">
             <ReactCompareSlider
                 className="w-full h-full"
                 itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" className="object-contain w-full h-full" />}
