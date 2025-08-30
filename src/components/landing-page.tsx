@@ -178,9 +178,9 @@ const LandingPage = ({ user }: { user: User | null }) => {
             >
               <CarouselContent>
                 {[
-                    { src: "https://i.ibb.co/1Y512tmL/hero1.jpg", alt: "AI generated minimalist bedroom", hint: "minimalist bedroom" },
-                    { src: "https://i.ibb.co/G4KRf34j/after1.png", alt: "AI generated luxury kitchen", hint: "luxury kitchen" },
-                    { src: "https://i.ibb.co/NgKGqxJ0/after.png", alt: "AI generated modern bedroom", hint: "modern bedroom" },
+                    { src: "https://i.ibb.co/210N8Gjn/h1.jpg", alt: "AI generated minimalist bedroom", hint: "minimalist bedroom" },
+                    { src: "https://i.ibb.co/gMZJYLHZ/h2.jpg", alt: "AI generated luxury kitchen", hint: "luxury kitchen" },
+                    { src: "https://i.ibb.co/C3Sgvy3Q/h3.jpg", alt: "AI generated modern bedroom", hint: "modern bedroom" },
                 ].map((image, index) => (
                     <CarouselItem key={index} className="md:basis-1/1">
                          <div className="p-1">
