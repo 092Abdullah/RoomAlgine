@@ -11,7 +11,7 @@ import type { PublishToGalleryInput } from '@/app/types';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isToday } from 'date-fns';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { uploadToCloudinary } from '@/lib/cloudinary';
+import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
@@ -133,7 +133,7 @@ export async function generateRoomStylesAction(
   try {
     const [originalImageUrl, result] = await Promise.all([
         uploadToCloudinary(photoDataUri, 'roomaigine_originals'),
-        generateRoomStyles({ ...input, photoDataUri, model: 'googleai/gemini-2.0-flash-preview-image-generation' })
+        generateRoomStyles({ ...input, photoDataUri })
     ]);
 
     const savedDesigns: GeneratedImageResult[] = [];
@@ -198,7 +198,7 @@ export async function generateExteriorStylesAction(
   try {
      const [originalImageUrl, result] = await Promise.all([
         uploadToCloudinary(photoDataUri, 'roomaigine_originals'),
-        generateExteriorStyles({ ...input, photoDataUri, model: 'googleai/gemini-2.0-flash-preview-image-generation' })
+        generateExteriorStyles({ ...input, photoDataUri })
     ]);
     
     const savedDesigns: GeneratedImageResult[] = [];
@@ -306,12 +306,37 @@ export async function deleteDesignAction(designId: string): Promise<{ success: b
     }
 
     try {
-        // RLS policy will ensure the user can only delete their own design.
-        const { error } = await supabase.from('designs').delete().eq('id', designId);
+        // 1. Fetch the design to get image URLs
+        const { data: design, error: fetchError } = await supabase
+            .from('designs')
+            .select('original_image_url, generated_image_url')
+            .eq('id', designId)
+            .single();
+
+        if (fetchError || !design) {
+            console.error('Error fetching design for deletion:', fetchError);
+            throw new Error('Design not found or you do not have permission to delete it.');
+        }
+
+        // 2. Delete images from Cloudinary
+        const [originalDeletion, generatedDeletion] = await Promise.allSettled([
+            deleteFromCloudinary(design.original_image_url),
+            deleteFromCloudinary(design.generated_image_url)
+        ]);
+
+        if (originalDeletion.status === 'rejected') {
+            console.warn(`Failed to delete original image from Cloudinary:`, originalDeletion.reason);
+        }
+        if (generatedDeletion.status === 'rejected') {
+            console.warn(`Failed to delete generated image from Cloudinary:`, generatedDeletion.reason);
+        }
+
+        // 3. Delete the design from Supabase
+        const { error: deleteError } = await supabase.from('designs').delete().eq('id', designId);
         
-        if (error) {
-            console.error('Error deleting design:', error);
-            throw new Error(error.message);
+        if (deleteError) {
+            console.error('Error deleting design from Supabase:', deleteError);
+            throw new Error(deleteError.message);
         }
 
         revalidatePath('/my-designs');
