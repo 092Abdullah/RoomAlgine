@@ -13,6 +13,7 @@ import { isToday } from 'date-fns';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 const DAILY_DESIGN_LIMIT = 20;
 
@@ -132,7 +133,7 @@ export async function generateRoomStylesAction(
   try {
     const [originalImageUrl, result] = await Promise.all([
         uploadToCloudinary(photoDataUri, 'roomaigine_originals'),
-        generateRoomStyles({ ...input, photoDataUri })
+        generateRoomStyles({ ...input, photoDataUri, model: 'googleai/gemini-2.0-flash-preview-image-generation' })
     ]);
 
     const savedDesigns: GeneratedImageResult[] = [];
@@ -197,7 +198,7 @@ export async function generateExteriorStylesAction(
   try {
      const [originalImageUrl, result] = await Promise.all([
         uploadToCloudinary(photoDataUri, 'roomaigine_originals'),
-        generateExteriorStyles({ ...input, photoDataUri })
+        generateExteriorStyles({ ...input, photoDataUri, model: 'googleai/gemini-2.0-flash-preview-image-generation' })
     ]);
     
     const savedDesigns: GeneratedImageResult[] = [];
@@ -293,6 +294,31 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
     } catch (e: any) {
         console.error('Failed to delete creation:', e);
         return { success: false, error: e.message || 'Could not delete the creation.' };
+    }
+}
+
+export async function deleteDesignAction(designId: string): Promise<{ success: boolean; error?: string }> {
+    const supabase = await createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: 'You must be logged in to delete designs.' };
+    }
+
+    try {
+        // RLS policy will ensure the user can only delete their own design.
+        const { error } = await supabase.from('designs').delete().eq('id', designId);
+        
+        if (error) {
+            console.error('Error deleting design:', error);
+            throw new Error(error.message);
+        }
+
+        revalidatePath('/my-designs');
+        return { success: true };
+    } catch (e: any) {
+        console.error('Failed to delete design:', e);
+        return { success: false, error: e.message || 'Could not delete the design.' };
     }
 }
 

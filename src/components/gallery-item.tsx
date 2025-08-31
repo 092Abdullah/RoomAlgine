@@ -5,21 +5,33 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
-import { Heart, Home, Building2, GalleryThumbnails } from 'lucide-react';
+import { Heart, Home, Building2, GalleryThumbnails, Trash2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { incrementKudosAction, publishToGalleryAction, deleteCreationAction } from '@/app/actions';
+import { incrementKudosAction, publishToGalleryAction, deleteCreationAction, deleteDesignAction } from '@/app/actions';
 import type { Creation } from '@/app/gallery/page';
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from './ui/button';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { Helix } from 'ldrs/react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export function GalleryItem({ creation, isDashboardItem = false }: { creation: Creation, isDashboardItem?: boolean }) {
   const [kudos, setKudos] = useState(creation.kudos || 0);
   const [isKudoed, setIsKudoed] = useState(false);
   const [formattedDate, setFormattedDate] = useState('');
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     // Format date only on the client to avoid hydration mismatch
@@ -72,6 +84,18 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
       setIsPublishing(false);
   };
 
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    const result = await deleteDesignAction(creation.id);
+    if (result.success) {
+        toast.success("Design deleted successfully.");
+        // The page will be revalidated by the server action, no need to refresh client-side.
+    } else {
+        toast.error("Deletion Failed", { description: result.error });
+    }
+    setIsDeleting(false);
+  }
+
 
   const isInterior = !!creation.room_type;
 
@@ -84,35 +108,71 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
             itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" className="object-contain w-full h-full" />}
             itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" className="object-contain w-full h-full" />}
           />
-          {!isDashboardItem ? (
-            <button
-                onClick={handleKudosClick}
-                className="absolute top-2 right-2 z-10 flex items-center gap-1.5 bg-background/70 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs hover:bg-primary/80 transition-all disabled:opacity-50"
-                disabled={isKudoed}
-            >
-                <Heart className={cn("h-4 w-4", isKudoed ? "text-red-500 fill-red-500" : "text-white")} />
-                <span>{kudos}</span>
-            </button>
-          ) : (
-             <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            size="icon"
-                            variant="secondary"
-                            className="absolute top-2 right-2 z-10 h-8 w-8"
-                            onClick={handlePublish}
-                            disabled={isPublishing}
-                        >
-                            {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Publish to Public Gallery</p>
-                    </TooltipContent>
-                </Tooltip>
-             </TooltipProvider>
-          )}
+          <div className="absolute top-2 right-2 z-10 flex gap-2">
+            {!isDashboardItem ? (
+              <button
+                  onClick={handleKudosClick}
+                  className="flex items-center gap-1.5 bg-background/70 backdrop-blur-sm text-white px-2 py-1 h-8 rounded-full text-xs hover:bg-primary/80 transition-all disabled:opacity-50"
+                  disabled={isKudoed}
+              >
+                  <Heart className={cn("h-4 w-4", isKudoed ? "text-red-500 fill-red-500" : "text-white")} />
+                  <span>{kudos}</span>
+              </button>
+            ) : (
+              <>
+               <TooltipProvider>
+                  <Tooltip>
+                      <TooltipTrigger asChild>
+                          <Button
+                              size="icon"
+                              variant="secondary"
+                              className="h-8 w-8"
+                              onClick={handlePublish}
+                              disabled={isPublishing}
+                          >
+                              {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
+                          </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                          <p>Publish to Public Gallery</p>
+                      </TooltipContent>
+                  </Tooltip>
+               </TooltipProvider>
+
+                <AlertDialog>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <AlertDialogTrigger asChild>
+                           <Button size="icon" variant="destructive" className="h-8 w-8" disabled={isDeleting}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </AlertDialogTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete Design</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your design
+                        from your history. It will not be removed from the public gallery if already published.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                        {isDeleting ? 'Deleting...' : 'Continue'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
+          </div>
         </div>
         <DialogTrigger asChild>
             <div className="p-4 cursor-pointer">
