@@ -34,7 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction, deleteCreationAction } from "@/app/actions";
+import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction, deleteCreationAction, uploadOriginalImageAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon } from "./icons";
 import { motion, AnimatePresence } from "framer-motion";
@@ -514,6 +514,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
   const router = useRouter();
   const searchParams = useSearchParams()
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [originalCloudinaryUrl, setOriginalCloudinaryUrl] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>("Minimalist");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -558,11 +559,16 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       setGeneratedImages([]);
       setActiveGeneratedImage(null);
       setStyleSuggestions([]);
+      setOriginalCloudinaryUrl(null); 
 
       setIsDetectingRoomType(true);
-      setLoadingMessage("Detecting room type...");
+      setLoadingMessage("Securing your image & detecting room type...");
 
-      const detectionResult = await detectRoomTypeAction(dataUri);
+      const [detectionResult, uploadResult] = await Promise.all([
+        detectRoomTypeAction(dataUri),
+        uploadOriginalImageAction(dataUri, false),
+      ]);
+
       if ('roomType' in detectionResult) {
           const isValidRoomType = roomTypes.some(rt => rt.id === detectionResult.roomType);
           if (isValidRoomType) {
@@ -571,10 +577,16 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
               console.warn(`Detected room type "${detectionResult.roomType}" is not a selectable option.`);
           }
       } else {
-          toast.error("Room Detection Failed", {
-              description: detectionResult.error,
-          });
+          toast.error("Room Detection Failed", { description: detectionResult.error });
       }
+
+      if ('url' in uploadResult) {
+        setOriginalCloudinaryUrl(uploadResult.url);
+      } else {
+        toast.error("Image Upload Failed", { description: uploadResult.error });
+        setUploadedImage(null); // Clear image if upload fails
+      }
+
       setIsDetectingRoomType(false);
       setLoadingMessage("");
     };
@@ -599,6 +611,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
     setGeneratedImages([]);
     setActiveGeneratedImage(null);
     setStyleSuggestions([]);
+    setOriginalCloudinaryUrl(null);
     if(fileInputRef.current) {
         fileInputRef.current.value = "";
     }
@@ -619,6 +632,13 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       return;
     }
 
+    if (!uploadedImage || !originalCloudinaryUrl) {
+      toast.error("Image Not Ready", {
+        description: "Please wait for the image to upload before generating.",
+      });
+      return;
+    }
+
     setIsGenerating(true);
     setLoadingMessage(`Generating your new ${selectedStyle} room...`);
     setActiveGeneratedImage(null);
@@ -630,7 +650,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       mood: selectedMoods[0],
       priceRange: `$${priceRange.toLocaleString()}`,
       userPrompt: userPrompt,
-    }, uploadedImage);
+    }, uploadedImage, originalCloudinaryUrl);
 
 
     if ("error" in result) {

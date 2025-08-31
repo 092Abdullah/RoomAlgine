@@ -107,9 +107,21 @@ type GeneratedImageResult = {
     imageDataUri: string; // We still pass the full data URI back to the client for immediate display
 };
 
+export async function uploadOriginalImageAction(photoDataUri: string, isExterior: boolean): Promise<{ url: string } | { error: string }> {
+    try {
+        const folder = isExterior ? 'roomaigine_originals_exterior' : 'roomaigine_originals';
+        const url = await uploadToCloudinary(photoDataUri, folder);
+        return { url };
+    } catch (e: any) {
+        return { error: 'Failed to upload original image: ' + e.message };
+    }
+}
+
+
 export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,
-  photoDataUri?: string | null
+  photoDataUri: string,
+  originalImageUrl: string
 ): Promise<{ styledRoomImages: GeneratedImageResult[] } | { error: string }> {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -126,15 +138,15 @@ export async function generateRoomStylesAction(
   if (!photoDataUri) {
     return { error: 'Please upload an image first.' };
   }
+  if (!originalImageUrl) {
+      return { error: 'Original image URL is missing. Please re-upload.' };
+  }
   if (input.styles.length === 0) {
     return { error: 'Please select at least one style.' };
   }
   
   try {
-    const [originalImageUrl, result] = await Promise.all([
-        uploadToCloudinary(photoDataUri, 'roomaigine_originals'),
-        generateRoomStyles({ ...input, photoDataUri })
-    ]);
+    const result = await generateRoomStyles({ ...input, photoDataUri });
 
     const savedDesigns: GeneratedImageResult[] = [];
 
@@ -174,7 +186,8 @@ export async function generateRoomStylesAction(
 
 export async function generateExteriorStylesAction(
   input: Omit<GenerateExteriorStylesInput, 'photoDataUri'>,
-  photoDataUri?: string | null
+  photoDataUri: string,
+  originalImageUrl: string
 ): Promise<{ styledExteriorImages: GeneratedImageResult[] } | { error: string }> {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -191,20 +204,20 @@ export async function generateExteriorStylesAction(
   if (!photoDataUri) {
     return { error: 'Please upload an image first.' };
   }
+  if (!originalImageUrl) {
+      return { error: 'Original image URL is missing. Please re-upload.' };
+  }
   if (input.styles.length === 0) {
     return { error: 'Please select at least one style.' };
   }
   
   try {
-     const [originalImageUrl, result] = await Promise.all([
-        uploadToCloudinary(photoDataUri, 'roomaigine_originals'),
-        generateExteriorStyles({ ...input, photoDataUri })
-    ]);
+    const result = await generateExteriorStyles({ ...input, photoDataUri });
     
     const savedDesigns: GeneratedImageResult[] = [];
 
     for (const image of result.styledExteriorImages) {
-        const generatedImageUrl = await uploadToCloudinary(image.imageDataUri, 'roomaigine_generated');
+        const generatedImageUrl = await uploadToCloudinary(image.imageDataUri, 'roomaigine_generated_exterior');
         
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
