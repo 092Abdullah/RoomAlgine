@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent, useEffect, type DragEvent } from "react";
-import { useSearchParams, useRouter } from 'next/navigation'
 import Image from "next/image";
 import {
   Upload,
@@ -10,17 +9,14 @@ import {
   Share2,
   Camera,
   Sparkles,
-  RefreshCw,
   Bath,
   CookingPot,
   Lightbulb,
   X,
   GalleryThumbnails,
   Expand,
-  ArrowRight,
   UtensilsCrossed,
   MessageSquare,
-  LayoutDashboard,
 } from "lucide-react";
 import {
   Card,
@@ -36,7 +32,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction, deleteCreationAction, uploadOriginalImageAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
-import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon, MoreFiltersIcon } from "./icons";
+import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon } from "./icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { Slider } from "@/components/ui/slider";
@@ -45,11 +41,10 @@ import { Helix } from 'ldrs/react';
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { useScrollDirection } from "@/hooks/use-scroll-direction";
-import { cn } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
 import type { User } from "@supabase/supabase-js";
 import { Header } from "./header";
+import { cn } from "@/lib/utils";
 
 type GeneratedImage = {
   designId: string;
@@ -93,7 +88,7 @@ const colorPreferences = [
 
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 
-const AppHeader = ({ onGenerateNew, showGenerateButton, user }: { onGenerateNew: () => void, showGenerateButton: boolean, user: User | null }) => {
+const AppHeader = ({ user }: { user: User | null }) => {
     return (
         <Header user={user} isSliding={true} />
     );
@@ -235,7 +230,6 @@ const RoomAIGineEditor = ({
 
     return (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-6 flex-grow w-full">
-            {/* Left Column */}
             <div className="col-span-1 xl:col-span-3 space-y-4 md:space-y-6">
                 <Card className="bg-card">
                     <CardHeader>
@@ -327,7 +321,6 @@ const RoomAIGineEditor = ({
                 </Card>
             </div>
 
-            {/* Middle Column */}
             <div className="col-span-1 xl:col-span-6">
                  <Dialog>
                     <Card className="bg-card h-full flex flex-col">
@@ -431,7 +424,6 @@ const RoomAIGineEditor = ({
                  </Dialog>
             </div>
 
-            {/* Right Column */}
              <div className="col-span-1 xl:col-span-3">
                 <Card className="bg-card">
                     <CardHeader>
@@ -510,8 +502,6 @@ const RoomAIGineEditor = ({
 }
 
 export default function RoomAIGineClient({ user }: { user: User | null }) {
-  const router = useRouter();
-  const searchParams = useSearchParams()
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [originalCloudinaryUrl, setOriginalCloudinaryUrl] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>("Minimalist");
@@ -533,15 +523,6 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  useEffect(() => {
-    const image = searchParams.get('image');
-    if (image) {
-      // In a real app, you might fetch the image data from a URL
-      // For simplicity here, we assume it's a data URI passed for demo purposes
-      // setUploadedImage(image);
-    }
-  }, [searchParams]);
-
   const [isUploading, setIsUploading] = useState(false);
   const isLoading = isUploading || isDetectingRoomType || isGenerating;
 
@@ -570,7 +551,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
         uploadOriginalImageAction(dataUri, false),
       ]);
       
-      setIsUploading(false); // Finished uploading
+      setIsUploading(false);
 
       if ('roomType' in detectionResult) {
           const isValidRoomType = roomTypes.some(rt => rt.id === detectionResult.roomType);
@@ -587,7 +568,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
         setOriginalCloudinaryUrl(uploadResult.url);
       } else {
         toast.error("Image Upload Failed", { description: uploadResult.error });
-        setUploadedImage(null); // Clear image if upload fails
+        setUploadedImage(null);
       }
 
       setIsDetectingRoomType(false);
@@ -608,17 +589,6 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       processFile(file);
     }
   };
-
-  const handleGenerateNew = () => {
-    setUploadedImage(null);
-    setGeneratedImages([]);
-    setActiveGeneratedImage(null);
-    setStyleSuggestions([]);
-    setOriginalCloudinaryUrl(null);
-    if(fileInputRef.current) {
-        fileInputRef.current.value = "";
-    }
-  }
 
   const handleColorSelect = (colorValue: string) => {
     setSelectedColors((prev) =>
@@ -768,7 +738,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-      <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={!!uploadedImage} user={user} />
+      <AppHeader user={user} />
       <main className="flex-grow flex items-center justify-center pt-24">
         {!uploadedImage ? (
           <UploadScreen

@@ -5,12 +5,12 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
-import { Heart, Home, Building2, GalleryThumbnails, Trash2, AlertCircle } from 'lucide-react';
+import { Heart, Home, Building2, GalleryThumbnails, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { incrementKudosAction, publishToGalleryAction, deleteCreationAction, deleteDesignAction } from '@/app/actions';
 import type { Creation } from '@/app/gallery/page';
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from './ui/button';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { Helix } from 'ldrs/react';
@@ -34,12 +34,11 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    // Format date only on the client to avoid hydration mismatch
     setFormattedDate(new Date(creation.created_at).toLocaleDateString());
   }, [creation.created_at]);
 
   const handleKudosClick = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent dialog from opening
+    e.stopPropagation(); 
     if (isKudoed) {
         toast("Already Appreciated!", { description: "You can only give kudos once per design." });
         return;
@@ -89,7 +88,6 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
     const result = await deleteDesignAction(creation.id);
     if (result.success) {
         toast.success("Design deleted successfully.");
-        // The page will be revalidated by the server action, no need to refresh client-side.
     } else {
         toast.error("Deletion Failed", { description: result.error });
     }

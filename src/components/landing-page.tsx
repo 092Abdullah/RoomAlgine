@@ -22,7 +22,6 @@ import {
   Sofa,
   CheckCircle,
   ArrowUp,
-  LayoutDashboard,
   Mail,
 } from "lucide-react";
 import { HeaderLogoIcon } from "./icons";
@@ -120,11 +119,9 @@ const LandingPage = ({ user }: { user: User | null }) => {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
        <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} user={user} />
-      {/* Header */}
        <Header user={user} />
 
       <main className="flex-grow">
-        {/* Hero Section */}
         <section className="relative pt-24 pb-16 md:pt-40 md:pb-24 text-center overflow-hidden">
           <motion.div
             className="container mx-auto px-4 sm:px-6 lg:px-8"
@@ -192,7 +189,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
                                 className="w-full h-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
                                 data-ai-hint={image.hint}
                                 priority={index === 0}
-                                loading={index === 0 ? undefined : "lazy"}
+                                loading={index > 0 ? "lazy" : "eager"}
                             />
                         </div>
                     </CarouselItem>
@@ -202,7 +199,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
           </motion.div>
         </section>
 
-        {/* How It Works Section */}
         <section id="how-it-works" className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
@@ -236,7 +232,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
           </div>
         </section>
         
-        {/* Why Choose Us Section */}
         <section id="why-choose-us" className="py-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -291,7 +286,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
             </div>
         </section>
 
-        {/* By the Numbers Section */}
         <section id="by-the-numbers" className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
@@ -323,7 +317,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
           </div>
         </section>
 
-        {/* Features Section */}
         <section id="features" className="py-20 relative overflow-hidden">
             <div
                 aria-hidden="true"
@@ -373,7 +366,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
         </section>
 
 
-        {/* Live Preview Carousel */}
         <section id="see-the-magic" className="py-20 bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
@@ -404,7 +396,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
           </div>
         </section>
 
-        {/* Testimonials Section */}
         <section id="loved-by-creatives" className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
@@ -446,7 +437,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
           </div>
         </section>
 
-        {/* FAQ Section */}
         <section id="faq" className="py-20 bg-secondary/30">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid md:grid-cols-2 gap-10 items-start">
@@ -483,8 +473,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
             </div>
         </section>
 
-
-        {/* CTA Section */}
         <section className="py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Ready to Redesign Your Space?</h2>
@@ -498,7 +486,6 @@ const LandingPage = ({ user }: { user: User | null }) => {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-secondary/30 border-t border-border/20">
         <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -544,5 +531,3 @@ const LandingPage = ({ user }: { user: User | null }) => {
 };
 
 export default LandingPage;
-
-    

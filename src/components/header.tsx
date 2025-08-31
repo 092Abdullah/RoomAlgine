@@ -28,14 +28,12 @@ export function Header({ user, isSliding = false }: { user: User | null, isSlidi
             <header className={headerClasses}>
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="floating-header">
-                    {/* Left Section */}
                     <div className="flex items-center">
                         <Link href="/" className="flex-shrink-0">
                             <HeaderLogoIcon />
                         </Link>
                     </div>
                     
-                    {/* Center Section (Navigation) */}
                     <nav className="hidden md:flex items-center gap-2 mx-auto">
                     {user ? (
                         <>
@@ -52,8 +50,7 @@ export function Header({ user, isSliding = false }: { user: User | null, isSlidi
                     )}
                     </nav>
 
-                    {/* Right Section (Actions) */}
-                    <div className="hidden md:flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                     {user ? (
                         <>
                             <Button onClick={() => setIsDialogOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Create Design</Button>
@@ -67,13 +64,6 @@ export function Header({ user, isSliding = false }: { user: User | null, isSlidi
                             <Button onClick={() => setIsDialogOpen(true)}>Get Started</Button>
                         </>
                     )}
-                    </div>
-                    
-                    {/* Mobile Menu (Drawer could be added here later) */}
-                    <div className="md:hidden flex items-center gap-2">
-                        <ThemeSwitcher />
-                        {user ? <UserNav user={user} /> : <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>}
-                        <Button size="icon" onClick={() => setIsDialogOpen(true)}><Sparkles className="h-4 w-4" /></Button>
                     </div>
                 </div>
                 </div>

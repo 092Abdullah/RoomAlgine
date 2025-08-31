@@ -9,7 +9,6 @@ import {
   Share2,
   Camera,
   Sparkles,
-  RefreshCw,
   Trees,
   Construction,
   PaintRoller,
@@ -17,7 +16,6 @@ import {
   GalleryThumbnails,
   ChevronDown,
   MessageSquare,
-  LayoutDashboard,
 } from "lucide-react";
 import {
   Card,
@@ -41,7 +39,6 @@ import { Helix } from 'ldrs/react';
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { useScrollDirection } from "@/hooks/use-scroll-direction";
 import { cn } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
 import type { User } from "@supabase/supabase-js";
@@ -65,7 +62,7 @@ const exteriorTypes = [
 const materialOptions = ["Siding", "Brick", "Stone", "Stucco"];
 const landscapingOptions = ["Minimal", "Lush", "Modern", "Natural"];
 
-const AppHeader = ({ onGenerateNew, showGenerateButton, user }: { onGenerateNew: () => void, showGenerateButton: boolean, user: User | null }) => {
+const AppHeader = ({ user }: { user: User | null }) => {
     return (
         <Header user={user} isSliding={true} />
     );
@@ -164,7 +161,6 @@ const ExteriorAIGineEditor = ({
 
     return (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6 max-w-[1600px] mx-auto p-2 sm:p-4 lg:p-6 flex-grow w-full">
-            {/* Left Column */}
             <div className="col-span-1 xl:col-span-3 space-y-4 md:space-y-6">
                 <Card className="bg-card">
                     <CardHeader>
@@ -210,7 +206,6 @@ const ExteriorAIGineEditor = ({
                 </Card>
             </div>
 
-            {/* Middle Column */}
             <div className="col-span-1 xl:col-span-6">
                  <Dialog>
                     <Card className="bg-card h-full flex flex-col">
@@ -314,7 +309,6 @@ const ExteriorAIGineEditor = ({
                  </Dialog>
             </div>
 
-            {/* Right Column */}
              <div className="col-span-1 xl:col-span-3">
                 <Card className="bg-card">
                     <CardHeader>
@@ -424,7 +418,7 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
         setOriginalCloudinaryUrl(uploadResult.url);
       } else {
         toast.error("Image Upload Failed", { description: uploadResult.error });
-        setUploadedImage(null); // Clear image if upload fails
+        setUploadedImage(null);
       }
       
       setIsUploading(false);
@@ -445,17 +439,6 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
             processFile(file);
         }
     };
-
-
-  const handleGenerateNew = () => {
-    setUploadedImage(null);
-    setGeneratedImages([]);
-    setActiveGeneratedImage(null);
-    setOriginalCloudinaryUrl(null);
-    if(fileInputRef.current) {
-        fileInputRef.current.value = "";
-    }
-  }
 
   const startGeneration = async () => {
     if (!selectedStyle) {
@@ -574,7 +557,7 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-      <AppHeader onGenerateNew={handleGenerateNew} showGenerateButton={!!uploadedImage} user={user} />
+      <AppHeader user={user} />
       <main className="flex-grow flex items-center justify-center pt-24">
         {!uploadedImage ? (
           <UploadScreen
