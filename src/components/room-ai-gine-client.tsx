@@ -563,7 +563,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
 
       setIsUploading(true);
       setIsDetectingRoomType(true);
-      setLoadingMessage("Securing your image & detecting room type...");
+      setLoadingMessage("Detecting room type...");
 
       const [detectionResult, uploadResult] = await Promise.all([
         detectRoomTypeAction(dataUri),
