@@ -94,9 +94,8 @@ const colorPreferences = [
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 
 const AppHeader = ({ onGenerateNew, showGenerateButton, user }: { onGenerateNew: () => void, showGenerateButton: boolean, user: User | null }) => {
-    const scrollDirection = useScrollDirection();
     return (
-        <Header user={user} />
+        <Header user={user} isSliding={true} />
     );
 }
 
@@ -543,7 +542,8 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
     }
   }, [searchParams]);
 
-  const isLoading = isDetectingRoomType || isGenerating;
+  const [isUploading, setIsUploading] = useState(false);
+  const isLoading = isUploading || isDetectingRoomType || isGenerating;
 
   const processFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -561,6 +561,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       setStyleSuggestions([]);
       setOriginalCloudinaryUrl(null); 
 
+      setIsUploading(true);
       setIsDetectingRoomType(true);
       setLoadingMessage("Securing your image & detecting room type...");
 
@@ -568,6 +569,8 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
         detectRoomTypeAction(dataUri),
         uploadOriginalImageAction(dataUri, false),
       ]);
+      
+      setIsUploading(false); // Finished uploading
 
       if ('roomType' in detectionResult) {
           const isValidRoomType = roomTypes.some(rt => rt.id === detectionResult.roomType);

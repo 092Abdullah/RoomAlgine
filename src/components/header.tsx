@@ -10,14 +10,22 @@ import { ThemeSwitcher } from '@/components/theme-switcher';
 import { UserNav } from '@/components/user-nav';
 import { DesignTypeSelectionDialog } from '@/components/design-type-selection-dialog';
 import { Sparkles, Image, GalleryThumbnails } from 'lucide-react';
+import { useScrollDirection } from '@/hooks/use-scroll-direction';
+import { cn } from '@/lib/utils';
 
-export function Header({ user }: { user: User | null }) {
+export function Header({ user, isSliding = false }: { user: User | null, isSliding?: boolean }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const scrollDirection = useScrollDirection();
+
+    const headerClasses = cn(
+        "fixed top-4 left-0 right-0 z-50 transition-transform duration-300",
+        isSliding && scrollDirection === 'down' ? "-translate-y-24" : "translate-y-0"
+    );
 
     return (
         <>
             <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} user={user} />
-            <header className="fixed top-4 left-0 right-0 z-50">
+            <header className={headerClasses}>
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="floating-header">
                     {/* Left Section */}

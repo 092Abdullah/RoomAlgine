@@ -66,9 +66,8 @@ const materialOptions = ["Siding", "Brick", "Stone", "Stucco"];
 const landscapingOptions = ["Minimal", "Lush", "Modern", "Natural"];
 
 const AppHeader = ({ onGenerateNew, showGenerateButton, user }: { onGenerateNew: () => void, showGenerateButton: boolean, user: User | null }) => {
-    const scrollDirection = useScrollDirection();
     return (
-        <Header user={user} />
+        <Header user={user} isSliding={true} />
     );
 }
 
