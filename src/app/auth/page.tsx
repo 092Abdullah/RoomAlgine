@@ -30,7 +30,7 @@ function AuthForm() {
                 } else if (result.success && result.message) {
                     toast.success('Check your email!', { description: result.message });
                     setView('login'); // Switch to login view after successful signup
-                } else {
+                } else if (result.success) {
                     // Successful login is handled by the AuthWatcher, which will redirect.
                     toast.success('Login successful!');
                 }
