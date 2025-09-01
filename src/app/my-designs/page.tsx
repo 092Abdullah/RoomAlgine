@@ -2,7 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { GalleryItem } from '@/components/gallery-item';
 import type { Creation } from '@/app/gallery/page';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,8 @@ import { ArrowRight, Image } from 'lucide-react';
 import { Header } from '@/components/header';
 import { DesignTypeSelectionDialog } from '@/components/design-type-selection-dialog';
 import type { User } from '@supabase/supabase-js';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 
 type MyDesignsPageProps = {
     user: User | null;
@@ -60,7 +61,6 @@ export default async function MyDesignsPageWrapper() {
 
     if (!user) {
         // This part runs on the server. If no user, redirect immediately.
-        const { redirect } = await import('next/navigation');
         redirect('/auth?next=/my-designs');
     }
 
