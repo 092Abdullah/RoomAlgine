@@ -3,19 +3,27 @@
 
 import { useState } from 'react';
 import { GalleryItem } from '@/components/gallery-item';
-import type { Creation } from '@/app/gallery/page';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Image } from 'lucide-react';
 import { Header } from '@/components/header';
 import { DesignTypeSelectionDialog } from '@/components/design-type-selection-dialog';
 import type { User } from '@supabase/supabase-js';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
+
+// Define the type for a single creation/design
+// Note: This matches the structure from gallery/page.tsx, but is defined locally for clarity
+type Design = {
+  id: string;
+  created_at: string;
+  original_image_url: string;
+  generated_image_url: string;
+  style: string;
+  room_type: string | null;
+  kudos: number;
+};
 
 type MyDesignsPageProps = {
     user: User | null;
-    creations: Creation[];
+    creations: Design[];
 };
 
 // This is the Client Component. It handles state and user interactions.
@@ -57,6 +65,17 @@ function MyDesignsClient({ user, creations }: MyDesignsPageProps) {
     );
 }
 
+// We are moving the server-side logic into a separate file or a wrapper component that doesn't use 'use client'
+// For this fix, let's restructure the page to have a Server Component wrapper that fetches data.
+// Since we cannot have both a server and client component in the same file as default export after Next.js 13.4,
+// let's assume the data fetching part will be in a wrapper. But the build error suggests the page itself is the problem.
+// The best approach is to make the page a server component and pass data to the client component.
+
+// The default export will now be a proper server component.
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+
 // This is the default export: a Server Component that fetches data and passes it to the client component.
 export default async function MyDesignsPageWrapper() {
     const cookieStore = await cookies();
@@ -78,8 +97,8 @@ export default async function MyDesignsPageWrapper() {
         // In a real app, you might want to show an error page here
     }
 
-    // Explicitly cast to Creation[] to resolve type mismatch, ensuring kudos exists.
-    const creations: Creation[] = (designs || []).map(d => ({ ...d, kudos: d.kudos || 0 }));
+    // Explicitly cast to Design[] to resolve type mismatch, ensuring kudos exists.
+    const creations: Design[] = (designs || []).map(d => ({ ...d, kudos: d.kudos || 0 }));
 
     // The Server Component now renders the Client Component and passes data as props.
     return <MyDesignsClient user={user} creations={creations} />;
