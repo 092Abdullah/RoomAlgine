@@ -18,7 +18,7 @@ type MyDesignsPageProps = {
     creations: Creation[];
 };
 
-// This is the Client Component
+// This is the Client Component. It handles state and user interactions.
 function MyDesignsClient({ user, creations }: MyDesignsPageProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -57,14 +57,13 @@ function MyDesignsClient({ user, creations }: MyDesignsPageProps) {
     );
 }
 
-// This will be the default export, a Server Component that fetches data.
+// This is the default export: a Server Component that fetches data and passes it to the client component.
 export default async function MyDesignsPageWrapper() {
     const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        // This part runs on the server. If no user, redirect immediately.
         redirect('/auth?next=/my-designs');
     }
 
