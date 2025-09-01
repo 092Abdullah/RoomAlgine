@@ -11,12 +11,14 @@ import { DesignTypeSelectionDialog } from '@/components/design-type-selection-di
 import type { User } from '@supabase/supabase-js';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
 type MyDesignsPageProps = {
     user: User | null;
     creations: Creation[];
 };
 
+// This is the Client Component
 function MyDesignsClient({ user, creations }: MyDesignsPageProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -57,7 +59,8 @@ function MyDesignsClient({ user, creations }: MyDesignsPageProps) {
 
 // This will be the default export, a Server Component that fetches data.
 export default async function MyDesignsPageWrapper() {
-    const supabase = await createSupabaseServerClient();
+    const cookieStore = cookies();
+    const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

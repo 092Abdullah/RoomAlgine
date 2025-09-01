@@ -10,6 +10,7 @@
 import { ai } from '@/ai/genkit';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { PublishToGalleryInputSchema, PublishToGalleryOutputSchema, type PublishToGalleryInput, type PublishToGalleryOutput } from '@/app/types';
+import { cookies } from 'next/headers';
 
 // Note: The Cloudinary upload logic is removed from here as we assume URLs are already stored.
 // If direct data URI upload is still needed, it should be added back.
@@ -25,7 +26,8 @@ const publishToGalleryFlow = ai.defineFlow(
         outputSchema: PublishToGalleryOutputSchema,
     },
     async ({ designId }) => {
-        const supabase = await createSupabaseServerClient();
+        const cookieStore = cookies();
+        const supabase = createSupabaseServerClient(cookieStore);
 
         // RLS policy on `creations` table now ensures only authenticated users can insert.
         // We still need the user to fetch from their private `designs` table.

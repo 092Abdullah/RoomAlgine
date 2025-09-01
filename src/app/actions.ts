@@ -15,13 +15,15 @@ import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { uploadFileToSupabase, deleteFileFromSupabase } from '@/lib/supabase/storage';
+import { cookies } from 'next/headers';
 
 const DAILY_DESIGN_LIMIT = 20;
 
 export async function signInWithEmail(data: FormData) {
     const email = data.get('email') as string;
     const password = data.get('password') as string;
-    const supabase = await createSupabaseServerClient();
+    const cookieStore = cookies();
+    const supabase = createSupabaseServerClient(cookieStore);
 
     const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -40,7 +42,8 @@ export async function signUpWithEmail(data: FormData) {
     const email = data.get('email') as string;
     const password = data.get('password') as string;
     const fullName = data.get('fullName') as string;
-    const supabase = await createSupabaseServerClient();
+    const cookieStore = cookies();
+    const supabase = createSupabaseServerClient(cookieStore);
 
     const { data: result, error } = await supabase.auth.signUp({
         email,
@@ -128,7 +131,8 @@ export async function generateRoomStylesAction(
   photoDataUri: string,
   originalImageUrl: string
 ): Promise<{ styledRoomImages: GeneratedImageResult[] } | { error: string }> {
-  const supabase = await createSupabaseServerClient();
+  const cookieStore = cookies();
+  const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user?.id) {
@@ -194,7 +198,8 @@ export async function generateExteriorStylesAction(
   photoDataUri: string,
   originalImageUrl: string
 ): Promise<{ styledExteriorImages: GeneratedImageResult[] } | { error: string }> {
-  const supabase = await createSupabaseServerClient();
+  const cookieStore = cookies();
+  const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user?.id) {
@@ -300,7 +305,8 @@ export async function publishToGalleryAction(
 }
 
 export async function deleteCreationAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createSupabaseServerClient();
+    const cookieStore = cookies();
+    const supabase = createSupabaseServerClient(cookieStore);
     try {
         const { error } = await supabase.from('creations').delete().eq('id', creationId);
         if (error) throw error;
@@ -312,7 +318,8 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
 }
 
 export async function deleteDesignAction(designId: string): Promise<{ success: boolean; error?: string }> {
-    const supabase = await createSupabaseServerClient();
+    const cookieStore = cookies();
+    const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -359,7 +366,8 @@ export async function deleteDesignAction(designId: string): Promise<{ success: b
 }
 
 export async function incrementKudosAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createSupabaseServerClient();
+  const cookieStore = cookies();
+  const supabase = createSupabaseServerClient(cookieStore);
   try {
     const { error } = await supabase.rpc('increment_kudos', { creation_id: creationId });
     if (error) throw error;
@@ -371,7 +379,8 @@ export async function incrementKudosAction(creationId: string): Promise<{ succes
 }
 
 export async function updateUserAction(formData: FormData): Promise<{ success: boolean, error?: string }> {
-    const supabase = await createSupabaseServerClient();
+    const cookieStore = cookies();
+    const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

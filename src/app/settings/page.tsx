@@ -3,9 +3,11 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { SettingsForm } from '@/components/settings-form';
 import { Header } from '@/components/header';
+import { cookies } from 'next/headers';
 
 export default async function SettingsPage() {
-    const supabase = await createSupabaseServerClient();
+    const cookieStore = cookies();
+    const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

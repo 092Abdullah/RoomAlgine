@@ -1,6 +1,7 @@
 
 import { GalleryClient } from '@/components/gallery-client';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 
 export type Creation = {
   id: string;
@@ -13,7 +14,8 @@ export type Creation = {
 };
 
 async function getCreations(): Promise<Creation[]> {
-  const supabase = await createSupabaseServerClient();
+  const cookieStore = cookies();
+  const supabase = createSupabaseServerClient(cookieStore);
   const { data, error } = await supabase
     .from('creations')
     .select('*')
@@ -33,7 +35,8 @@ type GalleryPageProps = {
 };
 
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
-  const supabase = await createSupabaseServerClient();
+  const cookieStore = cookies();
+  const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
   const creations = await getCreations();

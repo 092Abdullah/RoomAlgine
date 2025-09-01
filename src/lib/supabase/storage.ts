@@ -4,6 +4,7 @@
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { type SupabaseClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
+import { cookies } from 'next/headers';
 
 async function dataUriToBlob(dataUri: string): Promise<Blob> {
     const response = await fetch(dataUri);
@@ -17,7 +18,8 @@ export async function uploadFileToSupabase(
   folder: string,
   currentUrl?: string | null
 ): Promise<string> {
-  const supabase = await createSupabaseServerClient();
+  const cookieStore = cookies();
+  const supabase = createSupabaseServerClient(cookieStore);
   
   if (currentUrl) {
     try {
@@ -53,7 +55,8 @@ export async function uploadFileToSupabase(
 export async function deleteFileFromSupabase(fileUrl: string, bucketName: string): Promise<void> {
     if (!fileUrl) return;
 
-    const supabase = await createSupabaseServerClient();
+    const cookieStore = cookies();
+    const supabase = createSupabaseServerClient(cookieStore);
     const filePath = new URL(fileUrl).pathname.split(`/${bucketName}/`)[1];
 
     if (!filePath) {

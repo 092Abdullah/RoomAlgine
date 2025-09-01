@@ -1,9 +1,9 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 
 // This is the server-side client for use in Server Components, Server Actions, and Route Handlers.
-export async function createSupabaseServerClient() {
-  const cookieStore = await cookies();
+// It is adapted to accept the cookie store directly, avoiding the import of 'next/headers' in this file.
+export function createSupabaseServerClient(cookieStore: ReadonlyRequestCookies) {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
