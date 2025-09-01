@@ -22,7 +22,7 @@ const DAILY_DESIGN_LIMIT = 20;
 export async function signInWithEmail(data: FormData) {
     const email = data.get('email') as string;
     const password = data.get('password') as string;
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -42,7 +42,7 @@ export async function signUpWithEmail(data: FormData) {
     const email = data.get('email') as string;
     const password = data.get('password') as string;
     const fullName = data.get('fullName') as string;
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
 
     const { data: result, error } = await supabase.auth.signUp({
@@ -131,7 +131,7 @@ export async function generateRoomStylesAction(
   photoDataUri: string,
   originalImageUrl: string
 ): Promise<{ styledRoomImages: GeneratedImageResult[] } | { error: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -198,7 +198,7 @@ export async function generateExteriorStylesAction(
   photoDataUri: string,
   originalImageUrl: string
 ): Promise<{ styledExteriorImages: GeneratedImageResult[] } | { error: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -305,7 +305,7 @@ export async function publishToGalleryAction(
 }
 
 export async function deleteCreationAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
     try {
         const { error } = await supabase.from('creations').delete().eq('id', creationId);
@@ -318,7 +318,7 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
 }
 
 export async function deleteDesignAction(designId: string): Promise<{ success: boolean; error?: string }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -366,7 +366,7 @@ export async function deleteDesignAction(designId: string): Promise<{ success: b
 }
 
 export async function incrementKudosAction(creationId: string): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   try {
     const { error } = await supabase.rpc('increment_kudos', { creation_id: creationId });
@@ -379,7 +379,7 @@ export async function incrementKudosAction(creationId: string): Promise<{ succes
 }
 
 export async function updateUserAction(formData: FormData): Promise<{ success: boolean, error?: string }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 

@@ -18,7 +18,7 @@ export async function uploadFileToSupabase(
   folder: string,
   currentUrl?: string | null
 ): Promise<string> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   
   if (currentUrl) {
@@ -55,7 +55,7 @@ export async function uploadFileToSupabase(
 export async function deleteFileFromSupabase(fileUrl: string, bucketName: string): Promise<void> {
     if (!fileUrl) return;
 
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
     const filePath = new URL(fileUrl).pathname.split(`/${bucketName}/`)[1];
 

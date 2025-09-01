@@ -26,7 +26,7 @@ const publishToGalleryFlow = ai.defineFlow(
         outputSchema: PublishToGalleryOutputSchema,
     },
     async ({ designId }) => {
-        const cookieStore = cookies();
+        const cookieStore = await cookies();
         const supabase = createSupabaseServerClient(cookieStore);
 
         // RLS policy on `creations` table now ensures only authenticated users can insert.

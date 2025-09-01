@@ -6,7 +6,7 @@ import { Header } from '@/components/header';
 import { cookies } from 'next/headers';
 
 export default async function SettingsPage() {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 

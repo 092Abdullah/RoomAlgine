@@ -14,7 +14,7 @@ export type Creation = {
 };
 
 async function getCreations(): Promise<Creation[]> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   const { data, error } = await supabase
     .from('creations')
@@ -35,7 +35,7 @@ type GalleryPageProps = {
 };
 
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 

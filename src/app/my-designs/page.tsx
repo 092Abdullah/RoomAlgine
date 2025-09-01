@@ -59,7 +59,7 @@ function MyDesignsClient({ user, creations }: MyDesignsPageProps) {
 
 // This will be the default export, a Server Component that fetches data.
 export default async function MyDesignsPageWrapper() {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 
