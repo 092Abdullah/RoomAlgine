@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { GalleryItem } from '@/components/gallery-item';
 import type { Creation } from '@/app/gallery/page';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Image } from 'lucide-react';
 import { Header } from '@/components/header';
@@ -19,6 +18,7 @@ type MyDesignsPageProps = {
 
 function MyDesignsClient({ user, creations }: MyDesignsPageProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+
     return (
         <>
             <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} user={user} />
@@ -74,7 +74,8 @@ export default async function MyDesignsPageWrapper() {
         console.error('Error fetching user designs:', error);
     }
 
-    const creations: Creation[] = (designs || []).map(d => ({ ...d, kudos: 0 }));
+    // Explicitly cast to Creation[] to resolve type mismatch
+    const creations: Creation[] = (designs || []).map(d => ({ ...d, kudos: d.kudos || 0 }));
 
     return <MyDesignsClient user={user} creations={creations} />;
 }
