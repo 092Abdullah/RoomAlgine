@@ -23,8 +23,8 @@ export function SettingsForm({ user }: { user: User }) {
     const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            if (file.size > 10 * 1024 * 1024) { // 10MB
-                toast.error('File too large', { description: 'Please select an image under 10MB.' });
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                toast.error('File too large', { description: 'Please select an image under 2MB.' });
                 return;
             }
             setAvatarFile(file);
@@ -69,7 +69,6 @@ export function SettingsForm({ user }: { user: User }) {
 
             if (result.success) {
                 toast.success('Profile updated successfully!');
-                // We need to refresh the router to make sure the new avatar in the header is loaded
                 router.refresh(); 
             } else {
                 toast.error('Update failed', { description: result.error });
@@ -87,7 +86,7 @@ export function SettingsForm({ user }: { user: User }) {
             <Card>
                 <CardHeader>
                     <CardTitle>Profile Picture</CardTitle>
-                    <CardDescription>Update your avatar. We support PNG, JPEG under 10MB.</CardDescription>
+                    <CardDescription>Update your avatar. We support PNG, JPEG under 2MB.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex items-center gap-6">
                     <Avatar className="h-20 w-20">
@@ -106,7 +105,7 @@ export function SettingsForm({ user }: { user: User }) {
                             type="file"
                             name="avatar"
                             className="hidden"
-                            accept="image/png, image/jpeg, image/gif"
+                            accept="image/png, image/jpeg"
                             onChange={handleAvatarChange}
                         />
                     </div>

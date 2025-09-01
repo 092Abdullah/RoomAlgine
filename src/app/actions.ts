@@ -14,6 +14,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { uploadFileToSupabase, deleteFileFromSupabase } from '@/lib/supabase/storage';
 
 const DAILY_DESIGN_LIMIT = 20;
 
@@ -31,7 +32,6 @@ export async function signInWithEmail(data: FormData) {
         return { error: error.message };
     }
     
-    // Redirect logic will be handled by AuthWatcher
     return { success: true };
 }
 
@@ -47,8 +47,6 @@ export async function signUpWithEmail(data: FormData) {
         options: {
             data: {
                 name: fullName,
-                // The default avatar can be set here if needed
-                // avatar_url: '...', 
             },
         },
     });
@@ -57,8 +55,6 @@ export async function signUpWithEmail(data: FormData) {
         return { error: error.message };
     }
 
-    // Supabase sends a confirmation email. The user needs to verify.
-    // We can return a success message to show on the UI.
     return { success: true, message: 'Please check your email to verify your account.' };
 }
 
@@ -104,7 +100,7 @@ async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: st
 type GeneratedImageResult = {
     designId: string;
     style: string;
-    imageDataUri: string; // We still pass the full data URI back to the client for immediate display
+    imageDataUri: string;
 };
 
 export async function uploadOriginalImageAction(photoDataUri: string, isExterior: boolean): Promise<{ url: string } | { error: string }> {
@@ -172,7 +168,7 @@ export async function generateRoomStylesAction(
             savedDesigns.push({
                 designId: savedDesign.id,
                 style: savedDesign.style,
-                imageDataUri: image.imageDataUri, // Send original data URI to client for fast display
+                imageDataUri: image.imageDataUri,
             });
         }
     }
@@ -237,7 +233,7 @@ export async function generateExteriorStylesAction(
             savedDesigns.push({
                 designId: savedDesign.id,
                 style: savedDesign.style,
-                imageDataUri: image.imageDataUri, // Send original data URI to client
+                imageDataUri: image.imageDataUri,
             });
         }
     }
@@ -286,8 +282,6 @@ export async function publishToGalleryAction(
   input: PublishToGalleryInput
 ): Promise<{ success: boolean; galleryUrl?: string; creationId?: string; error?: string }> {
   try {
-    // The user check is implicitly handled by RLS policies on the 'designs' (for select)
-    // and 'creations' (for insert) tables. We no longer need to explicitly check for the user here.
     const result = await publishToGallery(input);
     return { success: true, galleryUrl: result.galleryUrl, creationId: result.creationId };
   } catch (e: any) {
@@ -299,8 +293,6 @@ export async function publishToGalleryAction(
 export async function deleteCreationAction(creationId: string): Promise<{ success: boolean; error?: string }> {
     const supabase = await createSupabaseServerClient();
     try {
-        // This action should probably delete from the 'designs' table now, or maybe from both?
-        // For now, let's assume it deletes from 'creations' as that's what "undo publish" implies.
         const { error } = await supabase.from('creations').delete().eq('id', creationId);
         if (error) throw error;
         return { success: true };
@@ -319,7 +311,6 @@ export async function deleteDesignAction(designId: string): Promise<{ success: b
     }
 
     try {
-        // 1. Fetch the design to get image URLs
         const { data: design, error: fetchError } = await supabase
             .from('designs')
             .select('original_image_url, generated_image_url')
@@ -331,7 +322,6 @@ export async function deleteDesignAction(designId: string): Promise<{ success: b
             throw new Error('Design not found or you do not have permission to delete it.');
         }
 
-        // 2. Delete images from Cloudinary
         const [originalDeletion, generatedDeletion] = await Promise.allSettled([
             deleteFromCloudinary(design.original_image_url),
             deleteFromCloudinary(design.generated_image_url)
@@ -344,7 +334,6 @@ export async function deleteDesignAction(designId: string): Promise<{ success: b
             console.warn(`Failed to delete generated image from Cloudinary:`, generatedDeletion.reason);
         }
 
-        // 3. Delete the design from Supabase
         const { error: deleteError } = await supabase.from('designs').delete().eq('id', designId);
         
         if (deleteError) {
@@ -384,28 +373,32 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
     const avatarDataUri = formData.get('avatarDataUri') as string | null;
     let avatarUrl = user.user_metadata.avatar_url;
 
-    if (avatarDataUri) {
-       try {
-            avatarUrl = await uploadToCloudinary(avatarDataUri, 'roomaigine_avatars');
-       } catch (e: any) {
-            return { success: false, error: 'Avatar upload failed: ' + e.message };
-       }
-    } else if (formData.has('removeAvatar')) {
-        avatarUrl = null;
-    }
+    const BUCKET_NAME = 'avatars';
 
-
-    const { data, error } = await supabase.auth.updateUser({
-        data: { 
-            name: fullName,
-            avatar_url: avatarUrl,
+    try {
+        if (avatarDataUri) {
+            avatarUrl = await uploadFileToSupabase(avatarDataUri, BUCKET_NAME, `user_${user.id}`, avatarUrl);
+        } else if (formData.has('removeAvatar')) {
+            await deleteFileFromSupabase(avatarUrl, BUCKET_NAME);
+            avatarUrl = null;
         }
-    });
 
-    if (error) {
-        console.error('Error updating user:', error);
-        return { success: false, error: error.message };
+        const { error: updateError } = await supabase.auth.updateUser({
+            data: { 
+                name: fullName,
+                avatar_url: avatarUrl,
+            }
+        });
+
+        if (updateError) {
+            throw updateError;
+        }
+
+    } catch (e: any) {
+        console.error('Error updating user profile:', e);
+        return { success: false, error: 'Profile update failed: ' + e.message };
     }
-
+    
+    revalidatePath('/settings');
     return { success: true };
 }
