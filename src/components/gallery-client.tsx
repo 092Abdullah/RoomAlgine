@@ -1,9 +1,8 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ArrowRight, Building, Folder, Home } from 'lucide-react';
+import { useState } from 'react';
+import { Folder, Home, Building } from 'lucide-react';
 import type { Creation } from '@/app/gallery/page';
 import { GalleryItem } from './gallery-item';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
@@ -11,30 +10,11 @@ import type { User } from '@supabase/supabase-js';
 import { Header } from './header';
 
 
-export function GalleryClient({ allCreations, initialFilter, user }: { allCreations: Creation[], initialFilter: string, user: User | null }) {
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const [filter, setFilter] = useState(initialFilter);
-
-    useEffect(() => {
-        const currentFilter = searchParams.get('filter');
-        if (currentFilter && currentFilter !== filter) {
-            setFilter(currentFilter);
-        } else if (!currentFilter && filter !== 'all') {
-            setFilter('all');
-        }
-    }, [searchParams, filter]);
+export function GalleryClient({ allCreations, user }: { allCreations: Creation[], user: User | null }) {
+    const [filter, setFilter] = useState('all');
 
     const handleFilterChange = (value: string) => {
         setFilter(value);
-        const params = new URLSearchParams(searchParams.toString());
-        if (value === 'all') {
-            params.delete('filter');
-        } else {
-            params.set('filter', value);
-        }
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
     const filteredCreations = allCreations.filter(creation => {
@@ -44,7 +24,6 @@ export function GalleryClient({ allCreations, initialFilter, user }: { allCreati
     });
 
     return (
-        <>
         <div className="bg-background min-h-screen">
           <Header user={user} />
           <main className="container mx-auto py-24 px-4 sm:px-6 lg:px-8">
@@ -88,6 +67,5 @@ export function GalleryClient({ allCreations, initialFilter, user }: { allCreati
             )}
           </main>
         </div>
-      </>
     )
 }

@@ -30,22 +30,12 @@ async function getCreations(): Promise<Creation[]> {
   return data || [];
 }
 
-type GalleryPageProps = {
-  searchParams?: any;
-};
-
-export default async function GalleryPage({ searchParams }: GalleryPageProps) {
+export default async function GalleryPage() {
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
   const creations = await getCreations();
 
-  const resolvedParams = searchParams || {};
-  const filter =
-    typeof resolvedParams.filter === 'string' && ['interior', 'exterior'].includes(resolvedParams.filter)
-      ? resolvedParams.filter
-      : 'all';
-
-  return <GalleryClient allCreations={creations} initialFilter={filter} user={user} />;
+  return <GalleryClient allCreations={creations} user={user} />;
 }
