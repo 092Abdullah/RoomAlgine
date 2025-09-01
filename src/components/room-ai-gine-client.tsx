@@ -88,12 +88,6 @@ const colorPreferences = [
 
 const moodOptions = ["Relaxed", "Energetic", "Romantic", "Productive"];
 
-const AppHeader = ({ user }: { user: User | null }) => {
-    return (
-        <Header user={user} isSliding={true} />
-    );
-}
-
 const UploadScreen = ({ onUploadClick, onFileDrop }: { onUploadClick: () => void, onFileDrop: (file: File) => void }) => {
     const [isDragging, setIsDragging] = useState(false);
 
@@ -738,7 +732,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-      <AppHeader user={user} />
+      <Header user={user} isSliding={true} />
       <main className="flex-grow flex items-center justify-center pt-24">
         {!uploadedImage ? (
           <UploadScreen
