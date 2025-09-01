@@ -55,6 +55,7 @@ function MyDesignsClient({ user, creations }: MyDesignsPageProps) {
     );
 }
 
+// This will be the default export, a Server Component that fetches data.
 export default async function MyDesignsPageWrapper() {
     const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -72,10 +73,12 @@ export default async function MyDesignsPageWrapper() {
 
     if (error) {
         console.error('Error fetching user designs:', error);
+        // In a real app, you might want to show an error page here
     }
 
-    // Explicitly cast to Creation[] to resolve type mismatch
+    // Explicitly cast to Creation[] to resolve type mismatch, ensuring kudos exists.
     const creations: Creation[] = (designs || []).map(d => ({ ...d, kudos: d.kudos || 0 }));
 
+    // The Server Component now renders the Client Component and passes data as props.
     return <MyDesignsClient user={user} creations={creations} />;
 }
