@@ -32,6 +32,7 @@ export async function signInWithEmail(data: FormData) {
         return { error: error.message };
     }
     
+    revalidatePath('/', 'layout');
     return { success: true };
 }
 
@@ -55,7 +56,15 @@ export async function signUpWithEmail(data: FormData) {
         return { error: error.message };
     }
 
-    return { success: true, message: 'Please check your email to verify your account.' };
+    // Check if the user needs verification. 
+    // If auto-confirm is on, user will be null, but session will be there.
+    // If verification is needed, user will have an identity but no session.
+    if (result.user && !result.session) {
+        return { success: true, message: 'Please check your email to verify your account.' };
+    }
+    
+    revalidatePath('/', 'layout');
+    return { success: true };
 }
 
 

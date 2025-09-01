@@ -27,12 +27,13 @@ function AuthForm() {
                 const result = await action(formData);
                 if (result.error) {
                     toast.error('Authentication Failed', { description: result.error });
-                } else if (result.success && result.message) {
+                } else if (result.success && result.message) { // Signup success with verification message
                     toast.success('Check your email!', { description: result.message });
                     setView('login'); // Switch to login view after successful signup
-                } else if (result.success) {
-                    // Successful login is handled by the AuthWatcher, which will redirect.
-                    toast.success('Login successful!');
+                } else if (result.success) { // Login success or signup with auto-confirm
+                    // The AuthWatcher will handle the redirect on state change.
+                    // We don't need to do anything here, but a success toast is nice.
+                    toast.success('Success!', { description: view === 'login' ? "You're now logged in." : "Account created successfully." });
                 }
             });
         };
