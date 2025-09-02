@@ -55,8 +55,7 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
     }
   };
 
-  const handlePublish = async (e: React.MouseEvent) => {
-      e.stopPropagation();
+  const handlePublish = async () => {
       setIsPublishing(true);
       const result = await publishToGalleryAction({ designId: creation.id });
 
@@ -118,24 +117,41 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
               </button>
             ) : (
               <>
-               <TooltipProvider>
-                  <Tooltip>
+                <AlertDialog>
+                  <TooltipProvider>
+                    <Tooltip>
                       <TooltipTrigger asChild>
-                          <Button
-                              size="icon"
-                              variant="secondary"
-                              className="h-8 w-8"
-                              onClick={handlePublish}
-                              disabled={isPublishing}
-                          >
-                              {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
-                          </Button>
+                         <AlertDialogTrigger asChild>
+                            <Button
+                                size="icon"
+                                variant="secondary"
+                                className="h-8 w-8"
+                                disabled={isPublishing}
+                            >
+                                {isPublishing ? <Helix size={18} /> : <GalleryThumbnails className="h-4 w-4" />}
+                            </Button>
+                         </AlertDialogTrigger>
                       </TooltipTrigger>
                       <TooltipContent>
                           <p>Publish to Public Gallery</p>
                       </TooltipContent>
-                  </Tooltip>
-               </TooltipProvider>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <AlertDialogContent>
+                      <AlertDialogHeader>
+                          <AlertDialogTitle>Publish to Gallery?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                              This will make your design visible to everyone in the public gallery. Are you sure you want to proceed?
+                          </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handlePublish} disabled={isPublishing}>
+                              {isPublishing ? 'Publishing...' : 'Publish'}
+                          </AlertDialogAction>
+                      </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
 
                 <AlertDialog>
                   <TooltipProvider>
