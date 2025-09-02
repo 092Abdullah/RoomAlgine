@@ -91,15 +91,17 @@ export function SettingsForm({ user }: { user: User }) {
                 <CardContent className="flex items-center gap-6">
                     <Avatar className="h-20 w-20">
                         <AvatarImage src={avatarPreview ?? undefined} alt="User avatar" />
-                        <AvatarFallback>{user.user_metadata.name?.[0] || user.email?.[0]}</AvatarFallback>
+                        <AvatarFallback>{user.user_metadata.full_name?.[0] || user.email?.[0]}</AvatarFallback>
                     </Avatar>
                      <div className="flex gap-2">
                         <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                             Change Image
                         </Button>
-                        <Button type="button" variant="ghost" onClick={handleRemoveAvatar} disabled={!avatarPreview}>
-                            Remove
-                        </Button>
+                        {avatarPreview && (
+                            <Button type="button" variant="ghost" onClick={handleRemoveAvatar} disabled={!avatarPreview}>
+                                Remove
+                            </Button>
+                        )}
                         <Input
                             ref={fileInputRef}
                             type="file"
@@ -123,7 +125,7 @@ export function SettingsForm({ user }: { user: User }) {
                         <Input
                             id="fullName"
                             name="fullName"
-                            defaultValue={user.user_metadata.name || ''}
+                            defaultValue={user.user_metadata.full_name || ''}
                             required
                         />
                     </div>

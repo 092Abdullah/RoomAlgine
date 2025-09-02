@@ -50,7 +50,7 @@ export async function signUpWithEmail(data: FormData) {
         password,
         options: {
             data: {
-                name: fullName,
+                full_name: fullName,
             },
         },
     });
@@ -298,7 +298,7 @@ export async function publishToGalleryAction(
   try {
     const result = await publishToGallery(input);
     return { success: true, galleryUrl: result.galleryUrl, creationId: result.creationId };
-  } catch (e: any) {
+  } catch (e: any)
     console.error('Publishing failed:', e);
     return { success: false, error: e.message || 'Failed to publish to gallery.' };
   }
@@ -371,6 +371,7 @@ export async function incrementKudosAction(creationId: string): Promise<{ succes
   try {
     const { error } = await supabase.rpc('increment_kudos', { creation_id: creationId });
     if (error) throw error;
+    revalidatePath('/gallery');
     return { success: true };
   } catch (e: any) {
     console.error('Failed to increment kudos:', e);
@@ -397,20 +398,29 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
         if (avatarDataUri) {
             avatarUrl = await uploadFileToSupabase(avatarDataUri, BUCKET_NAME, `user_${user.id}`, avatarUrl);
         } else if (formData.has('removeAvatar')) {
-            await deleteFileFromSupabase(avatarUrl, BUCKET_NAME);
+            if (avatarUrl) {
+                await deleteFileFromSupabase(avatarUrl, BUCKET_NAME);
+            }
             avatarUrl = null;
         }
 
-        const { error: updateError } = await supabase.auth.updateUser({
+        // Update auth.users metadata
+        const { error: userUpdateError } = await supabase.auth.updateUser({
             data: { 
-                name: fullName,
+                full_name: fullName,
                 avatar_url: avatarUrl,
             }
         });
 
-        if (updateError) {
-            throw updateError;
-        }
+        if (userUpdateError) throw userUpdateError;
+
+        // Update public.profiles table
+        const { error: profileUpdateError } = await supabase
+            .from('profiles')
+            .update({ name: fullName })
+            .eq('id', user.id);
+        
+        if (profileUpdateError) throw profileUpdateError;
 
     } catch (e: any) {
         console.error('Error updating user profile:', e);
@@ -418,5 +428,6 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
     }
     
     revalidatePath('/settings');
+    revalidatePath('/', 'layout'); // Revalidate layout to update header
     return { success: true };
 }
