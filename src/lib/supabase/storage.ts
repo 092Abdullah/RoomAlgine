@@ -10,8 +10,8 @@ async function dataUriToBlob(dataUri: string): Promise<{ blob: Blob; fileExtensi
     const blob = await response.blob();
     const mimeType = blob.type;
     const fileExtension = mimeType.split('/')[1];
-    if (!fileExtension) {
-        throw new Error('Could not determine file extension from MIME type.');
+    if (!fileExtension || !['png', 'jpeg', 'jpg'].includes(fileExtension)) {
+        throw new Error('Invalid or unsupported file type.');
     }
     return { blob, fileExtension };
 }
@@ -24,6 +24,7 @@ export async function deleteFileFromSupabase(fileUrl: string, bucketName: string
     
     try {
         const url = new URL(fileUrl);
+        // Path is everything after the bucket name
         const filePath = url.pathname.split(`/${bucketName}/`)[1];
         
         if (!filePath) {
@@ -40,11 +41,12 @@ export async function deleteFileFromSupabase(fileUrl: string, bucketName: string
                 return;
             }
             console.error('Supabase Storage Deletion Error:', error);
-            throw new Error('Failed to delete file from Supabase.');
+            throw new Error(`Failed to delete old file from Supabase: ${error.message}`);
         }
-    } catch (e) {
-        console.error("Error parsing URL or deleting from Supabase", e);
-        // Don't re-throw, to avoid blocking the upload of a new file.
+    } catch (e: any) {
+        console.error("Error during file deletion from Supabase", e);
+        // We throw so the calling function knows something went wrong.
+        throw new Error(`An error occurred while trying to delete the old file: ${e.message}`);
     }
 }
 
@@ -58,18 +60,21 @@ export async function uploadFileToSupabase(
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   
+  // 1. Delete the old file if it exists
   if (currentUrl) {
     await deleteFileFromSupabase(currentUrl, bucketName);
   }
 
+  // 2. Prepare the new file
   const { blob, fileExtension } = await dataUriToBlob(dataUri);
   const fileName = `${folder}/${uuidv4()}.${fileExtension}`;
   
+  // 3. Upload the new file
   const { data, error } = await supabase.storage
     .from(bucketName)
     .upload(fileName, blob, {
       cacheControl: '3600',
-      upsert: false, 
+      upsert: false, // Important: use false to avoid overwriting and rely on unique names
     });
 
   if (error) {
@@ -77,6 +82,7 @@ export async function uploadFileToSupabase(
     throw new Error('Failed to upload file to Supabase.');
   }
 
+  // 4. Get the public URL of the new file
   const { data: { publicUrl } } = supabase.storage
     .from(bucketName)
     .getPublicUrl(data.path);

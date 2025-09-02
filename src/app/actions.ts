@@ -12,7 +12,6 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isToday } from 'date-fns';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
-import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { uploadFileToSupabase, deleteFileFromSupabase } from '@/lib/supabase/storage';
 import { cookies } from 'next/headers';
@@ -376,7 +375,7 @@ export async function incrementKudosAction(creationId: string): Promise<{ succes
   }
 }
 
-export async function updateUserAction(formData: FormData): Promise<{ success: boolean, error?: string }> {
+export async function updateUserAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
     const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
@@ -390,7 +389,7 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
     const removeAvatar = formData.has('removeAvatar');
     
     const BUCKET_NAME = 'avatars';
-    let newAvatarUrl: string | undefined = undefined;
+    let newAvatarUrl: string | undefined | null = undefined;
     
     try {
         const { data: currentProfile } = await supabase
@@ -411,19 +410,23 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
             newAvatarUrl = uploadedUrl;
         } else if (removeAvatar && currentAvatarUrl) {
             await deleteFileFromSupabase(currentAvatarUrl, BUCKET_NAME);
-            newAvatarUrl = undefined;
+            newAvatarUrl = null;
         }
 
-        const authDataToUpdate: { full_name: string; avatar_url?: string } = {
-            full_name: fullName,
-        };
+        // Prepare data for updates
         const profileDataToUpdate: { name: string; avatar_url?: string | null } = {
             name: fullName,
         };
+        const authDataToUpdate: { data: { full_name: string; avatar_url?: string | null } } = {
+            data: {
+                full_name: fullName,
+            },
+        };
 
-        if (newAvatarUrl !== undefined || removeAvatar) {
-            authDataToUpdate.avatar_url = newAvatarUrl;
-            profileDataToUpdate.avatar_url = newAvatarUrl;
+        // Only add avatar_url to objects if it has changed
+        if (newAvatarUrl !== undefined) {
+             profileDataToUpdate.avatar_url = newAvatarUrl;
+             authDataToUpdate.data.avatar_url = newAvatarUrl;
         }
         
         // Update both tables
@@ -434,9 +437,7 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
             
         if (profileUpdateError) throw profileUpdateError;
         
-        const { error: userUpdateError } = await supabase.auth.updateUser({
-            data: authDataToUpdate,
-        });
+        const { error: userUpdateError } = await supabase.auth.updateUser(authDataToUpdate);
 
         if (userUpdateError) throw userUpdateError;
 
