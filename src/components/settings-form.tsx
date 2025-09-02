@@ -81,6 +81,20 @@ export function SettingsForm({ user }: { user: User }) {
         }
     };
 
+    const getInitials = (name?: string, email?: string) => {
+        if (name) {
+            const names = name.split(' ');
+            if (names.length > 1) {
+                return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+            }
+            return name.substring(0, 2).toUpperCase();
+        }
+        if (email) {
+            return email.substring(0, 2).toUpperCase();
+        }
+        return '??';
+    }
+
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
             <Card>
@@ -88,12 +102,12 @@ export function SettingsForm({ user }: { user: User }) {
                     <CardTitle>Profile Picture</CardTitle>
                     <CardDescription>Update your avatar. We support PNG, JPEG under 2MB.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex items-center gap-6">
+                <CardContent className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
                     <Avatar className="h-20 w-20">
                         <AvatarImage src={avatarPreview ?? undefined} alt="User avatar" />
-                        <AvatarFallback>{user.user_metadata.full_name?.[0] || user.email?.[0]}</AvatarFallback>
+                        <AvatarFallback>{getInitials(user.user_metadata.full_name, user.email)}</AvatarFallback>
                     </Avatar>
-                     <div className="flex gap-2">
+                     <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
                         <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                             Change Image
                         </Button>
@@ -141,7 +155,7 @@ export function SettingsForm({ user }: { user: User }) {
                          <p className="text-xs text-muted-foreground">Email address cannot be changed.</p>
                     </div>
                 </CardContent>
-                <CardFooter className="border-t pt-6">
+                <CardFooter className="border-t pt-6 flex justify-end">
                      <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? 'Saving...' : 'Save Changes'}
                     </Button>
