@@ -390,37 +390,48 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
 
     const fullName = formData.get('fullName') as string;
     const avatarDataUri = formData.get('avatarDataUri') as string | null;
-    let avatarUrl = user.user_metadata.avatar_url;
-
+    
+    // This will hold the final URL for the avatar, whether new or existing.
+    let finalAvatarUrl: string | null = user.user_metadata.avatar_url; 
     const BUCKET_NAME = 'avatars';
 
     try {
         if (avatarDataUri) {
-            avatarUrl = await uploadFileToSupabase(avatarDataUri, BUCKET_NAME, `user_${user.id}`, avatarUrl);
+            // A new avatar was uploaded.
+            finalAvatarUrl = await uploadFileToSupabase(
+                avatarDataUri, 
+                BUCKET_NAME, 
+                `user_${user.id}`, 
+                user.user_metadata.avatar_url // Pass the old URL to delete it
+            );
         } else if (formData.has('removeAvatar')) {
-            if (avatarUrl) {
-                await deleteFileFromSupabase(avatarUrl, BUCKET_NAME);
+            // The user wants to remove their avatar.
+            if (user.user_metadata.avatar_url) {
+                await deleteFileFromSupabase(user.user_metadata.avatar_url, BUCKET_NAME);
             }
-            avatarUrl = null;
+            finalAvatarUrl = null;
         }
-
-        // Update auth.users metadata
-        const { error: userUpdateError } = await supabase.auth.updateUser({
-            data: { 
-                full_name: fullName,
-                avatar_url: avatarUrl,
-            }
-        });
-
-        if (userUpdateError) throw userUpdateError;
 
         // Update public.profiles table
         const { error: profileUpdateError } = await supabase
             .from('profiles')
-            .update({ name: fullName })
+            .update({ 
+                name: fullName, 
+                avatar_url: finalAvatarUrl 
+            })
             .eq('id', user.id);
         
         if (profileUpdateError) throw profileUpdateError;
+        
+        // Update auth.users metadata to keep it in sync
+        const { error: userUpdateError } = await supabase.auth.updateUser({
+            data: { 
+                full_name: fullName,
+                avatar_url: finalAvatarUrl,
+            }
+        });
+
+        if (userUpdateError) throw userUpdateError;
 
     } catch (e: any) {
         console.error('Error updating user profile:', e);
@@ -431,5 +442,3 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
     revalidatePath('/', 'layout'); // Revalidate layout to update header
     return { success: true };
 }
-
-    
