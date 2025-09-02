@@ -390,62 +390,52 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
     const removeAvatar = formData.has('removeAvatar');
     
     const BUCKET_NAME = 'avatars';
-    let newAvatarUrl: string | null = null;
+    let newAvatarUrl: string | undefined = undefined;
     
-    // This will hold the current avatar URL from the profiles table to be deleted if necessary.
-    const { data: currentProfile, error: profileFetchError } = await supabase
-        .from('profiles')
-        .select('avatar_url')
-        .eq('id', user.id)
-        .single();
-        
-    if (profileFetchError) {
-        console.error("Could not fetch current profile:", profileFetchError);
-        // Continue anyway, deletion might just fail.
-    }
-    
-    const currentAvatarUrl = currentProfile?.avatar_url;
-
     try {
+        const { data: currentProfile } = await supabase
+            .from('profiles')
+            .select('avatar_url')
+            .eq('id', user.id)
+            .single();
+
+        const currentAvatarUrl = currentProfile?.avatar_url;
+
         if (avatarDataUri) {
-            newAvatarUrl = await uploadFileToSupabase(
+             const uploadedUrl = await uploadFileToSupabase(
                 avatarDataUri, 
                 BUCKET_NAME, 
                 `user_${user.id}`, 
-                currentAvatarUrl
+                currentAvatarUrl // Pass current URL for potential deletion
             );
+            newAvatarUrl = uploadedUrl;
         } else if (removeAvatar && currentAvatarUrl) {
             await deleteFileFromSupabase(currentAvatarUrl, BUCKET_NAME);
-            newAvatarUrl = null;
+            newAvatarUrl = undefined;
         }
 
+        const authDataToUpdate: { full_name: string; avatar_url?: string } = {
+            full_name: fullName,
+        };
         const profileDataToUpdate: { name: string; avatar_url?: string | null } = {
             name: fullName,
         };
-        
-        // Only include avatar_url in the update if it has changed.
-        if (avatarDataUri || removeAvatar) {
+
+        if (newAvatarUrl !== undefined || removeAvatar) {
+            authDataToUpdate.avatar_url = newAvatarUrl;
             profileDataToUpdate.avatar_url = newAvatarUrl;
         }
         
+        // Update both tables
         const { error: profileUpdateError } = await supabase
             .from('profiles')
             .update(profileDataToUpdate)
             .eq('id', user.id);
-        
+            
         if (profileUpdateError) throw profileUpdateError;
         
-        // Also update auth.users metadata to keep it in sync for UI purposes
-        const authDataToUpdate: { full_name: string; avatar_url?: string } = {
-            full_name: fullName,
-        };
-
-        if (avatarDataUri || removeAvatar) {
-            authDataToUpdate.avatar_url = newAvatarUrl ?? undefined; // Use undefined to remove
-        }
-        
         const { error: userUpdateError } = await supabase.auth.updateUser({
-            data: authDataToUpdate
+            data: authDataToUpdate,
         });
 
         if (userUpdateError) throw userUpdateError;
