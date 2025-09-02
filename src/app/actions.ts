@@ -59,9 +59,6 @@ export async function signUpWithEmail(data: FormData) {
         return { error: error.message };
     }
 
-    // Check if the user needs verification. 
-    // If auto-confirm is on, user will be null, but session will be there.
-    // If verification is needed, user will have an identity but no session.
     if (result.user && !result.session) {
         return { success: true, message: 'Please check your email to verify your account.' };
     }
@@ -390,45 +387,65 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
 
     const fullName = formData.get('fullName') as string;
     const avatarDataUri = formData.get('avatarDataUri') as string | null;
+    const removeAvatar = formData.has('removeAvatar');
     
-    // This will hold the final URL for the avatar, whether new or existing.
-    let finalAvatarUrl: string | null = user.user_metadata.avatar_url; 
     const BUCKET_NAME = 'avatars';
+    let newAvatarUrl: string | null = null;
+    
+    // This will hold the current avatar URL from the profiles table to be deleted if necessary.
+    const { data: currentProfile, error: profileFetchError } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single();
+        
+    if (profileFetchError) {
+        console.error("Could not fetch current profile:", profileFetchError);
+        // Continue anyway, deletion might just fail.
+    }
+    
+    const currentAvatarUrl = currentProfile?.avatar_url;
 
     try {
         if (avatarDataUri) {
-            // A new avatar was uploaded.
-            finalAvatarUrl = await uploadFileToSupabase(
+            newAvatarUrl = await uploadFileToSupabase(
                 avatarDataUri, 
                 BUCKET_NAME, 
                 `user_${user.id}`, 
-                user.user_metadata.avatar_url // Pass the old URL to delete it
+                currentAvatarUrl
             );
-        } else if (formData.has('removeAvatar')) {
-            // The user wants to remove their avatar.
-            if (user.user_metadata.avatar_url) {
-                await deleteFileFromSupabase(user.user_metadata.avatar_url, BUCKET_NAME);
-            }
-            finalAvatarUrl = null;
+        } else if (removeAvatar && currentAvatarUrl) {
+            await deleteFileFromSupabase(currentAvatarUrl, BUCKET_NAME);
+            newAvatarUrl = null;
         }
 
-        // Update public.profiles table
+        const profileDataToUpdate: { name: string; avatar_url?: string | null } = {
+            name: fullName,
+        };
+        
+        // Only include avatar_url in the update if it has changed.
+        if (avatarDataUri || removeAvatar) {
+            profileDataToUpdate.avatar_url = newAvatarUrl;
+        }
+        
         const { error: profileUpdateError } = await supabase
             .from('profiles')
-            .update({ 
-                name: fullName, 
-                avatar_url: finalAvatarUrl 
-            })
+            .update(profileDataToUpdate)
             .eq('id', user.id);
         
         if (profileUpdateError) throw profileUpdateError;
         
-        // Update auth.users metadata to keep it in sync
+        // Also update auth.users metadata to keep it in sync for UI purposes
+        const authDataToUpdate: { full_name: string; avatar_url?: string } = {
+            full_name: fullName,
+        };
+
+        if (avatarDataUri || removeAvatar) {
+            authDataToUpdate.avatar_url = newAvatarUrl ?? undefined; // Use undefined to remove
+        }
+        
         const { error: userUpdateError } = await supabase.auth.updateUser({
-            data: { 
-                full_name: fullName,
-                avatar_url: finalAvatarUrl,
-            }
+            data: authDataToUpdate
         });
 
         if (userUpdateError) throw userUpdateError;
@@ -439,6 +456,6 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
     }
     
     revalidatePath('/settings');
-    revalidatePath('/', 'layout'); // Revalidate layout to update header
+    revalidatePath('/', 'layout');
     return { success: true };
 }
