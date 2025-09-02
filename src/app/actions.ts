@@ -298,7 +298,7 @@ export async function publishToGalleryAction(
   try {
     const result = await publishToGallery(input);
     return { success: true, galleryUrl: result.galleryUrl, creationId: result.creationId };
-  } catch (e: any)
+  } catch (e: any) {
     console.error('Publishing failed:', e);
     return { success: false, error: e.message || 'Failed to publish to gallery.' };
   }
@@ -431,3 +431,5 @@ export async function updateUserAction(formData: FormData): Promise<{ success: b
     revalidatePath('/', 'layout'); // Revalidate layout to update header
     return { success: true };
 }
+
+    
