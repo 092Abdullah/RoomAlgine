@@ -156,7 +156,17 @@ export async function generateRoomStylesAction(
     const savedDesigns: GeneratedImageResult[] = [];
 
     for (const image of result.styledRoomImages) {
+        if (!image.imageDataUri) {
+            console.warn(`Skipping style "${image.style}" due to missing image data.`);
+            continue;
+        }
+
         const generatedImageUrl = await uploadToCloudinary(image.imageDataUri, 'roomaigine_generated');
+        
+        if (!generatedImageUrl) {
+             console.error(`Skipping style "${image.style}" because Cloudinary upload failed.`);
+             continue;
+        }
 
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
@@ -223,8 +233,18 @@ export async function generateExteriorStylesAction(
     const savedDesigns: GeneratedImageResult[] = [];
 
     for (const image of result.styledExteriorImages) {
+        if (!image.imageDataUri) {
+            console.warn(`Skipping style "${image.style}" due to missing image data.`);
+            continue;
+        }
+        
         const generatedImageUrl = await uploadToCloudinary(image.imageDataUri, 'roomaigine_generated_exterior');
         
+        if (!generatedImageUrl) {
+            console.error(`Skipping style "${image.style}" because Cloudinary upload failed.`);
+            continue;
+        }
+
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
             .insert({

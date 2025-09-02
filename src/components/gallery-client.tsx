@@ -17,7 +17,11 @@ export function GalleryClient({ allCreations, user }: { allCreations: Creation[]
         setFilter(value);
     };
 
-    const filteredCreations = allCreations.filter(creation => {
+    const validCreations = allCreations.filter(
+        c => c.original_image_url && c.generated_image_url
+    );
+
+    const filteredCreations = validCreations.filter(creation => {
         if (filter === 'interior') return !!creation.room_type;
         if (filter === 'exterior') return !creation.room_type;
         return true;
