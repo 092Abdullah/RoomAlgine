@@ -81,9 +81,9 @@ export function SettingsForm({ user }: { user: User }) {
         }
     };
 
-    const getInitials = (name?: string, email?: string) => {
+    const getInitials = (name?: string | null, email?: string | null) => {
         if (name) {
-            const names = name.split(' ');
+            const names = name.split(' ').filter(Boolean);
             if (names.length > 1) {
                 return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
             }
