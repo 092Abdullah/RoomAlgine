@@ -32,6 +32,8 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
   const [formattedDate, setFormattedDate] = useState('');
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isImageBroken, setIsImageBroken] = useState(false);
+
 
   useEffect(() => {
     setFormattedDate(new Date(creation.created_at).toLocaleDateString());
@@ -93,6 +95,13 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
     setIsDeleting(false);
   }
 
+  const handleImageError = () => {
+    setIsImageBroken(true);
+  };
+
+  if (isImageBroken) {
+    return null;
+  }
 
   const isInterior = !!creation.room_type;
 
@@ -102,8 +111,8 @@ export function GalleryItem({ creation, isDashboardItem = false }: { creation: C
         <div className="w-full aspect-video rounded-t-lg overflow-hidden relative">
           <ReactCompareSlider
             className="w-full h-full"
-            itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" className="object-contain w-full h-full" />}
-            itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" className="object-contain w-full h-full" />}
+            itemOne={<ReactCompareSliderImage src={creation.original_image_url} alt="Before image" className="object-contain w-full h-full" onError={handleImageError} />}
+            itemTwo={<ReactCompareSliderImage src={creation.generated_image_url} alt="After image" className="object-contain w-full h-full" onError={handleImageError}/>}
           />
           <div className="absolute top-2 right-2 z-10 flex gap-2">
             {!isDashboardItem ? (
