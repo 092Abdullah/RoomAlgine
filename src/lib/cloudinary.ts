@@ -24,21 +24,22 @@ export async function uploadToCloudinary(
   }
 }
 
-
 /**
  * Extracts the public ID from a Cloudinary URL.
+ * It's designed to work with URLs that may or may not have a version number.
  * @param url The Cloudinary image URL.
- * @returns The public ID of the image.
+ * @returns The public ID of the image, including the folder path.
  */
 function getPublicIdFromUrl(url: string): string {
     // Example URL: https://res.cloudinary.com/<cloud_name>/image/upload/v<version>/<folder>/<public_id>.<format>
-    const regex = /\/([^/]+)\.([^/]+)$/;
-    const match = url.match(/\/upload\/(?:v\d+\/)?([^.]+)/);
+    // The part we want is `<folder>/<public_id>`
+    const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)\.[^/]+$/);
     if (!match || !match[1]) {
         throw new Error('Could not parse public ID from Cloudinary URL.');
     }
     return match[1];
 }
+
 
 /**
  * Deletes an image from Cloudinary using its URL.
@@ -56,4 +57,24 @@ export async function deleteFromCloudinary(imageUrl: string): Promise<void> {
         // We throw the error so it can be handled by the calling action
         throw new Error('Failed to delete image from Cloudinary.');
     }
+}
+
+/**
+ * Re-uploads an existing Cloudinary image to a new folder, creating a separate copy.
+ * @param sourceUrl The URL of the existing image to copy.
+ * @param targetFolder The new folder to upload the copy to.
+ * @returns The URL of the newly created image copy.
+ */
+export async function copyCloudinaryImage(sourceUrl: string, targetFolder: string): Promise<string> {
+  try {
+    // Re-uploading from the source URL is Cloudinary's method for "copying"
+    const result = await cloudinary.uploader.upload(sourceUrl, {
+      folder: targetFolder,
+      resource_type: 'image',
+    });
+    return result.secure_url;
+  } catch (error) {
+    console.error(`Cloudinary Copy Error (from ${sourceUrl} to ${targetFolder}):`, error);
+    throw new Error('Failed to copy image for publishing.');
+  }
 }
