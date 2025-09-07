@@ -13,13 +13,8 @@ export default function AuthWatcher() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      // Note: We are not redirecting on SIGNED_IN here because the middleware already handles
-      // redirecting to the correct page (or the intended 'next' page).
-      // Redirecting here could cause a redirect loop or overwrite the intended destination.
-      if (event === "SIGNED_OUT") {
-        router.push("/auth");
-      } else {
-        // For SIGNED_IN or TOKEN_REFRESHED, just refresh to sync server components
+      // Refresh the page on sign-in or sign-out to update server components.
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
         router.refresh();
       }
     });
