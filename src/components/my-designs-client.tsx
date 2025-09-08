@@ -9,8 +9,8 @@ import { ArrowRight, Image } from 'lucide-react';
 import { Header } from '@/components/header';
 import { DesignTypeSelectionDialog } from '@/components/design-type-selection-dialog';
 
-// Define the type for a single creation/design
-// Note: This matches the structure from gallery/page.tsx, but is defined locally for clarity
+// Define the type for a single design.
+// This matches the `designs` table structure. `kudos` is not part of this table.
 export type Design = {
   id: string;
   created_at: string;
@@ -18,7 +18,6 @@ export type Design = {
   generated_image_url: string;
   style: string;
   room_type: string | null;
-  kudos: number;
 };
 
 type MyDesignsClientProps = {
@@ -55,7 +54,8 @@ export default function MyDesignsClient({ user, creations }: MyDesignsClientProp
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                         {creations.map((creation) => (
-                            <GalleryItem key={creation.id} creation={creation} isDashboardItem={true} />
+                            // We add a default value for kudos since the designs table doesn't have it.
+                            <GalleryItem key={creation.id} creation={{...creation, kudos: 0}} isDashboardItem={true} />
                         ))}
                     </div>
                 )}

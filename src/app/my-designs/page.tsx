@@ -25,9 +25,10 @@ export default async function MyDesignsPage() {
         console.error('Error fetching user designs:', error);
         // In a real app, you might want to show an error page here
     }
-
-    // Explicitly cast to Design[] to resolve type mismatch, ensuring kudos exists.
-    const creations: Design[] = (designs || []).map(d => ({ ...d, kudos: d.kudos || 0 }));
+    
+    // Pass the fetched designs directly to the client component.
+    // The Design type in the client component will handle the data structure.
+    const creations: Design[] = designs || [];
 
     // The Server Component now renders the Client Component and passes data as props.
     return <MyDesignsClient user={user} creations={creations} />;
