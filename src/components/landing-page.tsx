@@ -175,7 +175,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerPolicy="strict-origin-when-cross-origin"
                 ></iframe>
-                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+                 <div className="absolute top-0 left-0 w-full h-full z-10"></div>
             </div>
           </motion.div>
         </section>
@@ -512,3 +512,5 @@ const LandingPage = ({ user }: { user: User | null }) => {
 };
 
 export default LandingPage;
+
+    
