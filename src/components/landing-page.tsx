@@ -166,36 +166,17 @@ const LandingPage = ({ user }: { user: User | null }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full max-w-4xl mx-auto"
-            >
-              <CarouselContent>
-                {[
-                    { src: "https://i.ibb.co/210N8Gjn/h1.jpg", alt: "AI generated minimalist bedroom", hint: "minimalist bedroom" },
-                    { src: "https://i.ibb.co/gMZJYLHZ/h2.jpg", alt: "AI generated luxury kitchen", hint: "luxury kitchen" },
-                    { src: "https://i.ibb.co/C3Sgvy3Q/h3.jpg", alt: "AI generated modern bedroom", hint: "modern bedroom" },
-                ].map((image, index) => (
-                    <CarouselItem key={index} className="md:basis-1/1">
-                         <div className="p-1">
-                            <Image
-                                src={image.src}
-                                alt={image.alt}
-                                width={1200}
-                                height={600}
-                                className="w-full h-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20"
-                                data-ai-hint={image.hint}
-                                priority={index === 0}
-                                loading={index > 0 ? "lazy" : "eager"}
-                            />
-                        </div>
-                    </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
+             <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20">
+                <iframe
+                    className="absolute top-0 left-0 w-full h-full"
+                    src="https://www.youtube.com/embed/kPkFSeLGCXQ?playlist=kPkFSeLGCXQ&autoplay=1&loop=1&mute=1&controls=0&showinfo=0&modestbranding=1"
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                ></iframe>
+                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+            </div>
           </motion.div>
         </section>
 
