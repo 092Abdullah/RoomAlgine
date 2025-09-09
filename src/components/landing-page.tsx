@@ -166,7 +166,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-             <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden shadow-2xl shadow-primary/20">
+             <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden">
                 <iframe
                     className="absolute top-0 left-0 w-full h-full"
                     src="https://www.youtube.com/embed/kPkFSeLGCXQ?playlist=kPkFSeLGCXQ&autoplay=1&loop=1&mute=1&controls=0&showinfo=0&modestbranding=1"
@@ -512,5 +512,3 @@ const LandingPage = ({ user }: { user: User | null }) => {
 };
 
 export default LandingPage;
-
-    
