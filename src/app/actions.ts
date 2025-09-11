@@ -57,24 +57,9 @@ export async function signUpWithEmail(data: FormData) {
     if (authError) {
         return { error: authError.message };
     }
-
-    // After a successful sign-up, create a corresponding entry in the public.profiles table.
-    if (authData.user) {
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-                id: authData.user.id,
-                name: fullName,
-                email: email,
-            });
-
-        if (profileError) {
-            // This is a server-side error. We should probably clean up the user if this fails,
-            // but for now, we'll just log it and return an error to the client.
-            console.error('Failed to create user profile:', profileError);
-            return { error: 'Could not create your user profile. Please contact support.' };
-        }
-    }
+    
+    // The profile is now created automatically by the Supabase trigger.
+    // No need to insert it from here.
 
     if (authData.user && !authData.session) {
         return { success: true, message: 'Please check your email to verify your account.' };
