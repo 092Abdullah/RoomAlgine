@@ -44,7 +44,7 @@ export async function signUpWithEmail(data: FormData) {
     const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
 
-    const { data: result, error } = await supabase.auth.signUp({
+    const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -54,11 +54,29 @@ export async function signUpWithEmail(data: FormData) {
         },
     });
 
-    if (error) {
-        return { error: error.message };
+    if (authError) {
+        return { error: authError.message };
     }
 
-    if (result.user && !result.session) {
+    // After a successful sign-up, create a corresponding entry in the public.profiles table.
+    if (authData.user) {
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+                id: authData.user.id,
+                name: fullName,
+                email: email,
+            });
+
+        if (profileError) {
+            // This is a server-side error. We should probably clean up the user if this fails,
+            // but for now, we'll just log it and return an error to the client.
+            console.error('Failed to create user profile:', profileError);
+            return { error: 'Could not create your user profile. Please contact support.' };
+        }
+    }
+
+    if (authData.user && !authData.session) {
         return { success: true, message: 'Please check your email to verify your account.' };
     }
     
@@ -75,6 +93,8 @@ async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: st
         .single();
 
     if (profileError || !profile) {
+        // If profile doesn't exist, we can't enforce limits. Allow generation but log the issue.
+        console.error(`Could not find profile for user ${userId} to check design limits.`, profileError);
         return { allowed: true };
     }
 
@@ -89,10 +109,11 @@ async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: st
         return { allowed: false, error: `You have reached your daily limit of ${DAILY_DESIGN_LIMIT} designs.` };
     }
 
+    const newCount = designsToday + 1;
     const { error: updateError } = await supabase
         .from('profiles')
         .update({
-            designs_created_today: designsToday + 1,
+            designs_created_today: newCount,
             last_design_created_at: new Date().toISOString(),
         })
         .eq('id', userId);
