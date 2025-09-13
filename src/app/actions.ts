@@ -18,58 +18,6 @@ import { cookies } from 'next/headers';
 
 const DAILY_DESIGN_LIMIT = 20;
 
-export async function signInWithEmail(data: FormData) {
-    const email = data.get('email') as string;
-    const password = data.get('password') as string;
-    const cookieStore = await cookies();
-    const supabase = createSupabaseServerClient(cookieStore);
-
-    const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-    });
-
-    if (error) {
-        return { error: error.message };
-    }
-    
-    revalidatePath('/', 'layout');
-    return { success: true };
-}
-
-export async function signUpWithEmail(data: FormData) {
-    const email = data.get('email') as string;
-    const password = data.get('password') as string;
-    const fullName = data.get('fullName') as string;
-    const cookieStore = await cookies();
-    const supabase = createSupabaseServerClient(cookieStore);
-
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-            data: {
-                full_name: fullName,
-            },
-        },
-    });
-
-    if (authError) {
-        return { error: authError.message };
-    }
-    
-    // The profile is now created automatically by the Supabase trigger.
-    // No need to insert it from here.
-
-    if (authData.user && !authData.session) {
-        return { success: true, message: 'Please check your email to verify your account.' };
-    }
-    
-    revalidatePath('/', 'layout');
-    return { success: true };
-}
-
-
 async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: string): Promise<{ allowed: boolean; error?: string }> {
     const { data: profile, error: profileError } = await supabase
         .from('profiles')
