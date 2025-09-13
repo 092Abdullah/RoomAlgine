@@ -41,6 +41,7 @@ import { DesignTypeSelectionDialog } from "./design-type-selection-dialog";
 import { useScrollPosition } from "@/hooks/use-scroll-position";
 import type { User } from "@supabase/supabase-js";
 import { Header } from "./header";
+import { cn } from "@/lib/utils";
 
 
 const FADE_IN_ANIMATION_VARIANTS = {
@@ -150,7 +151,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
              Upload a photo of your room or home exterior, pick your favorite styles, and let our AI bring your vision to life in seconds. No credit card required.
             </motion.p>
             <motion.div variants={FADE_IN_ANIMATION_VARIANTS} className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
-               <Button size="lg" onClick={() => setIsDialogOpen(true)}>
+               <Button size="lg" onClick={() => setIsDialogOpen(true)} className="btn-glare">
                 <UploadCloud className="mr-2 h-5 w-5" /> Get Started
               </Button>
               <Button size="lg" variant="outline" asChild>
@@ -460,7 +461,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
             <p className="mt-4 max-w-xl mx-auto text-lg text-muted-foreground">
               Unlock your home's potential today. Start creating the space of your dreams with the power of AI.
             </p>
-            <Button size="lg" className="mt-8" onClick={() => setIsDialogOpen(true)}>
+            <Button size="lg" className="mt-8 btn-glare" onClick={() => setIsDialogOpen(true)}>
               Transform My Space Now
             </Button>
           </div>

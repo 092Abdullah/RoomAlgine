@@ -53,7 +53,7 @@ export function Header({ user, isSliding = false }: { user: User | null, isSlidi
                     <div className="flex items-center gap-2">
                     {user ? (
                         <>
-                            <Button onClick={() => setIsDialogOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> Create Design</Button>
+                            <Button onClick={() => setIsDialogOpen(true)} className="btn-glare"><Sparkles className="mr-2 h-4 w-4" /> Create Design</Button>
                             <ThemeSwitcher />
                             <UserNav user={user} />
                         </>
@@ -61,7 +61,7 @@ export function Header({ user, isSliding = false }: { user: User | null, isSlidi
                         <>
                             <ThemeSwitcher />
                             <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>
-                            <Button onClick={() => setIsDialogOpen(true)}>Get Started</Button>
+                            <Button onClick={() => setIsDialogOpen(true)} className="btn-glare">Get Started</Button>
                         </>
                     )}
                     </div>

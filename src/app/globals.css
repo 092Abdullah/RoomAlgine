@@ -97,6 +97,21 @@ h1, h2, h3, h4, h5, h6 {
     .glare-effect:hover::before {
         @apply left-[150%];
     }
+
+    .btn-glare {
+        @apply relative overflow-hidden;
+    }
+
+    .btn-glare::before {
+        content: "";
+        @apply absolute top-0 -left-[150%] w-[75%] h-full bg-gradient-to-r from-transparent via-white/30 to-transparent;
+        transition: left 0.6s ease;
+        transform: skewX(-25deg);
+    }
+
+    .btn-glare:hover::before {
+        @apply left-[150%];
+    }
 }
 
 .glassmorphic-card {
