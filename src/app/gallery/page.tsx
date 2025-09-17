@@ -49,7 +49,7 @@ export default async function GalleryPage({
   const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
-  const currentPage = Number(searchParams.page) || 1;
+  const currentPage = Number(searchParams['page']) || 1;
   const { creations, totalPages } = await getCreations(currentPage);
 
   return <GalleryClient allCreations={creations} user={user} totalPages={totalPages} currentPage={currentPage} />;
