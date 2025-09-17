@@ -8,9 +8,9 @@ import { GalleryItem } from './gallery-item';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
 import type { User } from '@supabase/supabase-js';
 import { Header } from './header';
+import { Pagination } from './ui/pagination';
 
-
-export function GalleryClient({ allCreations, user }: { allCreations: Creation[], user: User | null }) {
+export function GalleryClient({ allCreations, user, totalPages, currentPage }: { allCreations: Creation[], user: User | null, totalPages: number, currentPage: number }) {
     const [filter, setFilter] = useState('all');
 
     const handleFilterChange = (value: string) => {
@@ -67,6 +67,16 @@ export function GalleryClient({ allCreations, user }: { allCreations: Creation[]
                     {filteredCreations.map((creation) => (
                         <GalleryItem key={creation.id} creation={creation} />
                     ))}
+                </div>
+            )}
+            
+            {totalPages > 1 && (
+                <div className="mt-12 flex justify-center">
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        basePath="/gallery"
+                    />
                 </div>
             )}
           </main>

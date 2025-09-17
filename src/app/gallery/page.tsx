@@ -13,13 +13,21 @@ export type Creation = {
   kudos: number;
 };
 
-async function getCreations(): Promise<Creation[]> {
+const ITEMS_PER_PAGE = 12;
+
+async function getCreations(page: number): Promise<{ creations: Creation[], totalPages: number }> {
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
-  const { data, error } = await supabase
+
+  const from = (page - 1) * ITEMS_PER_PAGE;
+  const to = from + ITEMS_PER_PAGE - 1;
+
+  // Fetch creations for the current page and the total count in parallel
+  const { data, error, count } = await supabase
     .from('creations')
-    .select('*')
-    .order('created_at', { ascending: false });
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   if (error) {
     console.error('Error fetching creations:', error);
@@ -27,15 +35,24 @@ async function getCreations(): Promise<Creation[]> {
       `Failed to fetch creations from the database. Error: ${error.message}`
     );
   }
-  return data || [];
+
+  const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
+  return { creations: data || [], totalPages };
 }
 
-export default async function GalleryPage() {
+export default async function GalleryPage({
+  searchParams,
+}: {
+  searchParams?: {
+    page?: string;
+  };
+}) {
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
-  const creations = await getCreations();
+  const currentPage = Number(searchParams?.page) || 1;
+  const { creations, totalPages } = await getCreations(currentPage);
 
-  return <GalleryClient allCreations={creations} user={user} />;
+  return <GalleryClient allCreations={creations} user={user} totalPages={totalPages} currentPage={currentPage} />;
 }
