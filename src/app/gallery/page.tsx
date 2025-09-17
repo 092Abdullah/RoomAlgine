@@ -45,13 +45,16 @@ async function getCreations(page: number): Promise<{ creations: Creation[], tota
 export default async function GalleryPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: any;
 }) {
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
-  const currentPage = Number(searchParams?.page) || 1;
+  // Await searchParams as per the error message and user's guidance
+  const params = await searchParams;
+  const currentPage = Number(params?.page) || 1;
+  
   const { creations, totalPages } = await getCreations(currentPage);
 
   return <GalleryClient allCreations={creations} user={user} totalPages={totalPages} currentPage={currentPage} />;
