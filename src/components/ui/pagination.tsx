@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
+import React from 'react';
 
 const Pagination = ({
   totalPages,
@@ -17,7 +19,12 @@ const Pagination = ({
   basePath: string;
   className?: string;
 }) => {
+  const isMobile = useIsMobile();
+
   const getPageUrl = (page: number) => {
+    if (page < 1 || page > totalPages) {
+        return '#';
+    }
     const params = new URLSearchParams();
     if (page > 1) {
       params.set('page', page.toString());
@@ -28,26 +35,43 @@ const Pagination = ({
 
   const getPaginationItems = () => {
     const items: (number | 'ellipsis')[] = [];
-    if (totalPages <= 7) {
+    const pageRange = isMobile ? 1 : 2; // How many pages to show around current page
+
+    if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) {
         items.push(i);
       }
     } else {
-      items.push(1);
-      if (currentPage > 3) {
-        items.push('ellipsis');
-      }
-      const start = Math.max(2, currentPage - 1);
-      const end = Math.min(totalPages - 1, currentPage + 1);
-      for (let i = start; i <= end; i++) {
-        items.push(i);
-      }
-      if (currentPage < totalPages - 2) {
-        items.push('ellipsis');
-      }
-      items.push(totalPages);
+        items.push(1);
+        if (currentPage > pageRange + 1) {
+            items.push('ellipsis');
+        }
+        
+        let start = Math.max(2, currentPage - pageRange + 1);
+        let end = Math.min(totalPages - 1, currentPage + pageRange -1);
+
+        if (currentPage <= pageRange) {
+             start = 2;
+             end = 2 + pageRange;
+        }
+
+        if (currentPage > totalPages - pageRange) {
+            start = totalPages - pageRange - 1;
+            end = totalPages - 1;
+        }
+
+        for (let i = start; i <= end; i++) {
+            items.push(i);
+        }
+
+        if (currentPage < totalPages - pageRange) {
+            items.push('ellipsis');
+        }
+
+        items.push(totalPages);
     }
-    return items;
+    // Remove duplicates
+    return [...new Set(items)];
   };
 
   const paginationItems = getPaginationItems();
@@ -67,7 +91,7 @@ const Pagination = ({
             scroll={false}
           >
             <ChevronLeft className="h-4 w-4" />
-            <span>Previous</span>
+            <span className={isMobile ? 'sr-only' : ''}>Previous</span>
           </PaginationLink>
         </li>
 
@@ -99,7 +123,7 @@ const Pagination = ({
             className={cn(currentPage === totalPages && 'pointer-events-none opacity-50')}
             scroll={false}
           >
-            <span>Next</span>
+            <span className={isMobile ? 'sr-only' : ''}>Next</span>
             <ChevronRight className="h-4 w-4" />
           </PaginationLink>
         </li>
@@ -120,25 +144,31 @@ const PaginationLink = ({
   children: React.ReactNode;
   href: string;
   [key: string]: any;
-}) => (
-  <Link
-    href={href}
-    aria-current={isActive ? 'page' : undefined}
-    className={cn(
-      buttonVariants({
-        variant: isActive ? 'outline' : 'ghost',
-        size: 'icon',
-      }),
-      'gap-1',
-      className,
-      // Adjust size for "Previous" and "Next"
-      (children as React.ReactElement)?.props?.children?.[1] && 'px-4 h-9 w-auto'
-    )}
-    {...props}
-  >
-    {children}
-  </Link>
-);
+}) => {
+    // Check if children is just a number
+    const isPageNumber = typeof children === 'number';
+
+    return (
+        <Link
+            href={href}
+            aria-current={isActive ? 'page' : undefined}
+            className={cn(
+            buttonVariants({
+                variant: isActive ? 'outline' : 'ghost',
+                size: isPageNumber ? 'icon' : 'default',
+            }),
+            'gap-1',
+             // Add specific padding for prev/next buttons
+            !isPageNumber && 'px-2.5 sm:px-4',
+            className,
+            )}
+            {...props}
+        >
+            {children}
+        </Link>
+    );
+};
+
 PaginationLink.displayName = 'PaginationLink';
 
 export { Pagination };
