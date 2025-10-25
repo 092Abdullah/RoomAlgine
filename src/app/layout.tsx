@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 import { Analytics } from '@vercel/analytics/react';
 import { ThemeProvider } from '@/components/theme-provider';
-import AuthWatcher from '@/components/auth-watcher';
+
 
 export const metadata: Metadata = {
   title: 'RoomAIgine',
@@ -42,7 +42,6 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            <AuthWatcher />
             {children}
             <SonnerToaster position="top-center" />
             <Analytics />
@@ -51,4 +50,3 @@ export default function RootLayout({
     </html>
   );
 }
-

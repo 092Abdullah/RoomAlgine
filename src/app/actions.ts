@@ -18,44 +18,8 @@ import { cookies } from 'next/headers';
 
 const DAILY_DESIGN_LIMIT = 20;
 
-async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId: string): Promise<{ allowed: boolean; error?: string }> {
-    const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('designs_created_today, last_design_created_at')
-        .eq('id', userId)
-        .single();
-
-    if (profileError || !profile) {
-        // If profile doesn't exist, we can't enforce limits. Allow generation but log the issue.
-        console.error(`Could not find profile for user ${userId} to check design limits.`, profileError);
-        return { allowed: true };
-    }
-
-    let designsToday = profile.designs_created_today || 0;
-    const lastDesignDate = profile.last_design_created_at ? new Date(profile.last_design_created_at) : null;
-
-    if (lastDesignDate && !isToday(lastDesignDate)) {
-        designsToday = 0;
-    }
-    
-    if (designsToday >= DAILY_DESIGN_LIMIT) {
-        return { allowed: false, error: `You have reached your daily limit of ${DAILY_DESIGN_LIMIT} designs.` };
-    }
-
-    const newCount = designsToday + 1;
-    const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
-            designs_created_today: newCount,
-            last_design_created_at: new Date().toISOString(),
-        })
-        .eq('id', userId);
-
-    if (updateError) {
-        console.error("Error updating design count:", updateError);
-        return { allowed: false, error: 'Could not update your design usage. Please try again.' };
-    }
-
+// Since there is no user, we will not enforce any limits.
+async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId?: string): Promise<{ allowed: boolean; error?: string }> {
     return { allowed: true };
 }
 
@@ -83,13 +47,8 @@ export async function generateRoomStylesAction(
 ): Promise<{ styledRoomImages: GeneratedImageResult[] } | { error: string }> {
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user?.id) {
-    return { error: 'You must be logged in to generate designs.' };
-  }
-
-  const usageCheck = await checkAndIncrementDesignCount(supabase, user.id);
+  
+  const usageCheck = await checkAndIncrementDesignCount(supabase);
   if (!usageCheck.allowed) {
     return { error: usageCheck.error ?? 'You have reached your daily design limit.' };
   }
@@ -122,10 +81,12 @@ export async function generateRoomStylesAction(
              continue;
         }
 
+        // We still save to the 'designs' table but without a user_id. 
+        // This is for potential features like "share by link".
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
             .insert({
-                user_id: user.id,
+                // user_id is now omitted
                 original_image_url: originalImageUrl,
                 generated_image_url: generatedImageUrl,
                 style: image.style,
@@ -136,7 +97,7 @@ export async function generateRoomStylesAction(
             .single();
 
         if (dbError) {
-            console.error('Failed to save design to history:', dbError);
+            console.error('Failed to save design:', dbError);
         } else if (savedDesign) {
             savedDesigns.push({
                 designId: savedDesign.id,
@@ -160,13 +121,8 @@ export async function generateExteriorStylesAction(
 ): Promise<{ styledExteriorImages: GeneratedImageResult[] } | { error: string }> {
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user?.id) {
-      return { error: 'You must be logged in to generate designs.' };
-  }
-
-  const usageCheck = await checkAndIncrementDesignCount(supabase, user.id);
+  const usageCheck = await checkAndIncrementDesignCount(supabase);
   if (!usageCheck.allowed) {
       return { error: usageCheck.error ?? 'You have reached your daily design limit.' };
   }
@@ -202,7 +158,7 @@ export async function generateExteriorStylesAction(
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
             .insert({
-                user_id: user.id,
+                // user_id is omitted
                 original_image_url: originalImageUrl,
                 generated_image_url: generatedImageUrl,
                 style: image.style,
@@ -212,7 +168,7 @@ export async function generateExteriorStylesAction(
             .single();
 
         if (dbError) {
-            console.error('Failed to save exterior design to history:', dbError);
+            console.error('Failed to save exterior design:', dbError);
         } else if (savedDesign) {
             savedDesigns.push({
                 designId: savedDesign.id,
@@ -267,8 +223,9 @@ export async function publishToGalleryAction(
 ): Promise<{ success: boolean; galleryUrl?: string; creationId?: string; error?: string }> {
   try {
     const result = await publishToGallery(input);
+    revalidatePath('/gallery');
     return { success: true, galleryUrl: result.galleryUrl, creationId: result.creationId };
-  } catch (e: any) {
+  } catch (e: any)    {
     console.error('Publishing failed:', e);
     return { success: false, error: e.message || 'Failed to publish to gallery.' };
   }
@@ -278,8 +235,28 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
     const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
     try {
+        // We need to fetch the image URLs to delete them from Cloudinary
+        const { data: creation, error: fetchError } = await supabase
+            .from('creations')
+            .select('original_image_url, generated_image_url')
+            .eq('id', creationId)
+            .single();
+
+        if (fetchError || !creation) {
+            throw new Error('Creation not found.');
+        }
+
+        // Delete from DB first
         const { error } = await supabase.from('creations').delete().eq('id', creationId);
         if (error) throw error;
+        
+        // Then delete from Cloudinary
+        await Promise.allSettled([
+            deleteFromCloudinary(creation.original_image_url),
+            deleteFromCloudinary(creation.generated_image_url)
+        ]);
+        
+        revalidatePath('/gallery');
         return { success: true };
     } catch (e: any) {
         console.error('Failed to delete creation:', e);
@@ -287,14 +264,13 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
     }
 }
 
+// "My Designs" is no longer a user-specific concept, so deleting a single design
+// from the temporary `designs` table isn't a primary feature.
+// This function can be removed or disabled if there's no UI for it.
+// For now, it's left here but might be unused.
 export async function deleteDesignAction(designId: string): Promise<{ success: boolean; error?: string }> {
     const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-        return { success: false, error: 'You must be logged in to delete designs.' };
-    }
 
     try {
         const { data: design, error: fetchError } = await supabase
@@ -304,8 +280,7 @@ export async function deleteDesignAction(designId: string): Promise<{ success: b
             .single();
 
         if (fetchError || !design) {
-            console.error('Error fetching design for deletion:', fetchError);
-            throw new Error('Design not found or you do not have permission to delete it.');
+            throw new Error('Design not found.');
         }
 
         const [originalDeletion, generatedDeletion] = await Promise.allSettled([
@@ -323,7 +298,6 @@ export async function deleteDesignAction(designId: string): Promise<{ success: b
         const { error: deleteError } = await supabase.from('designs').delete().eq('id', designId);
         
         if (deleteError) {
-            console.error('Error deleting design from Supabase:', deleteError);
             throw new Error(deleteError.message);
         }
 
@@ -349,78 +323,7 @@ export async function incrementKudosAction(creationId: string): Promise<{ succes
   }
 }
 
+// This function is no longer needed as there are no user profiles to update.
 export async function updateUserAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
-    const cookieStore = await cookies();
-    const supabase = createSupabaseServerClient(cookieStore);
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-        return { success: false, error: 'You must be logged in to update your profile.' };
-    }
-
-    const fullName = formData.get('fullName') as string;
-    const avatarDataUri = formData.get('avatarDataUri') as string | null;
-    const removeAvatar = formData.has('removeAvatar');
-    
-    const BUCKET_NAME = 'avatars';
-    let newAvatarUrl: string | undefined | null = undefined;
-    
-    try {
-        const { data: currentProfile } = await supabase
-            .from('profiles')
-            .select('avatar_url')
-            .eq('id', user.id)
-            .single();
-
-        const currentAvatarUrl = currentProfile?.avatar_url;
-
-        if (avatarDataUri) {
-             const uploadedUrl = await uploadFileToSupabase(
-                avatarDataUri, 
-                BUCKET_NAME, 
-                `user_${user.id}`, 
-                currentAvatarUrl // Pass current URL for potential deletion
-            );
-            newAvatarUrl = uploadedUrl;
-        } else if (removeAvatar && currentAvatarUrl) {
-            await deleteFileFromSupabase(currentAvatarUrl, BUCKET_NAME);
-            newAvatarUrl = null;
-        }
-
-        // Prepare data for updates
-        const profileDataToUpdate: { name: string; avatar_url?: string | null } = {
-            name: fullName,
-        };
-        const authDataToUpdate: { data: { full_name: string; avatar_url?: string | null } } = {
-            data: {
-                full_name: fullName,
-            },
-        };
-
-        // Only add avatar_url to objects if it has changed
-        if (newAvatarUrl !== undefined) {
-             profileDataToUpdate.avatar_url = newAvatarUrl;
-             authDataToUpdate.data.avatar_url = newAvatarUrl;
-        }
-        
-        // Update both tables
-        const { error: profileUpdateError } = await supabase
-            .from('profiles')
-            .update(profileDataToUpdate)
-            .eq('id', user.id);
-            
-        if (profileUpdateError) throw profileUpdateError;
-        
-        const { error: userUpdateError } = await supabase.auth.updateUser(authDataToUpdate);
-
-        if (userUpdateError) throw userUpdateError;
-
-    } catch (e: any) {
-        console.error('Error updating user profile:', e);
-        return { success: false, error: 'Profile update failed: ' + e.message };
-    }
-    
-    revalidatePath('/settings');
-    revalidatePath('/', 'layout');
-    return { success: true };
+    return { success: false, error: 'User profiles are disabled.' };
 }

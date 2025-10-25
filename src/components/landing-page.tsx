@@ -119,7 +119,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
   ];
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body antialiased">
-       <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} user={user} />
+       <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
        <Header user={user} />
 
       <main className="flex-grow">

@@ -28,20 +28,13 @@ const publishToGalleryFlow = ai.defineFlow(
     async ({ designId }) => {
         const cookieStore = await cookies();
         const supabase = createSupabaseServerClient(cookieStore);
-
-        // RLS ensures only authenticated users can insert. We need the user to fetch their private design.
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            throw new Error('User must be logged in to publish to the gallery.');
-        }
-
+        
         // 1. Fetch the design from the private 'designs' table
+        // We no longer filter by user_id
         const { data: design, error: fetchError } = await supabase
             .from('designs')
             .select('*')
             .eq('id', designId)
-            .eq('user_id', user.id)
             .single();
         
         if (fetchError || !design) {

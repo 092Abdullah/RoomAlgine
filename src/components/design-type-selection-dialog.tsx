@@ -7,16 +7,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Home, Building2, ArrowRight } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
-export function DesignTypeSelectionDialog({ open, onOpenChange, user }: { open: boolean, onOpenChange: (open: boolean) => void, user: User | null }) {
+export function DesignTypeSelectionDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
   const router = useRouter();
 
   const handleSelection = (path: string) => {
     onOpenChange(false);
-    if (user) {
-        router.push(path);
-    } else {
-        router.push(`/auth?next=${path}`);
-    }
+    router.push(path);
   };
 
   return (

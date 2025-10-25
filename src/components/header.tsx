@@ -7,9 +7,8 @@ import type { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { HeaderLogoIcon } from '@/components/icons';
 import { ThemeSwitcher } from '@/components/theme-switcher';
-import { UserNav } from '@/components/user-nav';
 import { DesignTypeSelectionDialog } from '@/components/design-type-selection-dialog';
-import { Sparkles, Image, GalleryThumbnails } from 'lucide-react';
+import { Sparkles, GalleryThumbnails } from 'lucide-react';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
 import { cn } from '@/lib/utils';
 
@@ -24,7 +23,7 @@ export function Header({ user, isSliding = false }: { user: User | null, isSlidi
 
     return (
         <>
-            <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} user={user} />
+            <DesignTypeSelectionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
             <header className={headerClasses}>
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="floating-header">
@@ -35,35 +34,17 @@ export function Header({ user, isSliding = false }: { user: User | null, isSlidi
                     </div>
                     
                     <nav className="hidden md:flex items-center gap-2 mx-auto">
-                    {user ? (
-                        <>
-                            <Link href="/gallery" className="header-link"><GalleryThumbnails className="mr-2 h-4 w-4" />Gallery</Link>
-                            <Link href="/my-designs" className="header-link"><Image className="mr-2 h-4 w-4" />My Designs</Link>
-                            <Link href="/#faq" className="header-link">FAQ</Link>
-                        </>
-                    ) : (
-                        <>
-                            <Link href="/#features" className="header-link">Features</Link>
-                            <Link href="/#see-the-magic" className="header-link">Examples</Link>
-                            <Link href="/gallery" className="header-link">Gallery</Link>
-                        </>
-                    )}
+                        <Link href="/#features" className="header-link">Features</Link>
+                        <Link href="/#see-the-magic" className="header-link">Examples</Link>
+                        <Link href="/gallery" className="header-link"><GalleryThumbnails className="mr-2 h-4 w-4" />Gallery</Link>
+                        <Link href="/#faq" className="header-link">FAQ</Link>
                     </nav>
 
                     <div className="flex items-center gap-2">
-                    {user ? (
-                        <>
-                            <Button onClick={() => setIsDialogOpen(true)} className="btn-glare"><Sparkles className="mr-2 h-4 w-4" /> Create Design</Button>
-                            <ThemeSwitcher />
-                            <UserNav user={user} />
-                        </>
-                    ) : (
-                        <>
-                            <ThemeSwitcher />
-                            <Button variant="ghost" asChild><Link href="/auth">Login</Link></Button>
-                            <Button onClick={() => setIsDialogOpen(true)} className="btn-glare">Get Started</Button>
-                        </>
-                    )}
+                        <ThemeSwitcher />
+                        <Button onClick={() => setIsDialogOpen(true)} className="btn-glare">
+                            <Sparkles className="mr-2 h-4 w-4" /> Start Designing
+                        </Button>
                     </div>
                 </div>
                 </div>
