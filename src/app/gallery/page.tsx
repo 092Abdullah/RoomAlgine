@@ -45,10 +45,10 @@ async function getCreations(page: number): Promise<{ creations: Creation[], tota
 export default async function GalleryPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   // No need to fetch user anymore.
-  const currentPage = Number(searchParams.page) || 1;
+  const currentPage = Number(searchParams?.page) || 1;
   const { creations, totalPages } = await getCreations(currentPage);
 
   // Pass user as null to the client component.
