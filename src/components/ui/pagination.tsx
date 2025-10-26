@@ -16,7 +16,7 @@ const Pagination = ({
 }: {
   totalPages: number;
   currentPage: number;
-  basePath: string;
+  basePath: string; // e.g., "/gallery"
   className?: string;
 }) => {
   const isMobile = useIsMobile();
@@ -25,53 +25,49 @@ const Pagination = ({
     if (page < 1 || page > totalPages) {
         return '#';
     }
-    const params = new URLSearchParams();
-    if (page > 1) {
-      params.set('page', page.toString());
+    if (page === 1) {
+      return basePath; // Root path for page 1
     }
-    const queryString = params.toString();
-    return queryString ? `${basePath}?${queryString}` : basePath;
+    return `${basePath}/page/${page}`;
   };
 
   const getPaginationItems = () => {
     const items: (number | 'ellipsis')[] = [];
-    const pageRange = isMobile ? 1 : 2; // How many pages to show around current page
+    const pageRangeDisplayed = 5;
+    const pageCount = totalPages;
 
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) {
+    if (pageCount <= pageRangeDisplayed) {
+      for (let i = 1; i <= pageCount; i++) {
         items.push(i);
       }
     } else {
-        items.push(1);
-        if (currentPage > pageRange + 1) {
-            items.push('ellipsis');
-        }
-        
-        let start = Math.max(2, currentPage - pageRange + 1);
-        let end = Math.min(totalPages - 1, currentPage + pageRange -1);
+      let startPage = Math.max(2, currentPage - 1);
+      let endPage = Math.min(pageCount - 1, currentPage + 1);
 
-        if (currentPage <= pageRange) {
-             start = 2;
-             end = 2 + pageRange;
-        }
+      if (currentPage === 1) {
+        startPage = 2;
+        endPage = 3;
+      }
+      if (currentPage === pageCount) {
+        startPage = pageCount - 2;
+        endPage = pageCount - 1;
+      }
 
-        if (currentPage > totalPages - pageRange) {
-            start = totalPages - pageRange - 1;
-            end = totalPages - 1;
-        }
+      items.push(1);
+      if (startPage > 2) {
+        items.push('ellipsis');
+      }
 
-        for (let i = start; i <= end; i++) {
-            items.push(i);
-        }
+      for (let i = startPage; i <= endPage; i++) {
+        items.push(i);
+      }
 
-        if (currentPage < totalPages - pageRange) {
-            items.push('ellipsis');
-        }
-
-        items.push(totalPages);
+      if (endPage < pageCount - 1) {
+        items.push('ellipsis');
+      }
+      items.push(pageCount);
     }
-    // Remove duplicates
-    return [...new Set(items)];
+    return items;
   };
 
   const paginationItems = getPaginationItems();
@@ -145,7 +141,6 @@ const PaginationLink = ({
   href: string;
   [key: string]: any;
 }) => {
-    // Check if children is just a number
     const isPageNumber = typeof children === 'number';
 
     return (
@@ -158,7 +153,6 @@ const PaginationLink = ({
                 size: isPageNumber ? 'icon' : 'default',
             }),
             'gap-1',
-             // Add specific padding for prev/next buttons
             !isPageNumber && 'px-2.5 sm:px-4',
             className,
             )}

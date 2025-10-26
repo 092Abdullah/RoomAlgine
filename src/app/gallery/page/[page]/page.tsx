@@ -2,6 +2,7 @@
 import { GalleryClient } from '@/components/gallery-client';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
+import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,10 @@ export type Creation = {
 const ITEMS_PER_PAGE = 12;
 
 async function getCreations(page: number): Promise<{ creations: Creation[], totalPages: number }> {
+  if (isNaN(page) || page < 1) {
+    return { creations: [], totalPages: 0 };
+  }
+    
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
 
@@ -41,11 +46,18 @@ async function getCreations(page: number): Promise<{ creations: Creation[], tota
   return { creations: data || [], totalPages };
 }
 
-// This page now only handles the first page of the gallery.
-// Subsequent pages are handled by /gallery/page/[page].
-export default async function GalleryPage() {
-  const currentPage = 1;
+export default async function GalleryPaginatedPage({ params }: { params: { page: string } }) {
+  const currentPage = Number(params.page);
+  
+  if (isNaN(currentPage) || currentPage < 1) {
+    notFound();
+  }
+
   const { creations, totalPages } = await getCreations(currentPage);
+
+  if (currentPage > totalPages && totalPages > 0) {
+    notFound();
+  }
 
   return <GalleryClient allCreations={creations} user={null} totalPages={totalPages} currentPage={currentPage} />;
 }
