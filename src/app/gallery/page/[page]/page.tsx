@@ -46,8 +46,10 @@ async function getCreations(page: number): Promise<{ creations: Creation[], tota
   return { creations: data || [], totalPages };
 }
 
-export default async function GalleryPaginatedPage({ params }: { params: { page: string } }) {
-  const currentPage = Number(params.page);
+export default async function GalleryPaginatedPage({ params }: { params: any }) {
+  // Awaiting params as per the error message and environment requirements.
+  const awaitedParams = await params;
+  const currentPage = Number(awaitedParams?.page || '1');
   
   if (isNaN(currentPage) || currentPage < 1) {
     notFound();
