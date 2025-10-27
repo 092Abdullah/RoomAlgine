@@ -631,7 +631,6 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
                 const filteredNewImages = newImages.filter(img => !existingStyles.has(img.style));
                 return [...prevImages, ...filteredNewImages];
             });
-            // Immediately set the first new image as active to display it
             setActiveGeneratedImage(newImages[0]);
         }
     }
