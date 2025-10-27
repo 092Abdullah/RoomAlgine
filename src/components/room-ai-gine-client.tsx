@@ -619,6 +619,9 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       userPrompt: userPrompt,
     }, uploadedImage, originalCloudinaryUrl);
 
+    setIsGenerating(false);
+    setLoadingMessage('');
+
     if ("error" in result) {
       toast.error("Generation Failed", {
         description: result.error,
@@ -627,15 +630,24 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
         const newImages = result.styledRoomImages;
         if (newImages.length > 0) {
             setGeneratedImages(prevImages => {
-                const existingStyles = new Set(prevImages.map(img => img.style));
-                const filteredNewImages = newImages.filter(img => !existingStyles.has(img.style));
-                return [...prevImages, ...filteredNewImages];
+                const updatedImages = [...prevImages];
+                newImages.forEach(newImg => {
+                    const index = updatedImages.findIndex(img => img.style === newImg.style);
+                    if (index !== -1) {
+                        updatedImages[index] = newImg;
+                    } else {
+                        updatedImages.push(newImg);
+                    }
+                });
+                return updatedImages;
             });
             setActiveGeneratedImage(newImages[0]);
+        } else {
+             toast.info("No new image was generated.", {
+                description: "The AI might have failed to produce an image for this style. Please try again.",
+            });
         }
     }
-    setIsGenerating(false);
-    setLoadingMessage('');
   }
 
   const getAIStyleIdeas = async () => {
