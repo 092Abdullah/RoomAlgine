@@ -619,22 +619,21 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       userPrompt: userPrompt,
     }, uploadedImage, originalCloudinaryUrl);
 
-
     if ("error" in result) {
       toast.error("Generation Failed", {
         description: result.error,
       });
     } else {
         const newImages = result.styledRoomImages;
-        setGeneratedImages(prevImages => {
-            const existingStyles = new Set(prevImages.map(img => img.style));
-            const filteredNewImages = newImages.filter(img => !existingStyles.has(img.style));
-            return [...prevImages, ...filteredNewImages];
-        });
-
-      if (newImages.length > 0) {
-        setActiveGeneratedImage(newImages[0]);
-      }
+        if (newImages.length > 0) {
+            setGeneratedImages(prevImages => {
+                const existingStyles = new Set(prevImages.map(img => img.style));
+                const filteredNewImages = newImages.filter(img => !existingStyles.has(img.style));
+                return [...prevImages, ...filteredNewImages];
+            });
+            // Immediately set the first new image as active to display it
+            setActiveGeneratedImage(newImages[0]);
+        }
     }
     setIsGenerating(false);
     setLoadingMessage('');

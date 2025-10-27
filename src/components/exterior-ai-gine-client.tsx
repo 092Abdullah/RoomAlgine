@@ -468,15 +468,14 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
       });
     } else {
         const newImages = result.styledExteriorImages;
-        setGeneratedImages(prevImages => {
-            const existingStyles = new Set(prevImages.map(img => img.style));
-            const filteredNewImages = newImages.filter(img => !existingStyles.has(img.style));
-            return [...prevImages, ...filteredNewImages];
-        });
-
-      if (newImages.length > 0) {
-        setActiveGeneratedImage(newImages[0]);
-      }
+        if (newImages.length > 0) {
+            setGeneratedImages(prevImages => {
+                const existingStyles = new Set(prevImages.map(img => img.style));
+                const filteredNewImages = newImages.filter(img => !existingStyles.has(img.style));
+                return [...prevImages, ...filteredNewImages];
+            });
+            setActiveGeneratedImage(newImages[0]);
+        }
     }
     setIsGenerating(false);
     setLoadingMessage('');
