@@ -30,7 +30,7 @@ const publishToGalleryFlow = ai.defineFlow(
         const supabase = createSupabaseServerClient(cookieStore);
         
         // 1. Fetch the design from the private 'designs' table
-        // We no longer filter by user_id
+        // We no longer filter by user_id as authentication has been removed.
         const { data: design, error: fetchError } = await supabase
             .from('designs')
             .select('*')
