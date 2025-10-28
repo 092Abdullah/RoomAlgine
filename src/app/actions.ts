@@ -16,13 +16,6 @@ import { revalidatePath } from 'next/cache';
 import { uploadFileToSupabase, deleteFileFromSupabase } from '@/lib/supabase/storage';
 import { cookies } from 'next/headers';
 
-const DAILY_DESIGN_LIMIT = 20;
-
-// Since there is no user, we will not enforce any limits.
-async function checkAndIncrementDesignCount(supabase: SupabaseClient, userId?: string): Promise<{ allowed: boolean; error?: string }> {
-    return { allowed: true };
-}
-
 type GeneratedImageResult = {
     designId: string;
     style: string;
@@ -47,11 +40,6 @@ export async function generateRoomStylesAction(
 ): Promise<{ styledRoomImages: GeneratedImageResult[] } | { error: string }> {
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
-  
-  const usageCheck = await checkAndIncrementDesignCount(supabase);
-  if (!usageCheck.allowed) {
-    return { error: usageCheck.error ?? 'You have reached your daily design limit.' };
-  }
   
   if (!photoDataUri) {
     return { error: 'Please upload an image first.' };
@@ -86,18 +74,21 @@ export async function generateRoomStylesAction(
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
             .insert({
-                // user_id is now omitted
+                // user_id is now omitted and allowed to be NULL in DB
                 original_image_url: originalImageUrl,
                 generated_image_url: generatedImageUrl,
                 style: image.style,
                 room_type: input.roomType,
                 config: { ...input, styles: [image.style] }
             })
-            .select('id, style, generated_image_url')
+            .select('id, style')
             .single();
 
         if (dbError) {
             console.error('Failed to save design:', dbError);
+            // Even if DB save fails, we should return the generated image to the user.
+            // But we can't publish it later. For now, we will skip it on DB error.
+             continue;
         } else if (savedDesign) {
             savedDesigns.push({
                 designId: savedDesign.id,
@@ -105,6 +96,11 @@ export async function generateRoomStylesAction(
                 imageDataUri: image.imageDataUri,
             });
         }
+    }
+
+    if (result.styledRoomImages.length > 0 && savedDesigns.length === 0) {
+      // This means image generation worked, but all DB inserts failed.
+      return { error: 'Could not save the generated designs. Please try again.' };
     }
 
     return { styledRoomImages: savedDesigns };
@@ -121,11 +117,6 @@ export async function generateExteriorStylesAction(
 ): Promise<{ styledExteriorImages: GeneratedImageResult[] } | { error: string }> {
   const cookieStore = await cookies();
   const supabase = createSupabaseServerClient(cookieStore);
-
-  const usageCheck = await checkAndIncrementDesignCount(supabase);
-  if (!usageCheck.allowed) {
-      return { error: usageCheck.error ?? 'You have reached your daily design limit.' };
-  }
 
   if (!photoDataUri) {
     return { error: 'Please upload an image first.' };
@@ -158,17 +149,18 @@ export async function generateExteriorStylesAction(
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
             .insert({
-                // user_id is omitted
+                // user_id is omitted and allowed to be NULL in DB
                 original_image_url: originalImageUrl,
                 generated_image_url: generatedImageUrl,
                 style: image.style,
                 config: { ...input, styles: [image.style] }
             })
-            .select('id, style, generated_image_url')
+            .select('id, style')
             .single();
 
         if (dbError) {
             console.error('Failed to save exterior design:', dbError);
+            continue;
         } else if (savedDesign) {
             savedDesigns.push({
                 designId: savedDesign.id,
@@ -178,6 +170,10 @@ export async function generateExteriorStylesAction(
         }
     }
     
+    if (result.styledExteriorImages.length > 0 && savedDesigns.length === 0) {
+      return { error: 'Could not save the generated exterior designs. Please try again.' };
+    }
+
     return { styledExteriorImages: savedDesigns };
   } catch (e: any) {
     console.error(e);
