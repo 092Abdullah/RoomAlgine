@@ -69,37 +69,30 @@ export async function generateRoomStylesAction(
              continue;
         }
 
-        // We still save to the 'designs' table but without a user_id. 
-        // This is for potential features like "share by link".
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
             .insert({
-                // user_id is now omitted and allowed to be NULL in DB
                 original_image_url: originalImageUrl,
                 generated_image_url: generatedImageUrl,
                 style: image.style,
                 room_type: input.roomType,
-                config: { ...input, styles: [image.style] }
             })
             .select('id, style')
             .single();
 
         if (dbError) {
             console.error('Failed to save design:', dbError);
-            // Even if DB save fails, we should return the generated image to the user.
-            // But we can't publish it later. For now, we will skip it on DB error.
              continue;
         } else if (savedDesign) {
             savedDesigns.push({
                 designId: savedDesign.id,
                 style: savedDesign.style,
-                imageDataUri: image.imageDataUri,
+                imageDataUri: image.imageDataUri, 
             });
         }
     }
 
     if (result.styledRoomImages.length > 0 && savedDesigns.length === 0) {
-      // This means image generation worked, but all DB inserts failed.
       return { error: 'Could not save the generated designs. Please try again.' };
     }
 
@@ -149,11 +142,9 @@ export async function generateExteriorStylesAction(
         const { data: savedDesign, error: dbError } = await supabase
             .from('designs')
             .insert({
-                // user_id is omitted and allowed to be NULL in DB
                 original_image_url: originalImageUrl,
                 generated_image_url: generatedImageUrl,
                 style: image.style,
-                config: { ...input, styles: [image.style] }
             })
             .select('id, style')
             .single();
@@ -260,10 +251,6 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
     }
 }
 
-// "My Designs" is no longer a user-specific concept, so deleting a single design
-// from the temporary `designs` table isn't a primary feature.
-// This function can be removed or disabled if there's no UI for it.
-// For now, it's left here but might be unused.
 export async function deleteDesignAction(designId: string): Promise<{ success: boolean; error?: string }> {
     const cookieStore = await cookies();
     const supabase = createSupabaseServerClient(cookieStore);
@@ -319,7 +306,6 @@ export async function incrementKudosAction(creationId: string): Promise<{ succes
   }
 }
 
-// This function is no longer needed as there are no user profiles to update.
 export async function updateUserAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
     return { success: false, error: 'User profiles are disabled.' };
 }
