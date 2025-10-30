@@ -9,11 +9,8 @@ import { suggestStyles, SuggestStylesInput, SuggestStylesOutput } from '@/ai/flo
 import { publishToGallery } from '@/ai/flows/publish-to-gallery';
 import type { PublishToGalleryInput } from '@/app/types';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { isToday } from 'date-fns';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary';
 import { revalidatePath } from 'next/cache';
-import { uploadFileToSupabase, deleteFileFromSupabase } from '@/lib/supabase/storage';
 import { cookies } from 'next/headers';
 
 type GeneratedImageResult = {
