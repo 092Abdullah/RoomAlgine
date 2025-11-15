@@ -42,7 +42,7 @@ const prompt = ai.definePrompt({
 
   If the room type is not clear or doesn't fit into the categories, classify it as 'Other'.
 
-  Respond with only the detected room type in the specified output format.
+  Analyze the image and respond with only the detected room type in the specified JSON output format.
 
   Photo: {{media url=photoDataUri}}`,
 });
