@@ -36,6 +36,7 @@ const prompt = ai.definePrompt({
   name: 'detectRoomTypePrompt',
   input: {schema: DetectRoomTypeInputSchema},
   output: {schema: DetectRoomTypeOutputSchema},
+  model: 'googleai/gemini-1.5-flash-preview',
   prompt: `You are an expert in interior design and room classification. Analyze the provided image and determine the type of room.
 
   The possible room types are: ${roomTypes.join(', ')}.

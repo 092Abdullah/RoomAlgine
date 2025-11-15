@@ -44,6 +44,7 @@ const prompt = ai.definePrompt({
   name: 'suggestStylesPrompt',
   input: {schema: SuggestStylesInputSchema},
   output: {schema: SuggestStylesOutputSchema},
+  model: 'googleai/gemini-1.5-flash-preview',
   prompt: `You are an expert interior designer. Analyze the provided image of a {{roomType}} and suggest up to 3 suitable design styles from the following list: ${designStyles.join(', ')}.
 
   For each suggestion, provide a style and a corresponding color combination of 2-3 colors. 
