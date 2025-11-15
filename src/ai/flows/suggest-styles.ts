@@ -64,7 +64,11 @@ const suggestStylesFlow = ai.defineFlow(
     outputSchema: SuggestStylesOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    // Correct way to call a prompt in Genkit v1.x
+    const { output } = await ai.generate({
+      prompt: prompt,
+      input: input,
+    });
     return output!;
   }
 );
