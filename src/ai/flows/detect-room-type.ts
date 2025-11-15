@@ -32,20 +32,14 @@ export async function detectRoomType(input: DetectRoomTypeInput): Promise<Detect
   return detectRoomTypeFlow(input);
 }
 
-const detectRoomTypePrompt = ai.definePrompt({
-  name: 'detectRoomTypePrompt',
-  input: {schema: DetectRoomTypeInputSchema},
-  output: {schema: DetectRoomTypeOutputSchema},
-  prompt: `You are an expert in interior design and room classification. Analyze the provided image and determine the type of room.
+const instructionPrompt = `You are an expert in interior design and room classification. Analyze the provided image and determine the type of room.
 
   The possible room types are: ${roomTypes.join(', ')}.
 
   If the room type is not clear or doesn't fit into the categories, classify it as 'Other'.
 
-  Analyze the image and respond with only the detected room type in the specified JSON output format.
+  Analyze the image and respond with only the detected room type in the specified JSON output format.`;
 
-  Photo: {{media url=photoDataUri}}`,
-});
 
 const detectRoomTypeFlow = ai.defineFlow(
   {
@@ -54,10 +48,15 @@ const detectRoomTypeFlow = ai.defineFlow(
     outputSchema: DetectRoomTypeOutputSchema,
   },
   async (input) => {
-    // This uses the default model which is gemini-1.5-pro-latest, suitable for vision-to-text.
     const { output } = await ai.generate({
-      prompt: detectRoomTypePrompt,
-      input: input,
+      // Use the default model which is gemini-1.5-pro-latest
+      prompt: [
+        { text: instructionPrompt },
+        { media: { url: input.photoDataUri } }
+      ],
+      output: {
+        schema: DetectRoomTypeOutputSchema,
+      }
     });
     
     if (!output) {

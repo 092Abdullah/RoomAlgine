@@ -40,11 +40,7 @@ export async function suggestStyles(input: SuggestStylesInput): Promise<SuggestS
   return suggestStylesFlow(input);
 }
 
-const suggestStylesPrompt = ai.definePrompt({
-  name: 'suggestStylesPrompt',
-  input: {schema: SuggestStylesInputSchema},
-  output: {schema: SuggestStylesOutputSchema},
-  prompt: `You are an expert interior designer. Analyze the provided image of a {{roomType}} and suggest up to 3 suitable design styles from the following list: ${designStyles.join(', ')}.
+const instructionPrompt = `You are an expert interior designer. Analyze the provided image of a {{roomType}} and suggest up to 3 suitable design styles from the following list: ${designStyles.join(', ')}.
 
   For each suggestion, provide a style and a corresponding color combination of 2-3 colors. 
   
@@ -52,10 +48,7 @@ const suggestStylesPrompt = ai.definePrompt({
 
   Analyze the image for existing architecture, lighting, and general space. Base your suggestions on what would realistically enhance the room.
 
-  Respond only with the structured data as defined. Do not include any extra text or reasoning.
-
-  Photo: {{media url=photoDataUri}}`,
-});
+  Respond only with the structured data as defined. Do not include any extra text or reasoning.`;
 
 const suggestStylesFlow = ai.defineFlow(
   {
@@ -66,8 +59,17 @@ const suggestStylesFlow = ai.defineFlow(
   async (input) => {
     // This uses the default model which is gemini-1.5-pro-latest, suitable for vision-to-text.
     const { output } = await ai.generate({
-      prompt: suggestStylesPrompt,
-      input: input,
+      prompt: [
+        { text: instructionPrompt },
+        { media: { url: input.photoDataUri } }
+      ],
+      input: {
+        roomType: input.roomType,
+        availableColors: input.availableColors,
+      },
+      output: {
+        schema: SuggestStylesOutputSchema,
+      }
     });
     
     if (!output) {
