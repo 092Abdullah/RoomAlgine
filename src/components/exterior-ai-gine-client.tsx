@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { generateExteriorStylesAction, publishToGalleryAction, deleteCreationAction, uploadOriginalImageAction } from "@/app/actions";
+import { generateExteriorStylesAction, publishToGalleryAction, deleteCreationAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { GenerateIcon } from "./icons";
 import { motion } from "framer-motion";
@@ -45,7 +45,6 @@ import type { User } from "@supabase/supabase-js";
 import { Header } from "./header";
 
 type GeneratedImage = {
-  designId: string;
   style: string;
   imageDataUri: string;
 };
@@ -370,7 +369,6 @@ const ExteriorAIGineEditor = ({
 
 export default function ExteriorAIGineClient({ user }: { user: User | null }) {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [originalCloudinaryUrl, setOriginalCloudinaryUrl] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>("Modern");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -401,23 +399,11 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
       setUploadedImage(dataUri);
       setGeneratedImages([]);
       setActiveGeneratedImage(null);
-      setOriginalCloudinaryUrl(null);
-
-      setIsUploading(true);
-      setLoadingMessage("Securing your image...");
-
-      const uploadResult = await uploadOriginalImageAction(dataUri, true);
-
-      if ('url' in uploadResult) {
-        setOriginalCloudinaryUrl(uploadResult.url);
-      } else {
-        toast.error("Image Upload Failed", { description: uploadResult.error });
-        setUploadedImage(null);
-      }
-      
       setIsUploading(false);
       setLoadingMessage("");
     };
+    setIsUploading(true);
+    setLoadingMessage("Reading your image...");
     reader.readAsDataURL(file);
   };
 
@@ -442,9 +428,9 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
       return;
     }
 
-    if (!uploadedImage || !originalCloudinaryUrl) {
+    if (!uploadedImage) {
       toast.error("Image Not Ready", {
-        description: "Please wait for the image to upload before generating.",
+        description: "Please upload an image before generating.",
       });
       return;
     }
@@ -459,7 +445,7 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
       materials: selectedMaterials,
       landscaping: selectedLandscaping,
       userPrompt: userPrompt,
-    }, uploadedImage, originalCloudinaryUrl);
+    }, uploadedImage);
 
     setIsGenerating(false);
     setLoadingMessage('');
@@ -493,10 +479,15 @@ export default function ExteriorAIGineClient({ user }: { user: User | null }) {
   }
 
   const handlePublish = async (imageToPublish: GeneratedImage) => {
-    if (!imageToPublish) return;
+    if (!imageToPublish || !uploadedImage) return;
 
     setIsPublishing(true);
-    const result = await publishToGalleryAction({ designId: imageToPublish.designId });
+    const result = await publishToGalleryAction({ 
+        originalImageDataUri: uploadedImage,
+        generatedImageDataUri: imageToPublish.imageDataUri,
+        style: imageToPublish.style,
+        roomType: selectedExteriorType,
+    });
 
     if (result.success && result.creationId) {
         const creationId = result.creationId;

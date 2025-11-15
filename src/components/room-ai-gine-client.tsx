@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction, deleteCreationAction, uploadOriginalImageAction } from "@/app/actions";
+import { generateRoomStylesAction, detectRoomTypeAction, suggestStylesAction, publishToGalleryAction, deleteCreationAction } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { GenerateIcon, BedDouble, LivingRoomIcon, OfficeIcon } from "./icons";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,7 +47,6 @@ import { Header } from "./header";
 import { cn } from "@/lib/utils";
 
 type GeneratedImage = {
-  designId: string;
   style: string;
   imageDataUri: string;
 };
@@ -497,7 +496,6 @@ const RoomAIGineEditor = ({
 
 export default function RoomAIGineClient({ user }: { user: User | null }) {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [originalCloudinaryUrl, setOriginalCloudinaryUrl] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>("Minimalist");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -534,19 +532,13 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       setGeneratedImages([]);
       setActiveGeneratedImage(null);
       setStyleSuggestions([]);
-      setOriginalCloudinaryUrl(null); 
-
-      setIsUploading(true);
+      
+      setIsUploading(false);
       setIsDetectingRoomType(true);
       setLoadingMessage("Detecting room type...");
 
-      const [detectionResult, uploadResult] = await Promise.all([
-        detectRoomTypeAction(dataUri),
-        uploadOriginalImageAction(dataUri, false),
-      ]);
+      const detectionResult = await detectRoomTypeAction(dataUri);
       
-      setIsUploading(false);
-
       if ('roomType' in detectionResult) {
           const isValidRoomType = roomTypes.some(rt => rt.id === detectionResult.roomType);
           if (isValidRoomType) {
@@ -558,16 +550,11 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
           toast.error("Room Detection Failed", { description: detectionResult.error });
       }
 
-      if ('url' in uploadResult) {
-        setOriginalCloudinaryUrl(uploadResult.url);
-      } else {
-        toast.error("Image Upload Failed", { description: uploadResult.error });
-        setUploadedImage(null);
-      }
-
       setIsDetectingRoomType(false);
       setLoadingMessage("");
     };
+    setIsUploading(true);
+    setLoadingMessage("Reading your image...");
     reader.readAsDataURL(file);
   };
 
@@ -599,9 +586,9 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       return;
     }
 
-    if (!uploadedImage || !originalCloudinaryUrl) {
+    if (!uploadedImage) {
       toast.error("Image Not Ready", {
-        description: "Please wait for the image to upload before generating.",
+        description: "Please upload an image before generating.",
       });
       return;
     }
@@ -617,7 +604,7 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       mood: selectedMoods[0],
       priceRange: `$${priceRange.toLocaleString()}`,
       userPrompt: userPrompt,
-    }, uploadedImage, originalCloudinaryUrl);
+    }, uploadedImage);
 
     setIsGenerating(false);
     setLoadingMessage('');
@@ -674,10 +661,15 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
   };
 
   const handlePublish = async (imageToPublish: GeneratedImage) => {
-    if (!imageToPublish) return;
+    if (!imageToPublish || !uploadedImage) return;
 
     setIsPublishing(true);
-    const result = await publishToGalleryAction({ designId: imageToPublish.designId });
+    const result = await publishToGalleryAction({ 
+        originalImageDataUri: uploadedImage,
+        generatedImageDataUri: imageToPublish.imageDataUri,
+        style: imageToPublish.style,
+        roomType: roomType,
+    });
 
     if (result.success && result.creationId) {
         const creationId = result.creationId;

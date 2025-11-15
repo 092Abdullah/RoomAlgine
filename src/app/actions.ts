@@ -14,35 +14,28 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 type GeneratedImageResult = {
-    designId: string;
     style: string;
     imageDataUri: string;
 };
 
-export async function uploadOriginalImageAction(photoDataUri: string, isExterior: boolean): Promise<{ url: string } | { error: string }> {
-    try {
-        const folder = isExterior ? 'roomaigine_originals_exterior' : 'roomaigine_originals';
-        const url = await uploadToCloudinary(photoDataUri, folder);
-        return { url };
-    } catch (e: any) {
-        return { error: 'Failed to upload original image: ' + e.message };
-    }
-}
+// This action is no longer needed as uploads are handled by the publish action.
+// export async function uploadOriginalImageAction(photoDataUri: string, isExterior: boolean): Promise<{ url: string } | { error: string }> {
+//     try {
+//         const folder = isExterior ? 'roomaigine_originals_exterior' : 'roomaigine_originals';
+//         const url = await uploadToCloudinary(photoDataUri, folder);
+//         return { url };
+//     } catch (e: any) {
+//         return { error: 'Failed to upload original image: ' + e.message };
+//     }
+// }
 
 
 export async function generateRoomStylesAction(
   input: Omit<GenerateRoomStylesInput, 'photoDataUri'>,
   photoDataUri: string,
-  originalImageUrl: string
 ): Promise<{ styledRoomImages: GeneratedImageResult[] } | { error: string }> {
-  const cookieStore = await cookies();
-  const supabase = createSupabaseServerClient(cookieStore);
-  
   if (!photoDataUri) {
     return { error: 'Please upload an image first.' };
-  }
-  if (!originalImageUrl) {
-      return { error: 'Original image URL is missing. Please re-upload.' };
   }
   if (input.styles.length === 0) {
     return { error: 'Please select at least one style.' };
@@ -51,49 +44,13 @@ export async function generateRoomStylesAction(
   try {
     const result = await generateRoomStyles({ ...input, photoDataUri });
 
-    const savedDesigns: GeneratedImageResult[] = [];
+    // Directly return the image data URI without saving anything.
+    const clientResult: GeneratedImageResult[] = result.styledRoomImages.map(img => ({
+      style: img.style,
+      imageDataUri: img.imageDataUri,
+    }));
 
-    for (const image of result.styledRoomImages) {
-        if (!image.imageDataUri) {
-            console.warn(`Skipping style "${image.style}" due to missing image data.`);
-            continue;
-        }
-
-        const generatedImageUrl = await uploadToCloudinary(image.imageDataUri, 'roomaigine_generated');
-        
-        if (!generatedImageUrl) {
-             console.error(`Skipping style "${image.style}" because Cloudinary upload failed.`);
-             continue;
-        }
-
-        const { data: savedDesign, error: dbError } = await supabase
-            .from('designs')
-            .insert({
-                original_image_url: originalImageUrl,
-                generated_image_url: generatedImageUrl,
-                style: image.style,
-                room_type: input.roomType,
-            })
-            .select('id, style')
-            .single();
-
-        if (dbError) {
-            console.error('Failed to save design:', dbError);
-             continue;
-        } else if (savedDesign) {
-            savedDesigns.push({
-                designId: savedDesign.id,
-                style: savedDesign.style,
-                imageDataUri: image.imageDataUri, 
-            });
-        }
-    }
-
-    if (result.styledRoomImages.length > 0 && savedDesigns.length === 0) {
-      return { error: 'Could not save the generated designs. Please try again.' };
-    }
-
-    return { styledRoomImages: savedDesigns };
+    return { styledRoomImages: clientResult };
   } catch (e: any) {
     console.error(e);
     return { error: e.message || 'Error creating image, please try again.' };
@@ -103,16 +60,10 @@ export async function generateRoomStylesAction(
 export async function generateExteriorStylesAction(
   input: Omit<GenerateExteriorStylesInput, 'photoDataUri'>,
   photoDataUri: string,
-  originalImageUrl: string
 ): Promise<{ styledExteriorImages: GeneratedImageResult[] } | { error: string }> {
-  const cookieStore = await cookies();
-  const supabase = createSupabaseServerClient(cookieStore);
 
   if (!photoDataUri) {
     return { error: 'Please upload an image first.' };
-  }
-  if (!originalImageUrl) {
-      return { error: 'Original image URL is missing. Please re-upload.' };
   }
   if (input.styles.length === 0) {
     return { error: 'Please select at least one style.' };
@@ -121,48 +72,13 @@ export async function generateExteriorStylesAction(
   try {
     const result = await generateExteriorStyles({ ...input, photoDataUri });
     
-    const savedDesigns: GeneratedImageResult[] = [];
+    // Directly return the image data URI without saving anything.
+    const clientResult: GeneratedImageResult[] = result.styledExteriorImages.map(img => ({
+      style: img.style,
+      imageDataUri: img.imageDataUri,
+    }));
 
-    for (const image of result.styledExteriorImages) {
-        if (!image.imageDataUri) {
-            console.warn(`Skipping style "${image.style}" due to missing image data.`);
-            continue;
-        }
-        
-        const generatedImageUrl = await uploadToCloudinary(image.imageDataUri, 'roomaigine_generated_exterior');
-        
-        if (!generatedImageUrl) {
-            console.error(`Skipping style "${image.style}" because Cloudinary upload failed.`);
-            continue;
-        }
-
-        const { data: savedDesign, error: dbError } = await supabase
-            .from('designs')
-            .insert({
-                original_image_url: originalImageUrl,
-                generated_image_url: generatedImageUrl,
-                style: image.style,
-            })
-            .select('id, style')
-            .single();
-
-        if (dbError) {
-            console.error('Failed to save exterior design:', dbError);
-            continue;
-        } else if (savedDesign) {
-            savedDesigns.push({
-                designId: savedDesign.id,
-                style: savedDesign.style,
-                imageDataUri: image.imageDataUri,
-            });
-        }
-    }
-    
-    if (result.styledExteriorImages.length > 0 && savedDesigns.length === 0) {
-      return { error: 'Could not save the generated exterior designs. Please try again.' };
-    }
-
-    return { styledExteriorImages: savedDesigns };
+    return { styledExteriorImages: clientResult };
   } catch (e: any) {
     console.error(e);
     return { error: e.message || 'Error creating image, please try again.' };
@@ -248,45 +164,10 @@ export async function deleteCreationAction(creationId: string): Promise<{ succes
     }
 }
 
+// This action is now obsolete since the 'designs' table is no longer used for temporary storage.
 export async function deleteDesignAction(designId: string): Promise<{ success: boolean; error?: string }> {
-    const cookieStore = await cookies();
-    const supabase = createSupabaseServerClient(cookieStore);
-
-    try {
-        const { data: design, error: fetchError } = await supabase
-            .from('designs')
-            .select('original_image_url, generated_image_url')
-            .eq('id', designId)
-            .single();
-
-        if (fetchError || !design) {
-            throw new Error('Design not found.');
-        }
-
-        const [originalDeletion, generatedDeletion] = await Promise.allSettled([
-            deleteFromCloudinary(design.original_image_url),
-            deleteFromCloudinary(design.generated_image_url)
-        ]);
-
-        if (originalDeletion.status === 'rejected') {
-            console.warn(`Failed to delete original image from Cloudinary:`, originalDeletion.reason);
-        }
-        if (generatedDeletion.status === 'rejected') {
-            console.warn(`Failed to delete generated image from Cloudinary:`, generatedDeletion.reason);
-        }
-
-        const { error: deleteError } = await supabase.from('designs').delete().eq('id', designId);
-        
-        if (deleteError) {
-            throw new Error(deleteError.message);
-        }
-
-        revalidatePath('/my-designs');
-        return { success: true };
-    } catch (e: any) {
-        console.error('Failed to delete design:', e);
-        return { success: false, error: e.message || 'Could not delete the design.' };
-    }
+    console.warn("deleteDesignAction is obsolete and should not be called.");
+    return { success: false, error: "This function is obsolete." };
 }
 
 export async function incrementKudosAction(creationId: string): Promise<{ success: boolean; error?: string }> {

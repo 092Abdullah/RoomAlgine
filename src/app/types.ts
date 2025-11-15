@@ -1,8 +1,12 @@
+
 import { z } from 'zod';
 
-// This input now only requires the ID of the design to be published.
+// This input now contains all the data needed to create a gallery item from scratch.
 export const PublishToGalleryInputSchema = z.object({
-    designId: z.string().describe("The ID of the design from the user's history to publish."),
+    originalImageDataUri: z.string().describe("The original user-uploaded image as a data URI."),
+    generatedImageDataUri: z.string().describe("The AI-generated image as a data URI."),
+    style: z.string().describe("The design style applied."),
+    roomType: z.string().optional().describe("The type of room or exterior space."),
 });
 export type PublishToGalleryInput = z.infer<typeof PublishToGalleryInputSchema>;
 
