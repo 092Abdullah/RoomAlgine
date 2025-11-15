@@ -49,7 +49,7 @@ const detectRoomTypeFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await ai.generate({
-      // Use the default model which is gemini-1.5-pro-latest
+      // Use the default model which is gemini-1.5-pro
       prompt: [
         { text: instructionPrompt },
         { media: { url: input.photoDataUri } }
