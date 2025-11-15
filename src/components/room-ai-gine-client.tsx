@@ -540,10 +540,13 @@ export default function RoomAIGineClient({ user }: { user: User | null }) {
       const detectionResult = await detectRoomTypeAction(dataUri);
       
       if ('roomType' in detectionResult) {
-          const isValidRoomType = roomTypes.some(rt => rt.id === detectionResult.roomType);
+          const formattedRoomType = detectionResult.roomType.toLowerCase().replace(/\s+/g, '-');
+          const isValidRoomType = roomTypes.some(rt => rt.id === formattedRoomType);
           if (isValidRoomType) {
-              setRoomType(detectionResult.roomType);
+              setRoomType(formattedRoomType);
           } else {
+              // If the detected type isn't in our list (e.g., "Other"), we don't switch.
+              // We could default to something or leave it as is.
               console.warn(`Detected room type "${detectionResult.roomType}" is not a selectable option.`);
           }
       } else {

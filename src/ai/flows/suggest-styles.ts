@@ -40,7 +40,7 @@ export async function suggestStyles(input: SuggestStylesInput): Promise<SuggestS
   return suggestStylesFlow(input);
 }
 
-const prompt = ai.definePrompt({
+const suggestStylesPrompt = ai.definePrompt({
   name: 'suggestStylesPrompt',
   input: {schema: SuggestStylesInputSchema},
   output: {schema: SuggestStylesOutputSchema},
@@ -63,12 +63,17 @@ const suggestStylesFlow = ai.defineFlow(
     inputSchema: SuggestStylesInputSchema,
     outputSchema: SuggestStylesOutputSchema,
   },
-  async input => {
-    // Correct way to call a prompt in Genkit v1.x
+  async (input) => {
+    // This uses the default model which is gemini-1.5-pro-latest, suitable for vision-to-text.
     const { output } = await ai.generate({
-      prompt: prompt,
+      prompt: suggestStylesPrompt,
       input: input,
     });
-    return output!;
+    
+    if (!output) {
+        throw new Error('AI failed to suggest styles.');
+    }
+    
+    return output;
   }
 );

@@ -32,7 +32,7 @@ export async function detectRoomType(input: DetectRoomTypeInput): Promise<Detect
   return detectRoomTypeFlow(input);
 }
 
-const prompt = ai.definePrompt({
+const detectRoomTypePrompt = ai.definePrompt({
   name: 'detectRoomTypePrompt',
   input: {schema: DetectRoomTypeInputSchema},
   output: {schema: DetectRoomTypeOutputSchema},
@@ -53,12 +53,17 @@ const detectRoomTypeFlow = ai.defineFlow(
     inputSchema: DetectRoomTypeInputSchema,
     outputSchema: DetectRoomTypeOutputSchema,
   },
-  async input => {
-    // Correct way to call a prompt in Genkit v1.x
+  async (input) => {
+    // This uses the default model which is gemini-1.5-pro-latest, suitable for vision-to-text.
     const { output } = await ai.generate({
-      prompt: prompt,
+      prompt: detectRoomTypePrompt,
       input: input,
     });
-    return output!;
+    
+    if (!output) {
+      throw new Error('AI failed to detect the room type.');
+    }
+    
+    return output;
   }
 );
