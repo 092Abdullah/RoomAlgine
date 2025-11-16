@@ -75,7 +75,7 @@ Redesign the provided exterior space${exteriorTypeKeywords} to embody a ${styleK
 **DESIGN FOCUS - ${input.exteriorType || 'General Exterior'}:**
 -   **For "House Exterior (Facade)":** Focus on siding, roofing, trim, windows, the front door, and entry lighting.
 -   **For "Garden / Backyard":** Focus on plant arrangements, lawn care, patio furniture, pathways, and adding harmonious decor.
--   **For "Balcony / Terrace":** Focus on flooring, railings, container plants, compact furniture, and outdoor textiles.
+-   -   **For "Balcony / Terrace":** Focus on flooring, railings, container plants, compact furniture, and outdoor textiles.
 -   **For "Driveway & Garage":** Focus on the driveway surface, garage door style, and surrounding landscape integration.
 -   **For "Poolside / Outdoor Lounge":** Focus on deck materials, lounge furniture, umbrellas, and water features.
 -   **For "Fence & Gate Design":** Focus on the fence/gate style, material, color, and integration with the surrounding landscape.
