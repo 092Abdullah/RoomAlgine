@@ -63,7 +63,6 @@ const suggestStylesFlow = ai.defineFlow(
         { text: instructionPrompt },
         { media: { url: input.photoDataUri } }
       ],
-      // The `input` object provides data for the Handlebars template in `instructionPrompt`.
       input: {
         roomType: input.roomType || 'room', // Provide a default value
         availableColors: input.availableColors,
