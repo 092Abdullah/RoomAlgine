@@ -40,15 +40,25 @@ export async function suggestStyles(input: SuggestStylesInput): Promise<SuggestS
   return suggestStylesFlow(input);
 }
 
-const instructionPrompt = `You are an expert interior designer. Analyze the provided image of a {{roomType}} and suggest up to 3 suitable design styles from the following list: ${designStyles.join(', ')}.
+const suggestStylesPrompt = ai.definePrompt(
+  {
+    name: 'suggestStylesPrompt',
+    input: { schema: SuggestStylesInputSchema },
+    output: { schema: SuggestStylesOutputSchema },
+    prompt: `You are an expert interior designer. Analyze the provided image of a {{roomType}} and suggest up to 3 suitable design styles from the following list: ${designStyles.join(', ')}.
 
-  For each suggestion, provide a style and a corresponding color combination of 2-3 colors. 
+For each suggestion, provide a style and a corresponding color combination of 2-3 colors.
+
+IMPORTANT: You MUST ONLY choose colors from this list of available colors: {{#each availableColors}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}.
+
+Analyze the image for existing architecture, lighting, and general space. Base your suggestions on what would realistically enhance the room.
+
+Respond only with the structured data as defined. Do not include any extra text or reasoning.
   
-  IMPORTANT: You MUST ONLY choose colors from this list of available colors: {{#each availableColors}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}.
+Photo: {{media url=photoDataUri}}`,
+  },
+);
 
-  Analyze the image for existing architecture, lighting, and general space. Base your suggestions on what would realistically enhance the room.
-
-  Respond only with the structured data as defined. Do not include any extra text or reasoning.`;
 
 const suggestStylesFlow = ai.defineFlow(
   {
@@ -57,20 +67,14 @@ const suggestStylesFlow = ai.defineFlow(
     outputSchema: SuggestStylesOutputSchema,
   },
   async (input) => {
-    // This uses the default model which is gemini-1.5-pro-001, suitable for vision-to-text.
-    const { output } = await ai.generate({
-      prompt: [
-        { text: instructionPrompt },
-        { media: { url: input.photoDataUri } }
-      ],
-      input: {
-        roomType: input.roomType || 'room', // Provide a default value
-        availableColors: input.availableColors,
-      },
-      output: {
-        schema: SuggestStylesOutputSchema,
-      }
-    });
+    
+    // Provide a default value for roomType if it's not present
+    const flowInput = {
+        ...input,
+        roomType: input.roomType || 'room',
+    };
+    
+    const { output } = await suggestStylesPrompt(flowInput);
     
     if (!output) {
         throw new Error('AI failed to suggest styles.');
