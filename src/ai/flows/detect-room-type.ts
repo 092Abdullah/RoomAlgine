@@ -5,7 +5,7 @@
  * @fileOverview An AI flow to detect the type of room from a user-uploaded photo.
  *
  * - detectRoomType - A function that handles the room type detection.
- * - DetectRoomTypeInput - The input type for the detectRoomType function.
+ * - DetectRoomTypeInput - The input type for the detectRoomType functionूं।
  * - DetectRoomTypeOutput - The return type for the detectRoomType function.
  */
 
@@ -48,8 +48,8 @@ const detectRoomTypeFlow = ai.defineFlow(
     outputSchema: DetectRoomTypeOutputSchema,
   },
   async (input) => {
+    // This uses the default model which is gemini-1.5-pro-001, suitable for vision-to-text.
     const { output } = await ai.generate({
-      // Use the default model which is gemini-1.5-pro
       prompt: [
         { text: instructionPrompt },
         { media: { url: input.photoDataUri } }

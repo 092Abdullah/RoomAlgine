@@ -57,14 +57,15 @@ const suggestStylesFlow = ai.defineFlow(
     outputSchema: SuggestStylesOutputSchema,
   },
   async (input) => {
-    // This uses the default model which is gemini-1.5-pro-latest, suitable for vision-to-text.
+    // This uses the default model which is gemini-1.5-pro-001, suitable for vision-to-text.
     const { output } = await ai.generate({
       prompt: [
         { text: instructionPrompt },
         { media: { url: input.photoDataUri } }
       ],
+      // The `input` object provides data for the Handlebars template in `instructionPrompt`.
       input: {
-        roomType: input.roomType,
+        roomType: input.roomType || 'room', // Provide a default value
         availableColors: input.availableColors,
       },
       output: {
