@@ -1,5 +1,8 @@
+
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
+import {config} from 'dotenv';
+config();
 
 // Polyfill for fetch in Node.js environment
 if (typeof fetch !== 'function') {
@@ -10,6 +13,6 @@ if (typeof fetch !== 'function') {
 
 export const ai = genkit({
   plugins: [googleAI()],
-  // This model is suitable for vision and text tasks.
-  model: 'googleai/gemini-1.5-pro-001',
+  // This model is suitable for vision and text tasks and is known to be available.
+  model: 'googleai/gemini-1.5-flash-latest',
 });
