@@ -109,7 +109,7 @@ ${budgetInstructions}${userPromptKeywords}`;
 
       try {
         const { media } = await ai.generate({
-          model: 'googleai/gemini-2.5-flash-image',
+          model: 'gemini-2.5-flash',
           prompt: promptPayload,
           config: generateConfig,
         });

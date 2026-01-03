@@ -14,5 +14,5 @@ if (typeof fetch !== 'function') {
 export const ai = genkit({
   plugins: [googleAI()],
   // This model is suitable for vision and text tasks and is known to be available.
-  model: 'gemini-1.5-flash',
+  model: 'gemini-2.5-flash',
 });
