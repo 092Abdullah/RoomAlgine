@@ -1,4 +1,4 @@
-# **App Name**: RoomAIgine
+# RoomAIgine
 
 ## Core Features:
 
