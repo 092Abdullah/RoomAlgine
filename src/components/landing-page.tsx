@@ -496,7 +496,7 @@ const LandingPage = ({ user }: { user: User | null }) => {
                  <div>
                     <h3 className="font-semibold text-foreground">Connect</h3>
                     <div className="flex space-x-4 mt-4">
-                        <Link href="https://github.com/Abdullah-Maqbool1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
+                        <Link href="https://github.com/092Abdullah" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Github /></Link>
                         <Link href="https://www.instagram.com/abdullah__maqbool" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Instagram /></Link>
                         <Link href="https://www.linkedin.com/in/abdullah-maqbool-se" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground"><Linkedin /></Link>
                     </div>
