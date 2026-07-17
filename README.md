@@ -18,3 +18,6 @@
 - Responsive grid layout that adapts to different screen sizes, optimizing user experience on desktop and mobile devices.
 - Smooth transitions and loading animations to enhance user engagement while the AI generates and restyles the images.
 - Use simple, minimalist icons to represent different design styles and functionalities, in a style that avoids being cartoonish, and avoids free-use iconography styles.
+
+
+
